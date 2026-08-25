@@ -1,0 +1,7 @@
+{
+  "schema": "vantry.manifest/1",
+  "kit_version": "3.21.2",
+  "source_commit": "2f1b5b245d55fe91409a5212432e13cce364febd",
+  "installed_at": "2026-08-25T14:16:36Z",
+  "installed_by": "scripts/adopt/install.sh"
+}

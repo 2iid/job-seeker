@@ -1,0 +1,37 @@
+Copyright (c) 2026 2iD. All rights reserved.
+
+This source code is made publicly readable. It is NOT open source.
+
+WHAT YOU MAY DO
+  - Read this code.
+  - Fork this repository on GitHub, to the extent GitHub's Terms of Service
+    permit for public repositories.
+  - Quote short excerpts for commentary, teaching, or security research, with
+    attribution.
+
+WHAT YOU MAY NOT DO, without prior written permission from the copyright
+holder:
+  - Use, run, deploy, or operate this software, in whole or in part, for any
+    purpose.
+  - Copy, modify, merge, publish, distribute, sublicense, or sell copies of it.
+  - Use it to build or operate a competing product or service.
+
+No licence, right, or interest is granted by implication, estoppel, or
+otherwise. Publishing this source does not place it in the public domain and
+does not waive any right.
+
+THIRD-PARTY COMPONENTS
+  This repository contains components written by others. They are NOT covered
+  by the terms above and remain under their own licences, which are reproduced
+  in LICENSES/ and inventoried in THIRD_PARTY_NOTICES.md. Nothing in this file
+  restricts any right you hold under those licences.
+
+NO WARRANTY
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Contact for permissions: open an issue on this repository.

@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# =============================================================================
+#  pre-commit — secret-leak guard (always) + verification gate (strict only).
+#
+#  The secret scan runs on the STAGED content, not the working tree: what is
+#  about to enter history is what matters. gitleaks is used when installed;
+#  the built-in patterns are the floor, not a replacement.
+# =============================================================================
+set -uo pipefail
+
+# Answer the reachability probe from scripts/lib/enable-hooks.sh --status. This
+# is how "is vantry's stage actually reached?" becomes a fact instead of a grep.
+[ "${VANTRY_HOOK_PROBE:-}" = "1" ] && { echo "VANTRY_HOOK_REACHED:pre-commit"; exit 0; }
+
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$ROOT" || exit 0
+FAIL=0
+
+# ---------------------------------------------------------------- secret scan
+# gitleaks is an ADDITION, never a replacement.
+#
+# This used to be an if/else: when gitleaks was installed the built-in scan was
+# skipped entirely. Then gitleaks 8.19 removed `protect`, and on 8.30 the command
+# reported "0 commits scanned … no leaks found" and exited 0 — so a staged AWS
+# key committed cleanly on any machine that had gitleaks installed, while the
+# same repo refused it on a machine that did not. A gate whose strength depends
+# on which tools happen to be on your PATH is not a gate.
+#
+# The built-in scan is the FLOOR and always runs. gitleaks runs too when it is
+# available, and either one finding something is a refusal.
+if command -v gitleaks >/dev/null 2>&1 && [ -f "$ROOT/.gitleaks.toml" ]; then
+  # `git --staged` is the modern spelling; `protect --staged` is the pre-8.19
+  # one. Try the new one first and fall back, so both eras work.
+  if gitleaks git --staged --redact --config "$ROOT/.gitleaks.toml" --no-banner >/dev/null 2>&1; then :
+  elif gitleaks git --staged --redact --config "$ROOT/.gitleaks.toml" --no-banner 2>&1 | grep -qiE 'leak|finding'; then
+    gitleaks git --staged --redact --config "$ROOT/.gitleaks.toml" --no-banner 2>&1 | sed 's/^/  /'; FAIL=1
+  elif ! gitleaks protect --staged --redact --config "$ROOT/.gitleaks.toml" --no-banner >/dev/null 2>&1; then
+    gitleaks protect --staged --redact --config "$ROOT/.gitleaks.toml" --no-banner 2>&1 | sed 's/^/  /'; FAIL=1
+  fi
+fi
+
+# The floor. Runs on every commit, whatever else is installed.
+if true; then
+  # Built-in floor. Deliberately narrow: a noisy guard gets disabled on day 3.
+  # NUL-delimited, always. `for f in $STAGED` split on whitespace, so
+  # `src/my config.ts` became two paths that do not exist and was skipped
+  # entirely — a credential in any filename containing a space walked past the
+  # one check whose whole job is to stop it. Newlines in a filename did the same.
+  while IFS= read -r -d '' f; do
+    case "$f" in
+      *.lock|*.min.js|*.map|*-lock.json|*-lock.yaml) continue ;;
+      .gitleaks.toml|.githooks/pre-commit) continue ;;
+      # Fixtures are SUPPOSED to contain credential-shaped strings — that is how
+      # you test a secret scanner. Mirrors the .gitleaks.toml allowlist. Without
+      # this, installing the kit makes a project's very next commit fail on the
+      # kit's own test data, and a guard that cries wolf on day one gets removed.
+      scripts/test/*|evals/*|*/fixtures/*|fixtures/*|*/__fixtures__/*|*.fixture.*) continue ;;
+    esac
+    [ -f "$f" ] || continue
+    HIT="$(git show ":$f" 2>/dev/null | grep -nEi \
+      -e 'AKIA[0-9A-Z]{16}' \
+      -e 'sk-(live|proj|ant)-[A-Za-z0-9_-]{16,}' \
+      -e 'sk_live_[A-Za-z0-9]{16,}' \
+      -e 'rk_live_[A-Za-z0-9]{16,}' \
+      -e 'gh[pousr]_[A-Za-z0-9]{30,}' \
+      -e 'xox[baprs]-[A-Za-z0-9-]{10,}' \
+      -e '-----BEGIN [A-Z ]*PRIVATE KEY-----' \
+      -e 'eyJhbGciOi[A-Za-z0-9_-]{20,}' \
+      -e '(service_role|SUPABASE_SERVICE_ROLE_KEY)[[:space:]]*[:=][[:space:]]*['"'"'"][A-Za-z0-9._-]{20,}' \
+      | grep -vEi 'EXAMPLE|PLACEHOLDER|CHANGEME|REDACTED|<your-|xxxxxxxx|0123456789abcdef' \
+      | head -3)"
+    if [ -n "$HIT" ]; then
+      echo "✗ possible secret in $f:" >&2
+      printf '%s\n' "$HIT" | sed -e 's/^/    /' -e 's/\(.\{100\}\).*/\1…/' >&2
+      FAIL=1
+    fi
+  done < <(git diff --cached --name-only --diff-filter=ACM -z 2>/dev/null)
+
+  # Same defect, same fix: this matched the whole blob of names as ONE string, so
+  # it fired only when the LAST staged path happened to end in .env.
+  while IFS= read -r -d '' f; do
+    case "$f" in
+      *.env|*.env.local|*.env.production|*.env.*)
+        case "$f" in
+          *.env.example|*.env.sample|*.env.template) : ;;
+          *) echo "✗ refusing to commit $f — an env file belongs in your secret store." >&2; FAIL=1 ;;
+        esac ;;
+    esac
+  done < <(git diff --cached --name-only --diff-filter=ACM -z 2>/dev/null)
+fi
+
+if [ "$FAIL" -ne 0 ]; then
+  cat >&2 <<'MSG'
+
+  COMMIT REFUSED — a credential-shaped string is staged.
+
+  Rotate it if it is real, move it to your secret store, and reference it by
+  env var. If it is a false positive:  git commit --no-verify
+
+MSG
+  exit 1
+fi
+
+# ------------------------------------------------- verification gate (strict)
+if [ -f "$ROOT/vantry.yml" ] && [ -x "$ROOT/scripts/verify.sh" ] && [ "${VANTRY_SKIP_GATE:-0}" != "1" ]; then
+  # Hand-rolled sed here read `strictness: strict   # production` as
+  # "strict   # production", so strict mode NEVER engaged — while --status kept
+  # printing `strict` and validate-config kept printing valid. --init writes that
+  # exact comment style, so it was the likely path, not an edge case. One reader
+  # for the config, everywhere.
+  # shellcheck source=../scripts/lib/vantry-common.sh
+  . "$ROOT/scripts/lib/vantry-common.sh" 2>/dev/null || true
+  if command -v vantry_cfg >/dev/null 2>&1 || type vantry_cfg >/dev/null 2>&1; then
+    STRICT="$(vantry_cfg strictness standard)"
+  else
+    STRICT="$(sed -n 's/^strictness:[[:space:]]*//p' "$ROOT/vantry.yml" | head -1 | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//')"
+  fi
+  if [ "$STRICT" = "strict" ]; then
+    "$ROOT/scripts/verify.sh" --gate --pre-commit || exit 1
+  elif ! git -C "$ROOT" remote 2>/dev/null | grep -q .; then
+    # pre-push is the guarantee, but a repo with NO REMOTE never pushes — so in
+    # that repo the guarantee never fires and unverified work could accumulate
+    # unnoticed. Say so, once, at commit time. Deliberately a WARNING and not a
+    # block: commits are cheap and frequent, and a gate that refuses every save
+    # is a gate that gets uninstalled by Friday. The Stop hook already blocks
+    # the agent while it works; this is for the human who has no remote yet.
+    if ! "$ROOT/scripts/verify.sh" --gate --pre-commit >/dev/null 2>&1; then
+      echo "⚠ committing unverified work, and this repo has no remote — so the" >&2
+      echo "  pre-push gate will never run. Nothing else will object after this." >&2
+      echo "  Run scripts/verify.sh when you want the receipt." >&2
+    fi
+  fi
+fi
+exit 0

@@ -1,0 +1,75 @@
+# =============================================================================
+#  evidence.yml — the cheapest check in the kit, and the one that needs `edited`.
+#
+#  It lives apart from verify.yml on purpose. Reading a PR body takes seconds;
+#  re-running the whole contract takes minutes. Merging the two meant that every
+#  title tweak spent five of the month's 2000 GitHub Actions minutes.
+#
+#  It needs `edited` because the body is exactly the thing a human changes after
+#  the check has already failed — and it reads the body from the API rather than
+#  the event payload, so "Re-run jobs" works too. Between them those two close a
+#  loop that used to have no exit.
+# =============================================================================
+name: evidence
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+concurrency:
+  group: evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  evidence:
+    name: PR states its evidence
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: The verification-evidence block must be filled in
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # The payload body, kept ONLY as a fallback. It is frozen at trigger
+          # time, so re-running a failed run replayed the empty body forever —
+          # "Re-run jobs" could never turn this check green, whatever you wrote.
+          FALLBACK_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          # Read the body as it is NOW, not as it was when the event fired.
+          # Adding `edited` to the trigger fixes the edit case; this fixes the
+          # re-run case, and the two together are what actually closes the loop.
+          BODY="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""' 2>/dev/null || true)"
+          if [ -z "$BODY" ]; then
+            BODY="$FALLBACK_BODY"
+            echo "note: could not read the PR body from the API; falling back to the event payload."
+          fi
+          # A PR that cannot say what was observed has not been verified by a
+          # human either — this is the cheapest honest check there is.
+          BLOCK="$(printf '%s' "$BODY" | awk '/^##[[:space:]]*Verification evidence/{f=1;next} /^##[[:space:]]/{f=0} f')"
+          # A comment block spans many lines; stripping line by line left every
+          # line BETWEEN the markers, so the unedited template — the default —
+          # passed this gate and the log looked like filled-in evidence. Strip
+          # whole blocks with a state machine instead.
+          STRIPPED="$(printf '%s' "$BLOCK" \
+            | awk '/<!--/{c=1} !c{print} /-->/{c=0}' \
+            | grep -vE '^[[:space:]]*_.*_[[:space:]]*$' || true)"
+          if [ -z "$(printf '%s' "$STRIPPED" | tr -d '[:space:]')" ]; then
+            echo "::error::The '## Verification evidence' section is empty."
+            echo "Say what you ran and what you observed. 'Tests pass' is not an observation."
+            exit 1
+          fi
+          printf '%s\n' "$STRIPPED" | sed 's/^/  /'
+
+      - name: Surface an active override loudly
+        run: |
+          if ls .vantry/overrides/*.json >/dev/null 2>&1; then
+            echo "::warning::This branch carries a VERIFICATION OVERRIDE:"
+            for f in .vantry/overrides/*.json; do
+              echo "::warning::$(cat "$f")"
+            done
+          fi

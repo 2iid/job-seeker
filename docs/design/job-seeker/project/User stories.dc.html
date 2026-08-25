@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background: oklch(0.90 0.004 275); }
+  * { box-sizing: border-box; }
+  a { color: oklch(0.47 0.115 210); text-decoration: none; }
+  a:hover { color: oklch(0.36 0.11 210); text-decoration: underline; }
+  p, h1, h2, h3, h4 { margin:0; text-wrap: pretty; }
+  table { border-collapse: collapse; }
+</style>
+</helmet>
+
+<section style="padding:56px 64px 110px;font-family:Epilogue,system-ui,sans-serif;color:oklch(0.235 0.02 275);display:flex;flex-direction:column;gap:40px;width:1520px;font-variant-numeric:tabular-nums">
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#FFF;background:oklch(0.30 0.02 275);padding:4px 9px">7a</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Tour 7 — user stories de design</span>
+      <span style="height:1px;flex:1;background:oklch(0.72 0.006 275)"></span>
+    </div>
+    <h1 style="font-size:38px;font-weight:600;letter-spacing:-0.025em;line-height:1.1">Backlog · 16 stories avec critères d'acceptation vérifiables</h1>
+    <p style="font-size:16px;line-height:1.6;color:oklch(0.36 0.018 275);max-width:1000px">Écrites pour être importées telles quelles. Chaque story porte ses états couverts, son contraste mesuré, sa cible tactile, son comportement clavier et la chaîne française la plus longue testée à 390 px. Les valeurs de contraste sont calculées (oklch → sRGB → WCAG 2.1), pas estimées ; les tokens renvoient à <a href="Système.dc.html">2a</a>.</p>
+  </div>
+
+  <div style="display:flex;gap:22px;flex-wrap:wrap">
+    <div style="flex:1;min-width:440px;background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;display:flex;flex-direction:column;gap:11px">
+      <h2 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Personas</h2>
+      <p style="font-size:13.5px;line-height:1.6"><strong style="font-weight:600">P1 · la chercheuse active</strong> — 28 ans, développeuse, sans emploi depuis 3 mois. Postule 20 fois par semaine à la main. Besoin : dignité, effort rendu visible.</p>
+      <p style="font-size:13.5px;line-height:1.6"><strong style="font-weight:600">P2 · le veilleur passif</strong> — 35 ans, en poste, ouvert aux opportunités. Besoin : discrétion, faible bruit, confidentialité affichée.</p>
+      <p style="font-size:13.5px;line-height:1.6"><strong style="font-weight:600">P3 · le premier emploi</strong> — 23 ans, jeune diplômé. Besoin : pédagogie, comprendre pourquoi une offre matche.</p>
+    </div>
+    <div style="flex:1;min-width:440px;background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;display:flex;flex-direction:column;gap:11px">
+      <h2 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Critères globaux — s'appliquent à toutes les stories, à ne pas répéter en ticket</h2>
+      <div style="font-size:13px;line-height:1.7;color:oklch(0.30 0.018 275)">
+        <p><strong style="font-weight:600">G1</strong> — Corps de texte ≥ 4,5:1, grand texte et parties non textuelles de contrôle ≥ 3:1, en clair et en sombre. Valeurs de référence : texte principal 14,20:1 sombre / 16,70:1 clair ; texte discret 5,90 / 5,52 ; bordure de contrôle 3,28 / 3,39 (mesuré sur --surface-module, la surface la plus proche).</p>
+        <p><strong style="font-weight:600">G2</strong> — Anneau de focus 2 px + décalage 2 px (<span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--focus-ring</span> : 11,23:1 sombre / 6,20:1 clair). <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">outline: none</span> sans remplacement visible = ticket rejeté.</p>
+        <p><strong style="font-weight:600">G3</strong> — Cible tactile ≥ 44 × 44 px, 8 px d'écart réel. Lignes de tableau tactiles à 52 px.</p>
+        <p><strong style="font-weight:600">G4</strong> — <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">prefers-reduced-motion</span> : durées à 0, aucune information portée par le seul mouvement.</p>
+        <p><strong style="font-weight:600">G5</strong> — Aucun statut porté par la couleur seule : forme + libellé obligatoires, vérifié en niveaux de gris.</p>
+        <p><strong style="font-weight:600">G6</strong> — FR et EN conçus ensemble. Test de troncature à 390 px avec la chaîne FR la plus longue de la story.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:26px">
+
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Épopée 1 · contrôle et arrêt</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-01</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P2 (veilleur passif en poste), <strong style="font-weight:600">je veux</strong> arrêter l'agent en un geste depuis n'importe quel écran, <strong style="font-weight:600">afin de</strong> couper toute action sortante sans avoir à chercher un réglage.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0 · CRITIQUE</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>agent actif · agent en pause · agent bloqué (escalade) · envoi en cours (l'arrêt annule l'envoi en cours et le dit) · après arrêt (bandeau persistant « je suis arrêté depuis 09:41 » + reprise)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Bouton d'arrêt : bordure <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--accent-attente</span> sur <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--surface-chrome</span> = 8,93:1 sombre / 6,63:1 clair. Libellé en texte principal : 14,92 / 15,90.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>44 × ≥ 88 px en 390 (barre haute, main droite et gauche testées) ; 44 px de haut en 1280.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Atteignable en ≤ 2 Tab depuis le chargement de n'importe quel écran ; raccourci global <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">Maj + .</span> ; Entrée déclenche, aucune confirmation modale (l'arrêt est réversible, la reprise ne l'est pas dangereuse).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Arrêt immédiat » (16 car.) tient à 390 ; forme longue « Arrêter l'agent maintenant » (28 car.) réservée au 1280. Aucun retour à la ligne dans le bouton.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-02</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1, <strong style="font-weight:600">je veux</strong> changer le cran d'autonomie de l'agent depuis l'écran où je suis, <strong style="font-weight:600">afin de</strong> lui donner plus ou moins de latitude sans quitter ma tâche.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>4 crans · cran verrouillé par canal (contact recruteur, non déplaçable, avec explication) · transition en cours · conflit (« vous montez au cran 4 alors que 3 candidatures attendent votre accord : je les envoie ou je les garde ? »)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Cran actif : aplat <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--accent-machine</span> vs surface = 8,05 / 6,20 (≥ 3:1 pour partie non textuelle) ; libellé du cran actif 14,20 / 16,70 ; crans inactifs en texte discret 5,90 / 5,52.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>4 segments de 46 × 44 px minimum en 1280 ; en 390, liste de 4 lignes à 64 px.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Groupe radio : flèches ← → changent le cran, Espace confirme, le changement est annoncé (« cran 3 sur 4, j'agis avec votre accord »). Le cran verrouillé est focalisable et annonce son motif.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« J'agis avec votre accord » (25 car.) sur une ligne, 14 px min. La forme courte « ACCORD » est réservée au segment 1280 de 46 px.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Épopée 2 · compte rendu et traçabilité</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-03</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1, <strong style="font-weight:600">je veux</strong> lire en cinq secondes ce que l'agent a fait pendant mon absence, <strong style="font-weight:600">afin de</strong> savoir si quelque chose demande mon attention.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>premier jour (0 donnée, l'état vide porte l'action) · nuit calme (axe plat, formulation positive) · journée chargée (≤ 12 actions listées, au-delà groupées par type) · agent bloqué (escalade en tête) · intégration rompue (ce qui marche encore / ce qui est arrêté)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Phrases en texte principal 14,20 / 16,70 ; horodatages en <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--text-muted</span> 5,90 / 5,52 (donc lisibles, pas décoratifs) ; ligne d'escalade sur <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--surface-module</span> teintée, libellé 8,51 / 6,97.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Chaque ligne porte un lien de preuve de 44 px de haut minimum ; la zone tactile couvre toute la ligne en 390.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Tab suit l'ordre chronologique ; l'axe temporel n'est pas focalisable (dupliqué par le texte) ; chaque ligne annonce heure + phrase + type d'action.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>Titre le plus long testé : « Cette nuit, j'ai postulé deux fois, écarté quatre offres et préparé trois candidatures qui vous attendent. » (117 car.) — 4 lignes à 20 px, sans troncature, sans césure.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-04</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P2, <strong style="font-weight:600">je veux</strong> consulter le reçu exact d'une candidature envoyée en mon nom, <strong style="font-weight:600">afin de</strong> savoir précisément ce qu'un employeur a reçu de moi.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>envoyée (figée) · en file (annulable, avec compte à rebours d'annulation borné à 10 s et arrêtable) · échec technique (cause + reprise) · fil d'emails replié au-delà de 3 messages · document indisponible (le reçu le dit, ne masque pas)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Libellés clé en <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--text-muted</span> ≥ 4,5:1 (5,90 / 5,52) ; valeurs en principal ; pastille de statut = forme + mot (G5).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Liens « ouvrir le fichier exact » et « lire les 140 mots envoyés » : 44 px de haut, 8 px d'écart ; actions de pied 48 px en 390.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>E exporte · l'ouverture d'un document met le focus dans le panneau, Échap le referme et rend le focus à la ligne d'origine (test de retour de focus obligatoire).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« J'ai postulé chez Kaïra Finances en votre nom. » (44 car.) sur 2 lignes ; libellé le plus long : « RÉPONSES TRANSMISES » (19 car.) tient sur une ligne en L2.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Épopée 3 · décision et file d'approbation</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-05</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1, <strong style="font-weight:600">je veux</strong> traiter une demande d'approbation en moins de dix secondes à une main, <strong style="font-weight:600">afin de</strong> vider ma file dans le métro.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0 · MESURÉ</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>1 carte · file de 10+ (tri par fraîcheur, compteur en tête) · carte d'escalade · file vidée (récapitulatif + moyenne réelle par élément) · envoi échoué après approbation</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">MESURE</span><span>Test utilisateur : médiane ≤ 10 s par élément sur 3 éléments, pouce droit seul, appareil de 390 px. Instrument : horodatage entre l'affichage de la carte et l'action. Échec = story non livrée.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Action principale : texte sur aplat <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--accent-attente</span> = 9,82:1 sombre / 6,87:1 clair. Actions secondaires : bordure <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--border-control</span> 3,28 / 3,39.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Approuver 52 px ; Modifier et Refuser 48 px ; 8 px d'écart ; les trois cibles dans le tiers bas de l'écran (zone de pouce), aucune action destructive à moins de 8 px de l'action principale.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>J / K naviguer · A approuver · M modifier · R refuser · Espace déplier les preuves · Échap quitter sans rien envoyer. Focus visible sur la carte courante ; A sans focus de carte est inopérant (pas d'envoi accidentel).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Puis-je postuler chez Kaïra Finances pour vous ? » (41 car.) sur 2 lignes en T1 ; bouton « Approuver l'envoi » (18 car.) sur une ligne à 16 px.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-06</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1, <strong style="font-weight:600">je veux</strong> donner un motif de refus qui entraîne l'agent, <strong style="font-weight:600">afin de</strong> ne plus revoir le même type d'offre.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P1</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>4 motifs proposés + « autre, je vous écris deux mots » · motif appliqué (la règle créée est affichée en clair avant validation) · règle en conflit avec une règle existante · retour arrière (annuler la règle dans les 24 h)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Chaque motif affiche la conséquence exacte : « je remonte votre plancher à 1 400 000 FCFA ». Aucun motif n'agit sans que sa conséquence ait été montrée.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Boutons de motif : 52 px minimum, texte sur 2 lignes autorisé, 8 px d'écart.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>1–5 sélectionnent un motif, Entrée valide, Échap revient à la carte sans refuser.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« j'ajoute Kaïra Finances à vos exclusions » (39 car.) en sous-libellé 12,5 px, 2 lignes max.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">TON</span><span>Aucune formulation qui fasse du refus un échec de l'utilisateur. Interdits en revue : « dommage », « vous avez manqué », tout point d'exclamation.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-07</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P3 (premier emploi), <strong style="font-weight:600">je veux</strong> déplier un score en preuves, <strong style="font-weight:600">afin de</strong> comprendre pourquoi une offre me correspond et ce qui me manque.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>compact · déplié · score non calculable (palier C, « — » + motif) · annonce illisible (erreur + lien vers l'annonce d'origine) · plus de 3 preuves par groupe (plafonnées, reste au dépliage)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Aucun chiffre sans explication atteignable en un geste. Un score affiché sans preuve dépliable = ticket rejeté. Aucune compétence absente du profil n'est jamais ajoutée au CV.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Chiffre N1/N2 en principal ; histogramme 5 crans : plein 8,05 / 6,20, vide 3,28 / 3,39 — le nombre de crans est lisible en niveaux de gris (G5).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Espace déplie et replie ; annonce « correspondance 92 sur 100, 4 crans sur 5 » ; Tab atteint les deux actions de correction.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>Preuve la plus longue testée : « React — 5 ans demandés, 6 au dossier · TypeScript · design system interne » (74 car.) — 3 lignes à 12,5 px dans une colonne de 232 px.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Épopée 4 · véracité de la veille</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-08</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1, <strong style="font-weight:600">je veux</strong> voir le palier de veille partout où l'âge d'une offre est affiché, <strong style="font-weight:600">afin de</strong> ne jamais croire à une avance que je n'ai pas.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0 · AUDITÉ</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>palier A (4 barres, « parmi les premiers dossiers ») · palier B (2 barres, « publiée avant, je ne sais pas quand ») · palier C (1 barre pointillée, « je vous assiste, je ne postule pas ») · date inconnue · source injoignable · lot de 39 offres (indicateur unique en tête de lot)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Interdits vérifiés en revue : compte à rebours, rouge, clignotement, série, rang chiffré (« vous seriez le 3ᵉ candidat »). Une offre de palier B ne peut jamais emprunter la formulation d'un palier A. Après 24 h, l'âge devient « hier » puis une date.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Palier A : <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--accent-machine</span> 8,05 / 6,20 ; palier B : <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--text-secondary</span> 8,77 / 8,13 ; palier C : <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--text-muted</span> 5,90 / 5,52. Le palier est toujours écrit en lettre, jamais porté par la seule couleur.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Non focalisable, annoncé en entier par le lecteur d'écran. Identique sous <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">prefers-reduced-motion</span> (aucune animation d'entrée).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« PALIER B · VUE IL Y A 22 MIN » (27 car., L1, +0,06em) tient sur une ligne à 358 px de contenu. Forme de repli en tableau : « 22 min · B ».</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-09</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P2, <strong style="font-weight:600">je veux</strong> que l'agent s'arrête et m'explique quand un formulaire le bloque, <strong style="font-weight:600">afin de</strong> reprendre la main sans découvrir un envoi bâclé.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>question inconnue · champ obligatoire absent du profil · anti-robot rencontré (arrêt systématique, jamais de contournement) · session expirée côté employeur · reprise réussie · abandon assumé</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>L'escalade est un état de première classe : elle apparaît dans la ligne de vie, dans la file d'approbation, dans le suivi et dans la notification. Le message dit toujours quoi, pourquoi, et l'action réparatrice. La phrase « aucun anti-robot n'est contourné » est affichée dans le produit.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Triangle + libellé <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--accent-attente</span> 8,51 / 6,97 ; jamais de rouge pour une escalade (le rouge reste l'échec technique).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>« Répondre et reprendre » 48 px ; « Voir le formulaire » 44 px.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Le formulaire de Vireo demande votre numéro d'ordre. Je ne l'ai pas. » (66 car.) — 3 lignes en T1 à 16 px, sans troncature.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Épopée 5 · densité, international, discrétion</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-10</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1 après un mois, <strong style="font-weight:600">je veux</strong> savoir en un coup d'œil ce qui demande mon attention parmi 214 candidatures, <strong style="font-weight:600">afin de</strong> ne pas me noyer dans mon propre historique.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0 · MESURÉ</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>0 · 12 · 214 candidatures · 8 statuts · archive groupée par mois · aucune action requise aujourd'hui</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">MESURE</span><span>À 214 lignes : la question « qu'est-ce qui demande mon attention aujourd'hui ? » est répondue au-dessus de la ligne de flottaison, en 390 comme en 1280, sans défilement. Test avec jeu de données réel de 214 entrées.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Aucun compteur de refus en tête d'écran. « Sans réponse » est formulé comme une donnée du marché. Les 210 lignes restantes sont annoncées en chiffre et repliées, jamais étalées.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Lignes de suivi à 64 px en 390 (au-dessus du plancher de 52 px pour un contenu à 2 lignes) ; en 1280, cartes kanban glissables au clavier aussi (voir clavier).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Kanban : flèches déplacent le focus, Maj + flèches déplacent la carte de colonne, chaque déplacement est annoncé et journalisé. Le glisser-déposer n'est jamais le seul moyen.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Quatre choses demandent votre attention aujourd'hui. » (52 car.) sur 2 lignes ; statut le plus long : « Escalade — je rends la main » (28 car.) tronqué à « Escalade » + icône en liste, jamais coupé en plein mot.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-11</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> candidat hors de France, <strong style="font-weight:600">je veux</strong> voir les salaires dans la devise de l'offre avec une conversion identifiée comme telle, <strong style="font-weight:600">afin de</strong> ne pas confondre une estimation avec le montant annoncé.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P1</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>devise identique à celle du candidat (aucune conversion affichée) · devise différente (montant natif + conversion datée) · fourchette · montant mensuel vs annuel · aucun salaire annoncé (dit explicitement, pas estimé)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Le montant natif est toujours premier et en chiffres tabulaires. La conversion porte le mot « indicative » et la date du taux. Les heures sont dans le fuseau du candidat, avec le nom du fuseau. Les documents générés sont dans la langue de l'offre ; le CV suit le format du marché visé et le produit énumère ce qu'il a retiré et pourquoi.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« 1 200 000 FCFA par mois · ≈ 1 830 € — conversion indicative, taux du 25 août » (72 car.) — 3 lignes, montant natif jamais renvoyé à la ligne au milieu du nombre (<span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">white-space: nowrap</span> sur le groupe chiffre + devise).</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>La conversion est un texte, pas une infobulle au survol : accessible sans pointeur.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-12</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P2, <strong style="font-weight:600">je veux</strong> masquer les identifiants d'entreprise en un geste, <strong style="font-weight:600">afin de</strong> consulter le produit en open space sans exposer ma recherche.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>actif / inactif · notification sur écran verrouillé (score et palier visibles, nom d'entreprise masqué) · export d'un reçu en mode discrétion (le fichier n'est pas masqué, un avertissement le dit) · capture d'écran système</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Le mode masque : noms d'entreprise, montants, objets de notification. Il ne masque pas : scores, paliers, statuts — sinon l'écran devient inutilisable. L'employeur actuel du candidat est exclu de la veille et de toute prise de contact, indépendamment de ce mode.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Bascule 44 px atteignable depuis toutes les vues de liste et de détail ; bouton « masquer » 44 px dans l'en-tête de détail.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Raccourci global <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">Maj + D</span>, état annoncé (« mode discrétion activé »), persistant entre sessions.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Mode discrétion : le nom de l'entreprise n'apparaît qu'après déverrouillage. » (73 car.) — 3 lignes à 13 px dans la carte de notification.</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Épopée 6 · matière du dossier et entrée</h2>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-13</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P3, <strong style="font-weight:600">je veux</strong> corriger ce que la machine a mal lu dans mon CV avant qu'elle s'en serve, <strong style="font-weight:600">afin de</strong> ne pas candidater avec des informations fausses.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>extraction complète · champs incertains (triangle + motif du doute) · champ introuvable (formulé sans reproche) · PDF illisible (proposition de saisie manuelle) · import depuis un profil en ligne · correction après coup</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Chaque champ incertain indique d'où il vient (« écrit ligne 14 ») et ce dont la machine a hésité. Cliquer un champ surligne la zone du document. Aucun champ inventé : l'absence est affichée comme absence.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>Lignes de champ à 64 px, bouton « Corriger » 44 px, zone tactile de ligne entière en 390.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CLAVIER</span><span>Tab parcourt d'abord les 3 champs incertains, puis les 21 certains ; Entrée ouvre l'édition en place ; Échap annule sans perdre les autres corrections.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« J'ai lu 24 informations dans votre CV. Trois me font douter. » (58 car.) — 3 lignes ; libellé « Dates chez Néos Studio » (22 car.) sur une ligne.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-14</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P1, <strong style="font-weight:600">je veux</strong> voir exactement ce que l'agent a changé dans mon CV et refuser une modification, <strong style="font-weight:600">afin de</strong> garder la plume sur mon propre parcours.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>0 modification · 3 modifications (modifié, réordonné, retiré) · modification refusée · toutes refusées (le CV maître part tel quel) · variante de format par marché (photo, date de naissance, longueur) avec justification de chaque retrait</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Chaque différence porte un « pourquoi » sourcé dans l'annonce. Aucune compétence absente du profil n'est ajoutée. Un refus ne modifie jamais le CV maître. La vue de différence est disponible depuis le reçu, après envoi.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CONTRASTE</span><span>Marqueur de modification : bordure gauche 2 px <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">--accent-machine</span> (6,20:1 en clair) + libellé « MODIFIÉ · 1 » — la forme et le mot, jamais la couleur seule.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RESPONSIVE</span><span>Sous 768, les deux colonnes deviennent un empilement « avant / après » par bloc modifié, avec ancre de retour ; jamais deux colonnes de texte à 390.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Pourquoi : l'annonce insiste deux fois sur l'accès aux données de santé. » (72 car.) — 3 lignes à 12 px.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-15</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P3, <strong style="font-weight:600">je veux</strong> voir l'agent trouver une première offre pendant que je regarde, <strong style="font-weight:600">afin de</strong> comprendre ce que le produit fait pour moi avant de lui faire confiance.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P1</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>relevé en cours · première offre trouvée · aucune offre au premier relevé (« je continue, je vous préviens ») · source injoignable · utilisateur qui quitte l'écran (le relevé continue, il retrouve le résultat au retour)</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Aucune candidature ne peut partir pendant l'entrée : le cran par défaut est « je propose ». Le progrès est réel (nombre de sources et d'offres lues), jamais une barre décorative. Aucun confetti, aucune célébration.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">G4</span><span>Sous <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">prefers-reduced-motion</span>, la barre de progression ne s'anime pas : les compteurs textuels portent l'information.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Je lis 34 sources. Restez là : la première offre arrive dans quelques secondes. » (78 car.) — 3 lignes à 22 px, sans troncature.</span>
+        </div>
+      </div>
+
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);display:flex;flex-direction:column">
+        <div style="padding:14px 20px;border-bottom:1px solid oklch(0.88 0.008 275);background:oklch(0.97 0.004 275);display:flex;align-items:baseline;gap:16px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:oklch(0.47 0.115 210)">US-16</span>
+          <p style="font-size:15.5px;line-height:1.5;flex:1"><strong style="font-weight:600">En tant que</strong> P2, <strong style="font-weight:600">je veux</strong> que le message au recruteur reste dans ma main, <strong style="font-weight:600">afin de</strong> ne jamais apparaître comme un outil de prospection automatique.</p>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:oklch(0.43 0.018 275);flex:none">P0 · AUDITÉ</span>
+        </div>
+        <div style="padding:14px 20px;display:grid;grid-template-columns:150px 1fr;gap:10px 18px;font-size:13px;line-height:1.6">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">ÉTATS COUVERTS</span><span>adresse vérifiée · adresse devinée (marquée comme devinée partout où elle apparaît) · aucun contact identifié (dit explicitement, aucune adresse inventée) · message envoyé par l'utilisateur · destinataire ayant demandé l'arrêt</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">RÈGLE MÉTIER</span><span>Aucun envoi autonome, aucune relance automatique, aucun envoi groupé, jamais de copie cachée. Un destinataire par message, depuis la boîte du candidat. Une prise de contact par entreprise et par mois maximum. Mention de désinscription dans chaque message. L'interface n'offre aucune action « envoyer à tous » — son absence fait partie de l'acceptation.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CIBLE TACTILE</span><span>« Ouvrir dans ma boîte » 46 px ; « Modifier » et « Jeter » 46 px, 8 px d'écart.</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">CHAÎNE FR · 390</span><span>« Adresse devinée — schéma prénom.nom du domaine, non vérifiée » (60 car.) — 2 lignes à 12 px, jamais tronquée ni abrégée en « devinée ».</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid oklch(0.72 0.006 275);padding-top:22px;max-width:1000px;display:flex;flex-direction:column;gap:10px">
+    <h2 style="font-size:19px;font-weight:600;letter-spacing:-0.015em">Ce qui fait échouer une revue, en une liste</h2>
+    <p style="font-size:14.5px;line-height:1.7;color:oklch(0.30 0.018 275)">Un score sans explication atteignable · un statut porté par la couleur seule · un anneau de focus supprimé · une cible sous 44 px · un état vide sans action · un compte à rebours ou un rouge permanent sur la fraîcheur · un rang inventé · une troncature en français à 390 px · un contraste estimé au lieu d'être calculé · une candidature partie sans reçu · un anti-robot contourné · un envoi de message recruteur sans geste humain.</p>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

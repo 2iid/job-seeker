@@ -1,0 +1,125 @@
+# =============================================================================
+#  vulnerabilities.yml — known CVEs in what this project depends on.
+#
+#  Separate from verify.yml on purpose, and cheap: a scan is a photograph, and
+#  the thing that makes yesterday's clean result wrong is an advisory published
+#  overnight, not a commit. So it runs on a SCHEDULE as well as on PRs that touch
+#  a lockfile — and it does not run at all on a PR that does not, because there
+#  is nothing new to learn and Actions minutes are finite.
+#
+#  What blocks and what only reports is the design decision here:
+#    · a vulnerability THIS PR introduced (it changed a lockfile) fails the check;
+#    · everything pre-existing is reported and opened as an issue, never a red
+#      build for whoever pushed next. A gate that fails on work you did not do is
+#      a gate you learn to ignore, and then it protects nothing.
+# =============================================================================
+name: security scans
+
+on:
+  pull_request:
+    paths:
+      - '**.js'
+      - '**.ts'
+      - '**.jsx'
+      - '**.tsx'
+      - '**.py'
+      - '**.go'
+      - '**.rb'
+      - '**.php'
+      - '**.rs'
+      - '**.java'
+      - '**.kt'
+      - '**.swift'
+      - '**.ex'
+      - '**.cs'
+      - '**/package-lock.json'
+      - '**/yarn.lock'
+      - '**/pnpm-lock.yaml'
+      - '**/poetry.lock'
+      - '**/Pipfile.lock'
+      - '**/uv.lock'
+      - '**/requirements*.txt'
+      - '**/Cargo.lock'
+      - '**/go.sum'
+      - '**/Gemfile.lock'
+      - '**/composer.lock'
+      - '**/packages.lock.json'
+      - '**/pubspec.lock'
+      - '**/mix.lock'
+      - '.github/workflows/vulnerabilities.yml'
+  schedule:
+    # Weekly. An advisory lands without your repository changing, so a scan you
+    # only run on push is a scan that goes stale between pushes.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: vulns-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scan:
+    name: known vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Full scan — report everything
+        id: full
+        run: |
+          set +e
+          bash scripts/scan-vulns.sh | tee /tmp/scan.txt
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          # Exit 2 means the scan could not RUN. That is not a clean result and
+          # must never be recorded as one.
+          if grep -q 'INCOMPLETE\|NOTHING RAN\|could not reach' /tmp/scan.txt; then
+            echo "::error::the vulnerability scan did not complete — this is not a clean result"
+            exit 1
+          fi
+
+      - name: Code quality — the project's own analysers, then the cross-language floor
+        run: |
+          set +e
+          bash scripts/scan-quality.sh | tee /tmp/quality.txt
+          RC=$?
+          # Exit 2 = nothing ran. A quality gate that prints green on a language
+          # it cannot read is worse than none, because somebody will cite it.
+          if [ "$RC" = "2" ]; then
+            echo "::error::no analyser ran — this is not a clean result"
+            exit 1
+          fi
+          # Findings are reported, not fatal, unless they are in this change.
+          exit 0
+
+      - name: Quality of what THIS pull request touched
+        if: github.event_name == 'pull_request'
+        run: bash scripts/scan-quality.sh --changed --strict
+
+      - name: What THIS pull request introduced — the blocking part
+        if: github.event_name == 'pull_request'
+        run: |
+          # Pre-existing findings are somebody's backlog, not this author's
+          # problem. Only what this branch added or bumped fails here.
+          bash scripts/scan-vulns.sh --introduced
+
+      - name: On a schedule, open an issue rather than fail silently
+        if: github.event_name == 'schedule' && steps.full.outputs.rc != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Known vulnerabilities in dependencies ($(date -u +%Y-%m-%d))"
+          # One open issue at a time: a weekly scan that opens a new issue every
+          # Monday teaches people to close them unread.
+          EXISTING="$(gh issue list --search "Known vulnerabilities in dependencies in:title state:open" \
+                      --json number --jq '.[0].number' 2>/dev/null || true)"
+          BODY="$(printf 'The weekly dependency scan found known vulnerabilities.\n\n```\n%s\n```\n\nFollow `/vulnerability-scan`: split introduced-vs-pre-existing, upgrade through `/dependency-upgrade`, and record any finding you accept with its reason.\n' "$(cat /tmp/scan.txt)")"
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY" && echo "commented on #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label security || true
+          fi

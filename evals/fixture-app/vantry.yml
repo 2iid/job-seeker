@@ -1,0 +1,19 @@
+version: 2
+project_type: service
+strictness: standard
+run:
+  test: bash tests.sh
+  build: "true"
+  start: bash server.sh
+  ready: test -f .ready
+  smoke: bash smoke.sh
+  logs: .vantry/state/app.log
+gates:
+  verify_change: block
+merge:
+  authority: human
+  base: main
+trivial_paths:
+  - "*.md"
+sensitive_paths:
+  - "auth/**"

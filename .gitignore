@@ -1,0 +1,68 @@
+# --- vantry: evidence, not source ---
+.vantry/receipts/
+.vantry/state/
+.vantry/artifacts/
+*.vantry-bak-*
+# tracked deliberately: .vantry/manifest.json, .vantry/overrides/, .vantry/reviews/
+
+# --- secrets: NOTHING here may ever be committed ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+.secrets/
+service-account*.json
+gha-creds-*.json
+
+# --- dependencies ---
+node_modules/
+.pnp
+.pnp.*
+.yarn/
+.pnpm-store/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- build output ---
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# --- test and tooling artifacts ---
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+.eslintcache
+
+# --- local databases and dumps ---
+*.sqlite
+*.sqlite3
+*.db
+supabase/.temp/
+supabase/.branches/
+
+# --- editor and OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# --- scratch ---
+tmp/
+.tmp/
+spikes/**/screenshots/
+spikes/**/*.local.*

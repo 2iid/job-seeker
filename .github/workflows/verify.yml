@@ -1,0 +1,219 @@
+# =============================================================================
+#  verify.yml — the gate that does NOT trust the receipt.
+#
+#  The local receipt exists to block the AGENT, early and cheaply. This job
+#  exists to block the MERGE, and it earns that by re-running the contract on a
+#  clean machine. A receipt is evidence of a run on someone's laptop; CI is the
+#  run nobody could have staged.
+#
+#  Budget note: `verify` runs on every PR because that is the whole point.
+#  Keep vantry.yml's run.smoke fast — it is the thing you pay for.
+# =============================================================================
+name: verify
+
+on:
+  # DEFAULT types on purpose (opened, synchronize, reopened). This workflow runs
+  # the whole contract and costs minutes; a PR title or body edit must not
+  # re-trigger it. The cheap body check that DOES need `edited` lives in its own
+  # workflow, evidence.yml, so an edit costs seconds instead of five minutes.
+  pull_request:
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE', '.gitignore']
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE', '.gitignore']
+  workflow_dispatch:
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  contract:
+    name: contract is valid
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 is NOT optional here. The default shallow checkout gives a
+      # detached HEAD with no branch refs at all, so `merge.base: main` resolves
+      # to nothing and validate-config.sh correctly refuses — which made this job
+      # fail on EVERY pull_request in every adopted repo. It never showed up
+      # locally because this repo's own runs are all `push` on main, where main
+      # exists. Found by opening a real PR in a real repo.
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: vantry.yml must parse and mean something
+        run: |
+          test -f vantry.yml || { echo "::error::vantry.yml is missing — verification is undefined."; exit 1; }
+          bash scripts/validate-config.sh
+
+  verify:
+    name: re-run the verification
+    runs-on: ubuntu-latest
+    needs: contract
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      # Two mutually exclusive steps, not one ternary. In GitHub Actions
+      # `cond && '' || '20'` ALWAYS yields '20', because the empty string is
+      # falsy and the expression falls through to the right-hand side. So
+      # node-version was pinned to 20 for everyone, node-version-file was ALSO
+      # set when .nvmrc existed, and setup-node resolves that conflict by
+      # ignoring the file — silently. A repo pinning Node 18 or 22 got 20 and no
+      # warning. Never write a ternary whose true-branch is a falsy literal.
+      - name: Set up Node (version from the repo's own pin)
+        if: hashFiles('package.json') != '' && (hashFiles('.nvmrc') != '' || hashFiles('.node-version') != '')
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ${{ hashFiles('.nvmrc') != '' && '.nvmrc' || '.node-version' }}
+
+      - name: Set up Node (no pin in the repo — default)
+        if: hashFiles('package.json') != '' && hashFiles('.nvmrc') == '' && hashFiles('.node-version') == ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install
+        run: |
+          # Use the ONE config reader. A private sed here matched any two-space
+          # `install:` anywhere in the file — including one nested under another
+          # block — and it did not strip an inline comment, so
+          # `install: npm ci   # fast` ran with the comment attached. Local and CI
+          # must not disagree about what the contract says.
+          . scripts/lib/vantry-common.sh
+          CMD="$(vantry_cfg run.install)"
+          # The old form printed "skipping" when the install FAILED, because the
+          # || caught eval's non-zero exit as well as the empty-CMD case.
+          if [ -n "$CMD" ]; then eval "$CMD"; else echo "no run.install declared — skipping"; fi
+
+      - name: Verify (runs the real contract, ignores any local receipt)
+        run: bash scripts/verify.sh --ci
+
+      - name: Publish the receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vantry-receipt
+          path: .vantry/receipts/
+          if-no-files-found: warn
+          retention-days: 14
+
+
+  security:
+    name: sensitive paths need a security review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Does this diff touch a sensitive path?
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          . scripts/lib/vantry-common.sh
+          BASE="origin/${{ github.base_ref }}"
+          git fetch --quiet origin "${{ github.base_ref }}" || true
+          # An unresolvable base made `git diff` fail, the for-loop iterate over
+          # nothing, and the job report "no sensitive path touched" — a security
+          # gate passing because it could not look.
+          git rev-parse --verify --quiet "$BASE" >/dev/null || {
+            echo "::error::cannot resolve $BASE — refusing to report a clean scan I could not perform"; exit 1; }
+          DIFF="$(git diff --name-only "$BASE"...HEAD)" || {
+            echo "::error::git diff against $BASE failed"; exit 1; }
+          HITS=""
+          for f in $DIFF; do
+            vantry_is_sensitive "$f" && HITS="$HITS $f"
+          done
+          if [ -z "$HITS" ]; then echo "no sensitive path touched"; exit 0; fi
+          echo "sensitive paths in this diff:"; for f in $HITS; do echo "  $f"; done
+          SLUG="$(printf '%s' "${{ github.head_ref }}" | tr '/' '-' | tr -cd 'A-Za-z0-9._-')"
+          # Reviews live in .vantry/reviews/ — TRACKED, unlike verification
+          # receipts. A verification is evidence regenerated per machine; a
+          # review is a judgement, and a judgement has to travel with the PR.
+          R=".vantry/reviews/$SLUG.security.json"
+          if [ -f "$R" ]; then
+            V="$(grep -o '"verdict"[[:space:]]*:[[:space:]]*"[a-z]*"' "$R" | head -1 | sed 's/.*"\([a-z]*\)"$/\1/')"
+            [ "$V" = "pass" ] || { echo "::error::The security review on this branch returned '$V'."; exit 1; }
+            # "Editing a file flips the verdict back to block" was enforced by
+            # nothing: a pass reviewed three commits ago still counted. The
+            # verdict must name the commit it looked at, and that commit must be
+            # an ancestor of what is actually being merged.
+            RH="$(grep -o '"head"[[:space:]]*:[[:space:]]*"[0-9a-f]*"' "$R" | head -1 | sed 's/.*"\([0-9a-f]*\)"$/\1/')"
+            if [ -z "$RH" ]; then
+              echo "::error::$R records no 'head' — a verdict that does not name the commit it reviewed cannot be trusted."; exit 1
+            fi
+            # This compared $RH to HEAD for EQUALITY, and the playbook requires the
+            # verdict to be COMMITTED — which moves HEAD. The gate therefore had no
+            # reachable success state: every sensitive PR was red forever, and its
+            # error told you to redo the step that caused it. The only ways out were
+            # to empty sensitive_paths, switch the gate off, or merge red — i.e. the
+            # gate deleted itself. The comment above always said "ancestor"; now the
+            # code does too.
+            #
+            # Two separate properties, both enforced:
+            #   1. the reviewed commit is genuinely part of what is being merged;
+            #   2. no SENSITIVE file changed after the review — so the verdict commit
+            #      itself (which only adds .vantry/reviews/*) lands without
+            #      invalidating the review, while an auth edit afterwards does.
+            # Same staleness trap as the evidence body: the payload head is
+            # frozen at trigger time. Ask for the head as it is NOW, so a re-run
+            # answers "does the review cover what is being merged today?" rather
+            # than replaying an old yes.
+            HEAD_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }}" --jq '.head.sha' 2>/dev/null || true)"
+            [ -n "$HEAD_SHA" ] || HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+            git cat-file -e "$RH^{commit}" 2>/dev/null || {
+              echo "::error::the review names commit $RH, which does not exist in this repository"; exit 1; }
+            git merge-base --is-ancestor "$RH" "$HEAD_SHA" || {
+              echo "::error::The security review was made at $RH, which is not an ancestor of $HEAD_SHA."
+              echo "That verdict does not describe the code being merged. Re-run the security-review playbook."
+              exit 1; }
+            AFTER="$(git diff --name-only "$RH" "$HEAD_SHA")"
+            LATE=""
+            for f in $AFTER; do vantry_is_sensitive "$f" && LATE="$LATE $f"; done
+            if [ -n "$LATE" ]; then
+              echo "::error::sensitive file(s) changed AFTER the review at $RH:"
+              for f in $LATE; do echo "  $f"; done
+              echo "The verdict is stale. Re-run the security-review playbook."; exit 1
+            fi
+            echo "security review: pass at $RH, an ancestor of $HEAD_SHA, with no sensitive change since"; exit 0
+          fi
+          echo "::error::This PR changes security-sensitive files and carries no security review."
+          echo "Run the security-review playbook, then commit $R"
+          exit 1
+
+      - name: Reviews that vantry.yml says BLOCK
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # `gates.code_review: block` and `gates.design_review: block` were
+          # accepted by validate-config.sh and read by NOTHING — the playbooks
+          # each said their verdict file was "the file CI looks for", and no job
+          # ever opened one. A gate nobody consumes is a setting, not a gate.
+          . scripts/lib/vantry-common.sh
+          SLUG="$(printf '%s' "${{ github.head_ref }}" | tr '/' '-' | tr -cd 'A-Za-z0-9._-')"
+          HEAD_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }}" --jq '.head.sha' 2>/dev/null || true)"
+          [ -n "$HEAD_SHA" ] || HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          FAIL=0
+          for kind in code design; do
+            POLICY="$(vantry_cfg "gates.${kind}_review" off)"
+            [ "$POLICY" = "block" ] || { echo "$kind review: $POLICY (not blocking)"; continue; }
+            R=".vantry/reviews/$SLUG.$kind.json"
+            if [ ! -f "$R" ]; then
+              echo "::error::vantry.yml sets gates.${kind}_review: block, and this PR carries no $R"
+              echo "Run the ${kind}-review playbook and commit its verdict."; FAIL=1; continue
+            fi
+            V="$(grep -o '"verdict"[[:space:]]*:[[:space:]]*"[a-z]*"' "$R" | head -1 | sed 's/.*"\([a-z]*\)"$/\1/')"
+            [ "$V" = "pass" ] || { echo "::error::the $kind review on this branch returned '$V'"; FAIL=1; continue; }
+            RH="$(grep -o '"head"[[:space:]]*:[[:space:]]*"[0-9a-f]*"' "$R" | head -1 | sed 's/.*"\([0-9a-f]*\)"$/\1/')"
+            if [ -z "$RH" ]; then
+              echo "::error::$R records no 'head' — a verdict that does not name the commit it reviewed cannot be trusted"; FAIL=1; continue
+            fi
+            git merge-base --is-ancestor "$RH" "$HEAD_SHA" 2>/dev/null || {
+              echo "::error::the $kind review was made at $RH, which is not an ancestor of $HEAD_SHA"; FAIL=1; continue; }
+            echo "$kind review: pass at $RH"
+          done
+          exit $FAIL

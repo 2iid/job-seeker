@@ -1,0 +1,145 @@
+# =============================================================================
+#  vantry.yml — this project's contract with its agents.
+#
+#  It is the ONE place that answers a question no model can answer for you:
+#  "what does it mean, in THIS project, for a change to be verified?"
+#
+#  scripts/verify.sh runs what you declare here, captures the real exit codes,
+#  and writes the receipt every gate reads. If run.smoke is empty, verification
+#  is UNDEFINED and the gate says so instead of quietly passing.
+#
+#  Restricted YAML: flat keys, one level of 2-space nesting, "- item" lists.
+#  No anchors, no multiline scalars. Quote a value that contains " #".
+#  Validate with: scripts/validate-config.sh
+# =============================================================================
+version: 2
+
+# Free text, and deliberately not an enum: it names what this project ACTUALLY
+# runs on. Every playbook's "## Stack notes" block is void when this says
+# something else, and the Procedure above it still applies. Examples:
+#   "Next.js 15 App Router + Supabase"   "Go 1.22 + chi + Postgres + sqlc"
+#   "Flutter 3 + Riverpod + Firebase"    "Python 3.12 + FastAPI + SQLAlchemy"
+stack: "<name the real stack — framework, datastore, the things that decide idioms>"
+
+# web | service | cli | library | mobile | data | docs
+# Only decides the WORDING of the guidance. The contract below is what runs.
+project_type: web
+
+# relaxed | standard | strict   — see docs/engineering/strictness.md
+#   relaxed  : the gate warns. For prototypes and the first sprint of /adopt.
+#   standard : the gate blocks on unverified behavioral change. The default.
+#   strict   : + a recorded human-readable observation is mandatory.
+strictness: standard
+
+# ---------------------------------------------------------------- the contract
+# Every line is a real shell command run from the repo root.
+# Leave a key empty to skip that step — EXCEPT smoke, which is mandatory.
+run:
+  # One-time setup, used by CI. Not run by the local gate.
+  install: pnpm install --frozen-lockfile
+
+  # The test suite. Necessary, never sufficient.
+  test: pnpm vitest run
+
+  # Must fail on a type error or a broken build.
+  build: pnpm build
+
+  # Start the app in the background. Empty for a CLI or a library.
+  start: pnpm dev --port 3100
+
+  # Polled until it succeeds (90s budget). Proves `start` really came up.
+  ready: curl -sf http://localhost:3100/api/health
+
+  # MANDATORY. The command that EXERCISES the software the way a user does.
+  # A test suite is not a smoke run. Examples per project type:
+  #   web     : pnpm exec playwright test tests/smoke.spec.ts
+  #   service : bash scripts/smoke.sh          (real HTTP calls + status assertions)
+  #   cli     : bash scripts/smoke.sh          (run the binary, assert output + exit code)
+  #   library : node scripts/smoke.mjs         (import the BUILT artifact and use it)
+  smoke: pnpm exec playwright test tests/smoke.spec.ts
+
+  # Where `start` output is captured, so the gate can scan it for errors.
+  logs: .vantry/state/app.log
+
+# ------------------------------------------------------------ acceptance
+# The criteria that outlive the ticket. Each one runs on EVERY verification and
+# is written into the receipt, so the receipt answers "which agreed requirement
+# does this prove?" rather than only "did something work?".
+#   "AC-n | REQ-n | what it proves, in words | the command that proves it"
+# Added at the END of /pickup-issue, when the criterion passes — not when the
+# spec is written, or every board starts red. Keep them few (<=2 per issue) and
+# never make one a second copy of run.test.
+# acceptance:
+#   - "AC-1 | REQ-004 | a refund above the original amount is refused | pnpm exec playwright test tests/refund-cap.spec.ts"
+
+# ------------------------------------------------------------------- the gates
+# block | warn | off   (security_review also accepts block_on_sensitive)
+# Wall-clock bound per phase, in seconds. Default 1800. A leaked handle in a
+# test suite is the commonest way an inherited repo hangs the gate forever, and
+# a step that never returns is not a step that failed — the receipt records 124
+# so you can tell the two apart.
+timeouts:
+  default: 1800
+  test: 900
+  smoke: 600
+
+# Known-vulnerability scanning. `scripts/scan-vulns.sh` uses the native scanner
+# for each ecosystem when one is installed, and OSV.dev for everything else —
+# which is what makes it work on a stack no vendor scanner covers.
+security:
+  # Severity at or above which a finding fails a build. A prototype and a
+  # payments system do not owe the same answer.
+  fail_on: high
+
+gates:
+  verify_change: block
+  security_review: block_on_sensitive
+  code_review: warn
+  design_review: warn        # ship as warn; set to block once you have a design system worth gating
+
+# ------------------------------------------------------------------- dispatch
+dispatch:
+  max_parallel: 2
+  confirm_before_fanout: true
+  # How many independent issues may share ONE pull request. 1 = the old
+  # behaviour, one PR per issue. Higher values trade a little review granularity
+  # for GitHub Actions minutes: CI runs per PR, the free tier is 2000 minutes a
+  # month, and a full verification is roughly five of them.
+  #
+  # Batching NEVER applies to an issue that touches `sensitive_paths` or is
+  # flagged `security: yes` — those get their own PR so the review verdict has an
+  # unambiguous scope. Keep this at 3-4: a ten-issue PR is not reviewed, it is
+  # waved through, and the review gate is real.
+  batch_prs: 3
+
+# ---------------------------------------------------------------------- merge
+# human | agent   — who is allowed to run `gh pr merge`.
+merge:
+  authority: human
+
+# --------------------------------------------------------------------- paths
+# Files that CANNOT change what the software does. Editing only these owes no
+# verification. Deny by default: anything not listed here is behavioral.
+trivial_paths:
+  - "*.md"
+  - "docs/**"
+  - "LICENSE"
+  - ".gitignore"
+  - ".vscode/**"
+  - "**/*.snap"
+
+# Files whose change REQUIRES a security review. This same list generates
+# .github/CODEOWNERS and drives the CI security job — one definition, not three.
+sensitive_paths:
+  # Third-party agent instructions. Changing what your agent BELIEVES is a
+  # security change, so it owes a committed security-review verdict.
+  - "vendor/**"
+  - "**/auth/**"
+  - "**/*auth*"
+  - "app/api/**"
+  - "supabase/migrations/**"
+  - "**/webhook*/**"
+  - "**/payment*/**"
+  - "**/billing/**"
+  - "middleware.ts"
+  - ".github/workflows/**"

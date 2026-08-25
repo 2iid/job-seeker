@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background: oklch(0.90 0.004 275); }
+  * { box-sizing: border-box; }
+  a { color: oklch(0.47 0.115 210); text-decoration: none; }
+  a:hover { color: oklch(0.36 0.11 210); text-decoration: underline; }
+  p, h1, h2, h3, h4 { margin:0; text-wrap: pretty; }
+  table { border-collapse: collapse; }
+</style>
+</helmet>
+
+<section style="padding:56px 64px 110px;font-family:Epilogue,system-ui,sans-serif;color:oklch(0.235 0.02 275);display:flex;flex-direction:column;gap:52px;width:max-content;font-variant-numeric:tabular-nums">
+
+  <div style="max-width:1000px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#FFF;background:oklch(0.30 0.02 275);padding:4px 9px">5a</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Tour 5 — les cinq composants signature</span>
+      <span style="height:1px;flex:1;background:oklch(0.72 0.006 275)"></span>
+    </div>
+    <h1 style="font-size:38px;font-weight:600;letter-spacing:-0.025em;line-height:1.1">Anatomie, variantes, états, responsive, clavier</h1>
+    <p style="font-size:16px;line-height:1.6;color:oklch(0.36 0.018 275)">Chaque fiche donne le composant rendu à sa taille réelle, ses variantes, ses quatre états, son comportement sous 768 px et ses touches. Les valeurs de couleur viennent de <a href="Système.dc.html">2a</a> ; rien n'est introduit ici.</p>
+  </div>
+
+  <!-- ═══ 1 · INDICATEUR DE SCORE ═══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Composant 1</span>
+      <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em">L'indicateur de score</h2>
+      <span style="font-size:14px;color:oklch(0.43 0.018 275)">un chiffre qui se déplie en preuves</span>
+    </div>
+    <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Compact — en liste dense, 88 × 26</span>
+        <div style="background:#1C1E25;border:1px solid #373942;padding:22px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:center;gap:22px">
+            <span style="display:flex;align-items:center;gap:7px"><span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:#EBECF2">92</span><span style="display:flex;align-items:flex-end;gap:1.5px;height:14px"><span style="width:3px;height:5px;background:#59C2D4"></span><span style="width:3px;height:8px;background:#59C2D4"></span><span style="width:3px;height:11px;background:#59C2D4"></span><span style="width:3px;height:14px;background:#59C2D4"></span><span style="width:3px;height:14px;background:#6B6E7B"></span></span></span>
+            <span style="display:flex;align-items:center;gap:7px"><span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:#EBECF2">76</span><span style="display:flex;align-items:flex-end;gap:1.5px;height:14px"><span style="width:3px;height:5px;background:#59C2D4"></span><span style="width:3px;height:8px;background:#59C2D4"></span><span style="width:3px;height:11px;background:#6B6E7B"></span><span style="width:3px;height:14px;background:#6B6E7B"></span><span style="width:3px;height:14px;background:#6B6E7B"></span></span></span>
+            <span style="display:flex;align-items:center;gap:7px"><span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:#BABCC4">54</span><span style="display:flex;align-items:flex-end;gap:1.5px;height:14px"><span style="width:3px;height:5px;background:#6B6E7B"></span><span style="width:3px;height:8px;background:#6B6E7B"></span><span style="width:3px;height:11px;background:#6B6E7B"></span><span style="width:3px;height:14px;background:#6B6E7B"></span><span style="width:3px;height:14px;background:#6B6E7B"></span></span></span>
+            <span style="display:flex;align-items:center;gap:7px"><span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:#BABCC4">—</span><span style="display:flex;align-items:flex-end;gap:1.5px;height:14px"><span style="width:3px;height:14px;border:1px dashed #6B6E7B;border-bottom:none"></span></span></span>
+          </div>
+          <p style="font-size:12.5px;line-height:1.55;color:#BABCC4;max-width:340px">Cinq crans, jamais un dégradé : le nombre de barres pleines est lisible sans couleur. Sous 65, le chiffre passe en texte secondaire — l'agent ne met pas en avant ce qu'il ne recommande pas. « — » : score non calculable, palier C.</p>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #D2D4DC;padding:16px;display:flex;align-items:center;gap:22px">
+          <span style="display:flex;align-items:center;gap:7px"><span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-0.02em;color:#1B1D28">92</span><span style="display:flex;align-items:flex-end;gap:1.5px;height:14px"><span style="width:3px;height:5px;background:#006B7E"></span><span style="width:3px;height:8px;background:#006B7E"></span><span style="width:3px;height:11px;background:#006B7E"></span><span style="width:3px;height:14px;background:#006B7E"></span><span style="width:3px;height:14px;background:#888B99"></span></span></span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:#666872">MÊME COMPOSANT, THÈME CLAIR</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Déplié — sur le détail, 520 de large</span>
+        <div style="width:520px;background:#1C1E25;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:12px;color:#EBECF2">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:40px;font-weight:600;letter-spacing:-0.03em;line-height:1">92</span>
+            <span style="display:flex;align-items:flex-end;gap:3px;height:28px"><span style="width:7px;height:10px;background:#59C2D4"></span><span style="width:7px;height:16px;background:#59C2D4"></span><span style="width:7px;height:22px;background:#59C2D4"></span><span style="width:7px;height:28px;background:#59C2D4"></span><span style="width:7px;height:28px;background:#6B6E7B"></span></span>
+            <span style="flex:1;font-size:12.5px;color:#BABCC4;line-height:1.45">sur 100 · correspondance<br>calculée il y a 6 min</span>
+            <button style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:#59C2D4;background:transparent;border:1px solid #373942;border-radius:3px;height:44px;padding:0 12px;cursor:pointer">REPLIER ␣</button>
+          </div>
+          <div style="display:grid;grid-template-columns:96px 1fr;gap:12px;font-size:13px;line-height:1.45;padding-top:11px;border-top:1px solid #373942"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#59C2D4">CORRESPOND</span><span>React — 5 ans demandés, 6 au dossier · TypeScript · design system interne</span></div>
+          <div style="display:grid;grid-template-columns:96px 1fr;gap:12px;font-size:13px;line-height:1.45;padding-top:11px;border-top:1px solid #2A2C33"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#E4AF6C">MANQUE</span><span>Kubernetes — cité une fois, en « appréciable »</span></div>
+          <div style="display:grid;grid-template-columns:96px 1fr;gap:12px;font-size:13px;line-height:1.45;padding-top:11px;border-top:1px solid #2A2C33"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#9799A1">RÉDHIBIT.</span><span style="color:#BABCC4">Aucun — plancher et zone respectés</span></div>
+          <div style="display:flex;gap:9px;padding-top:11px;border-top:1px solid #373942">
+            <button style="font-family:Epilogue,sans-serif;font-size:13px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Ce score est faux</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:13px;color:#BABCC4;background:transparent;border:1px solid #373942;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Ce type de poste ne m'intéresse pas</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:400px;background:#FFFFFF;border:1px solid #D2D4DC;padding:18px;display:flex;flex-direction:column;gap:12px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Spécification</span>
+        <table style="width:100%;font-size:12.5px;line-height:1.5">
+          <tbody>
+            <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;width:104px;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Anatomie</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">Chiffre N1 ou N2 · histogramme 5 crans · libellé de dénominateur · bouton de dépliage · 3 groupes de preuves · 2 actions de correction</td></tr>
+            <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Variantes</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">compact (liste, 26 px de haut) · déplié (détail) · non calculable (palier C) · sous seuil (chiffre en secondaire)</td></tr>
+            <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">États</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">chargement : chiffre en squelette, crans vides · vide : « — » + motif · erreur : « score indisponible, l'annonce est illisible » + lien vers l'annonce · saturé : les preuves sont plafonnées à 3 par groupe, le reste au dépliage</td></tr>
+            <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Responsive</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">sous 768, la version compacte empile chiffre au-dessus de l'histogramme (38 px de large) ; le déplié passe en pleine largeur, groupes en colonne</td></tr>
+            <tr><td style="padding:7px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Clavier</td><td style="padding:7px 0;color:#4D4F5A">Espace déplie et replie · Tab entre les deux actions de correction · le chiffre est annoncé « correspondance 92 sur 100, 4 crans sur 5 » ; jamais la couleur seule</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 2 · LIGNE DE VIE ═══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Composant 2</span>
+      <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em">La ligne de vie de l'agent</h2>
+      <span style="font-size:14px;color:oklch(0.43 0.018 275)">ce qu'une machine a fait pendant la nuit, sans ressembler à un log serveur</span>
+    </div>
+    <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Nuit chargée — 760 de large</span>
+        <div style="width:760px;background:#111218;border:1px solid #373942;padding:18px;display:flex;flex-direction:column;gap:14px;color:#EBECF2">
+          <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#9799A1">21:40 → 09:14 · HEURE DE PARIS</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#BABCC4">7 ACTIONS · 1 ESCALADE · 0 ÉCHEC</span></div>
+          <div>
+            <div style="display:flex;align-items:flex-end;height:30px">
+              <span style="flex:8;height:2px;background:#373942"></span><span style="width:2px;height:20px;background:#59C2D4"></span><span style="flex:5;height:2px;background:#373942"></span><span style="width:2px;height:12px;background:#6B6E7B"></span><span style="flex:4;height:2px;background:#373942"></span><span style="width:2px;height:20px;background:#59C2D4"></span><span style="flex:9;height:2px;background:#373942"></span><span style="width:2px;height:26px;background:#E4AF6C"></span><span style="flex:6;height:2px;background:#373942"></span><span style="width:2px;height:12px;background:#6B6E7B"></span><span style="flex:7;height:2px;background:#373942"></span><span style="width:2px;height:20px;background:#59C2D4"></span><span style="flex:3;height:2px;background:#373942"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#9799A1;margin-top:5px"><span>21:40</span><span>00:00</span><span>03:12</span><span>06:30</span><span>09:14</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:52px 1fr 96px;gap:14px;align-items:baseline;padding:9px 0;border-top:1px solid #2A2C33"><span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#59C2D4">03:12</span><p style="font-size:14px;line-height:1.45">J'ai postulé chez <strong style="font-weight:600">Alma Santé</strong>, CV « Produit », lettre de 140 mots.</p><a href="#5a" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#59C2D4;justify-self:end">LE REÇU</a></div>
+          <div style="display:grid;grid-template-columns:52px 1fr 96px;gap:14px;align-items:baseline;padding:9px 0;border-top:1px solid #2A2C33;background:#1C1E25;margin:0 -18px;padding-left:18px;padding-right:18px;border-left:2px solid #E4AF6C"><span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#E4AF6C">03:14</span><p style="font-size:14px;line-height:1.45"><span style="display:inline-block;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C;margin-right:7px"></span>Arrêté chez <strong style="font-weight:600">Vireo</strong> : une question sans réponse validée. Rien n'est parti.</p><a href="#5a" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#E4AF6C;justify-self:end">REPRENDRE</a></div>
+          <div style="display:grid;grid-template-columns:52px 1fr 96px;gap:14px;align-items:baseline;padding:9px 0;border-top:1px solid #2A2C33"><span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#9799A1">03:49</span><p style="font-size:14px;line-height:1.45;color:#BABCC4">J'ai écarté 4 offres — plancher salarial et zone. <a href="#5a" style="color:#59C2D4">Me contredire</a></p><span></span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Nuit calme — la variante la plus importante</span>
+          <div style="width:400px;background:#111218;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:11px;color:#EBECF2">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#9799A1">23:10 → 07:02 · 34 SOURCES</span>
+            <div style="display:flex;align-items:flex-end;height:22px"><span style="flex:1;height:2px;background:#373942"></span></div>
+            <p style="font-size:14.5px;line-height:1.5;font-weight:600">Rien ne demandait votre attention cette nuit.</p>
+            <p style="font-size:13px;line-height:1.5;color:#BABCC4">61 offres vues, meilleur score 68, aucune au-dessus de votre seuil. Le silence est une information : la ligne reste plate, sans reproche ni relance.</p>
+          </div>
+        </div>
+        <div style="width:400px;background:#FFFFFF;border:1px solid #D2D4DC;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Spécification</span>
+          <table style="width:100%;font-size:12.5px;line-height:1.5">
+            <tbody>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;width:104px;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Anatomie</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">Bornes horaires · axe avec un tick par action (hauteur = importance : 12 lecture, 20 envoi, 26 escalade) · échelle de 5 repères · lignes en phrases à la première personne · un lien de preuve par ligne</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Variantes</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">nuit chargée · nuit calme (axe plat) · session en cours (axe qui s'étend à droite) · journée complète (repères aux quarts)</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">États</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">chargement : axe + 3 lignes en squelette · vide : « je n'ai rien fait depuis votre dernière visite » + heure du prochain relevé · erreur : la ligne d'échec porte la croix et l'action réparatrice · saturé : au-delà de 12 actions, groupées par type avec un compte (« j'ai lu 112 offres »)</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Responsive</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">sous 768, l'axe disparaît et les heures passent en tête de chaque phrase ; l'escalade reste la seule ligne à fond teinté</td></tr>
+              <tr><td style="padding:7px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Clavier</td><td style="padding:7px 0;color:#4D4F5A">Tab parcourt les liens de preuve dans l'ordre chronologique · l'axe n'est pas focalisable (décoratif, dupliqué par le texte) · aucune information portée par le seul mouvement</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 3 · CARTE D'APPROBATION ═══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Composant 3</span>
+      <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em">La carte d'approbation</h2>
+      <span style="font-size:14px;color:oklch(0.43 0.018 275)">décision au pouce, contenu complet consultable, trois issues</span>
+    </div>
+    <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">390 · au pouce · 3 cibles de 48 px</span>
+        <div style="width:358px;background:#1C1E25;border:1px solid #6B6E7B;display:flex;flex-direction:column;color:#EBECF2">
+          <div style="padding:14px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="display:flex;align-items:center;gap:8px"><span style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:11px;background:#59C2D4"></span><span style="width:3px;height:8px;background:#59C2D4"></span><span style="width:3px;height:6px;background:#59C2D4"></span><span style="width:3px;height:4px;background:#59C2D4"></span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:#59C2D4">PALIER A · 7 MIN</span></span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#BABCC4">1 / 3</span>
+            </div>
+            <p style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Puis-je postuler chez Kaïra Finances pour vous ?</p>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;letter-spacing:-0.03em;line-height:1">89</span>
+              <span style="display:flex;align-items:flex-end;gap:3px;height:22px"><span style="width:6px;height:8px;background:#59C2D4"></span><span style="width:6px;height:13px;background:#59C2D4"></span><span style="width:6px;height:17px;background:#59C2D4"></span><span style="width:6px;height:22px;background:#59C2D4"></span><span style="width:6px;height:22px;background:#6B6E7B"></span></span>
+              <span style="flex:1;font-size:12.5px;line-height:1.45;color:#BABCC4">Comptable général · Dakar<br><span style="font-family:'IBM Plex Mono',monospace">1 200 000 FCFA</span> / mois</span>
+            </div>
+            <p style="font-size:13px;line-height:1.5;color:#BABCC4">CV « Finance » format Sénégal, lettre de 118 mots en français. 4 correspondances, 1 manque, rien de rédhibitoire.</p>
+            <a href="#5a" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#59C2D4">TOUT LIRE AVANT DE DÉCIDER →</a>
+          </div>
+          <div style="border-top:1px solid #373942;background:#181920;padding:12px;display:flex;flex-direction:column;gap:8px">
+            <button style="font-family:Epilogue,sans-serif;font-size:16px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:52px;cursor:pointer">Approuver l'envoi</button>
+            <div style="display:flex;gap:8px">
+              <button style="flex:1;font-family:Epilogue,sans-serif;font-size:14px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:48px;cursor:pointer">Modifier</button>
+              <button style="flex:1;font-family:Epilogue,sans-serif;font-size:14px;color:#BABCC4;background:transparent;border:1px solid #373942;border-radius:3px;height:48px;cursor:pointer">Refuser</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Variante escalade — l'agent n'a pas pu finir</span>
+          <div style="width:400px;background:#1C1E25;border:1px solid #6B6E7B;padding:14px;display:flex;flex-direction:column;gap:10px;color:#EBECF2">
+            <span style="display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;color:#E4AF6C"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C"></span>ESCALADE · 03:14</span>
+            <p style="font-size:16px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Le formulaire de Vireo demande votre numéro d'ordre. Je ne l'ai pas.</p>
+            <p style="font-size:13px;line-height:1.5;color:#BABCC4">Répondez une fois et je garde la réponse pour les prochaines. Rien n'est parti — la candidature attend.</p>
+            <div style="display:flex;gap:8px">
+              <button style="flex:1;font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:48px;cursor:pointer">Répondre et reprendre</button>
+              <button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#BABCC4;background:transparent;border:1px solid #373942;border-radius:3px;height:48px;padding:0 14px;cursor:pointer">Abandonner</button>
+            </div>
+          </div>
+        </div>
+        <div style="width:400px;background:#FFFFFF;border:1px solid #D2D4DC;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Spécification</span>
+          <table style="width:100%;font-size:12.5px;line-height:1.5">
+            <tbody>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;width:104px;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Anatomie</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">Fraîcheur + palier · position dans la file · question en T1 · score compact + poste + rémunération · résumé de l'envoi en une phrase · lien « tout lire » · 3 issues, la principale en aplat</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Variantes</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">candidature · escalade · relance de courtoisie · message recruteur (l'action principale devient « ouvrir dans ma boîte »)</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">États</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">chargement : squelette de la question sur 2 lignes · vide : « la file est vide, vous avez traité 3 demandes en 26 s » + récapitulatif · erreur : l'envoi a échoué après approbation, avec reprise en un geste · saturé : au-delà de 10 en file, tri par fraîcheur décroissante et compteur en tête</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Responsive</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">390 : une carte par écran, actions en pied fixe (52 / 48 / 48 px, 8 px d'écart) · 1280 : liste de cartes, la carte focalisée dépliée, aperçu de l'envoi en panneau latéral</td></tr>
+              <tr><td style="padding:7px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Clavier</td><td style="padding:7px 0;color:#4D4F5A">J / K carte suivante et précédente · A approuver · M modifier · R refuser (ouvre le motif) · Espace déplier · Échap quitter sans rien envoyer · anneau de focus 2 px + décalage 2 px, jamais supprimé</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 4 · REÇU ═══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Composant 4</span>
+      <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em">Le reçu de candidature</h2>
+      <span style="font-size:14px;color:oklch(0.43 0.018 275)">la confiance d'un justificatif, sans sa froideur</span>
+    </div>
+    <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Reçu complet — 560 de large, thème clair</span>
+        <div style="width:560px;background:#FFFFFF;border:1px solid #D2D4DC;display:flex;flex-direction:column;color:#1B1D28">
+          <div style="padding:16px 20px;border-bottom:1px solid #D2D4DC;background:#F8F9FC;display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+            <div>
+              <p style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">J'ai postulé chez Alma Santé en votre nom.</p>
+              <p style="font-size:13px;color:#4D4F5A;margin-top:5px">Ingénieure front-end · via le formulaire de l'employeur</p>
+            </div>
+            <span style="display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#006B7E;flex:none"><span style="width:8px;height:8px;background:#006B7E"></span>ENVOYÉE</span>
+          </div>
+          <div style="padding:14px 20px;display:flex;flex-direction:column;gap:0;font-size:13px">
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #E9EBF1"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">HORODATAGE</span><span><span style="font-family:'IBM Plex Mono',monospace">12 août 2026 · 03:12:41</span> <span style="color:#4D4F5A">heure de Paris, votre fuseau</span></span></div>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #E9EBF1"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">CANAL</span><span>Formulaire Teamtailor de l'employeur · <span style="color:#4D4F5A">aucun anti-robot rencontré</span></span></div>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #E9EBF1"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">DESTINATAIRE</span><span>Alma Santé — service recrutement · <span style="color:#4D4F5A">accusé de réception reçu à 03:13</span></span></div>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #E9EBF1"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">CV ENVOYÉ</span><span>Variante « Produit », 2 pages — <a href="#5a">ouvrir le fichier exact</a><br><span style="color:#4D4F5A">3 différences avec le CV maître, que vous avez approuvées</span></span></div>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #E9EBF1"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">LETTRE</span><span style="line-height:1.6;color:#4D4F5A">« Votre équipe reprend l'accès aux données de santé depuis l'interface patient… » — <a href="#5a">lire les 140 mots envoyés</a></span></div>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0;border-bottom:1px solid #E9EBF1"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">RÉPONSES</span><span>3 questions du formulaire · <a href="#5a">voir les valeurs transmises</a></span></div>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;padding:9px 0"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872">DEPUIS</span><span>Consultée 3 fois · <span style="color:#4D4F5A">dernière ouverture hier 18:22</span></span></div>
+          </div>
+          <div style="padding:13px 20px;border-top:1px solid #D2D4DC;background:#F8F9FC;display:flex;align-items:center;gap:10px">
+            <button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Écrire un correctif</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Exporter le reçu</button>
+            <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#666872">PARTI — NON RAPPELABLE</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Variante avant envoi — annulable</span>
+          <div style="width:400px;background:#1C1E25;border:1px solid #6B6E7B;padding:14px;display:flex;flex-direction:column;gap:11px;color:#EBECF2">
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:15px;font-weight:600">Départ prévu à 14:00</span><span style="display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#E4AF6C"><span style="width:8px;height:8px;background:#E4AF6C;transform:rotate(45deg)"></span>EN FILE</span></div>
+            <p style="font-size:13px;line-height:1.55;color:#BABCC4">Tant que rien n'est parti, le reçu est un projet : vous pouvez tout modifier ou tout annuler. Après l'envoi, cette carte devient un justificatif figé.</p>
+            <div style="display:flex;gap:8px"><button style="flex:1;font-family:Epilogue,sans-serif;font-size:14px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:46px;cursor:pointer">Modifier</button><button style="flex:1;font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:46px;cursor:pointer">Annuler l'envoi</button></div>
+          </div>
+        </div>
+        <div style="width:400px;background:#FFFFFF;border:1px solid #D2D4DC;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Spécification</span>
+          <table style="width:100%;font-size:12.5px;line-height:1.5">
+            <tbody>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;width:104px;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Anatomie</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">Phrase d'ouverture à la première personne · pastille de statut · 7 lignes clé-valeur (horodatage, canal, destinataire, CV, lettre, réponses, suites) · 2 actions · mention de non-rappel</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Variantes</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">envoyée (figée) · en file (annulable) · échec technique (avec cause et reprise) · message recruteur envoyé par vous (le canal devient « votre boîte »)</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">États</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">chargement : 7 lignes en squelette, hauteurs fixes · vide : jamais vide — un reçu n'existe que s'il y a eu une action · erreur : « l'envoi a échoué à 03:12, voici la réponse du serveur » + reprise · saturé : le fil d'emails se replie au-delà de 3 messages</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Responsive</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">sous 768, les paires clé-valeur s'empilent (libellé L2 au-dessus de la valeur) ; les deux actions passent en pied fixe à 48 px</td></tr>
+              <tr><td style="padding:7px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Clavier</td><td style="padding:7px 0;color:#4D4F5A">Tab suit l'ordre de lecture · E exporte · les documents s'ouvrent dans un panneau focalisable, Échap le referme et rend le focus à la ligne d'origine</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 5 · FRAÎCHEUR ═══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:14px;border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Composant 5</span>
+      <h2 style="font-size:22px;font-weight:600;letter-spacing:-0.02em">L'indicateur de fraîcheur</h2>
+      <span style="font-size:14px;color:oklch(0.43 0.018 275)">la vitesse sans l'urgence toxique — et jamais plus de promesse que de mesure</span>
+    </div>
+    <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Les trois paliers, forme puis mot</span>
+        <div style="width:520px;background:#111218;border:1px solid #373942;padding:18px;display:flex;flex-direction:column;gap:14px;color:#EBECF2">
+          <div style="display:flex;align-items:flex-start;gap:13px;padding-bottom:13px;border-bottom:1px solid #2A2C33">
+            <span style="display:flex;align-items:flex-end;gap:2px;height:14px;flex:none;margin-top:3px"><span style="width:4px;height:14px;background:#59C2D4"></span><span style="width:4px;height:11px;background:#59C2D4"></span><span style="width:4px;height:8px;background:#59C2D4"></span><span style="width:4px;height:5px;background:#59C2D4"></span></span>
+            <div><p style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;color:#59C2D4">PALIER A · IL Y A 4 MIN</p><p style="font-size:13px;line-height:1.5;margin-top:4px">Board de l'entreprise, relevé toutes les 2 à 5 minutes. <strong style="font-weight:600">Vous êtes parmi les premiers dossiers.</strong></p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:13px;padding-bottom:13px;border-bottom:1px solid #2A2C33">
+            <span style="display:flex;align-items:flex-end;gap:2px;height:14px;flex:none;margin-top:3px"><span style="width:4px;height:14px;background:#BABCC4"></span><span style="width:4px;height:11px;background:#BABCC4"></span><span style="width:4px;height:8px;border:1px solid #6B6E7B;border-bottom:none"></span><span style="width:4px;height:5px;border:1px solid #6B6E7B;border-bottom:none"></span></span>
+            <div><p style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;color:#BABCC4">PALIER B · VUE IL Y A 22 MIN</p><p style="font-size:13px;line-height:1.5;margin-top:4px;color:#BABCC4">Agrégateur, relevé toutes les 15 à 60 minutes. <strong style="color:#EBECF2;font-weight:600">Publiée avant, je ne sais pas quand.</strong> Aucune promesse de rang.</p></div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:13px">
+            <span style="display:flex;align-items:flex-end;gap:2px;height:14px;flex:none;margin-top:3px"><span style="width:4px;height:14px;border:1px dashed #9799A1;border-bottom:none"></span></span>
+            <div><p style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;color:#9799A1">PALIER C · SANS RELEVÉ</p><p style="font-size:13px;line-height:1.5;margin-top:4px;color:#BABCC4">Plateforme que je ne peux pas parcourir. <strong style="color:#EBECF2;font-weight:600">Je vous assiste, je ne postule pas.</strong></p></div>
+          </div>
+        </div>
+        <div style="width:520px;background:#FFFFFF;border:1px solid #D2D4DC;padding:16px;display:flex;flex-direction:column;gap:11px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Interdits tenus par le composant</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:12.5px;line-height:1.5;color:#4D4F5A">
+            <span>· Aucun compte à rebours</span><span>· Aucun rouge, à aucun palier</span>
+            <span>· Aucun clignotement ni pulsation</span><span>· Aucun rang inventé (« 3ᵉ candidat »)</span>
+            <span>· Aucune série, aucun badge à collectionner</span><span>· L'âge cesse d'être précis après 24 h : « hier », puis la date</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Décroissance — la même offre, 4 h plus tard</span>
+          <div style="width:400px;background:#111218;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:12px;color:#EBECF2">
+            <div style="display:flex;align-items:center;gap:12px"><span style="display:flex;align-items:flex-end;gap:2px;height:14px"><span style="width:4px;height:14px;background:#59C2D4"></span><span style="width:4px;height:11px;background:#59C2D4"></span><span style="width:4px;height:8px;background:#59C2D4"></span><span style="width:4px;height:5px;background:#59C2D4"></span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#59C2D4">IL Y A 4 MIN</span><span style="font-size:12.5px;color:#BABCC4">— parmi les premiers</span></div>
+            <div style="display:flex;align-items:center;gap:12px"><span style="display:flex;align-items:flex-end;gap:2px;height:14px"><span style="width:4px;height:14px;background:#59C2D4"></span><span style="width:4px;height:11px;background:#59C2D4"></span><span style="width:4px;height:8px;background:#6B6E7B"></span><span style="width:4px;height:5px;background:#6B6E7B"></span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">IL Y A 40 MIN</span><span style="font-size:12.5px;color:#BABCC4">— encore tôt</span></div>
+            <div style="display:flex;align-items:center;gap:12px"><span style="display:flex;align-items:flex-end;gap:2px;height:14px"><span style="width:4px;height:14px;background:#BABCC4"></span><span style="width:4px;height:11px;background:#6B6E7B"></span><span style="width:4px;height:8px;background:#6B6E7B"></span><span style="width:4px;height:5px;background:#6B6E7B"></span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">IL Y A 4 H</span><span style="font-size:12.5px;color:#9799A1">— pas de promesse</span></div>
+            <div style="display:flex;align-items:center;gap:12px"><span style="display:flex;align-items:flex-end;gap:2px;height:14px"><span style="width:4px;height:14px;border:1px solid #6B6E7B;border-bottom:none"></span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#9799A1">HIER</span><span style="font-size:12.5px;color:#9799A1">— l'âge cesse d'être une donnée utile</span></div>
+          </div>
+        </div>
+        <div style="width:400px;background:#FFFFFF;border:1px solid #D2D4DC;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Spécification</span>
+          <table style="width:100%;font-size:12.5px;line-height:1.5">
+            <tbody>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;width:104px;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Anatomie</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">Histogramme décroissant de 1 à 4 barres · lettre de palier · âge en L1 · une phrase de portée. Le palier accompagne l'âge partout où l'âge apparaît — liste, détail, carte d'approbation, notification</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Variantes</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">A (4 barres pleines) · B (2 pleines, 2 creuses) · C (1 pointillée) · compacte, sans phrase, en tableau</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">États</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">chargement : 4 barres creuses · vide : « date de publication inconnue » — jamais « à l'instant » par défaut · erreur : source injoignable, la barre passe en pointillé et le texte le dit · saturé : dans un lot de 39 offres, l'indicateur est unique en tête de lot et non répété par ligne</td></tr>
+              <tr><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Responsive</td><td style="padding:7px 0;border-bottom:1px solid #E9EBF1;color:#4D4F5A">sous 768, la phrase de portée disparaît des listes et reste sur le détail ; l'histogramme et la lettre ne disparaissent jamais ensemble</td></tr>
+              <tr><td style="padding:7px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;vertical-align:top">Clavier</td><td style="padding:7px 0;color:#4D4F5A">Non focalisable, mais annoncé en entier : « palier A, publiée il y a 4 minutes, vous êtes parmi les premiers dossiers ». Rien n'est communiqué par le seul mouvement ; sous <span style="font-family:'IBM Plex Mono',monospace;font-size:11px">prefers-reduced-motion</span> l'indicateur est identique</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1000px;border-top:1px solid oklch(0.72 0.006 275);padding-top:22px">
+    <p style="font-size:15px;line-height:1.6;color:oklch(0.36 0.018 275)">Suite : les deux parcours bout en bout en 390, puis les user stories avec leurs critères d'acceptation.</p>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

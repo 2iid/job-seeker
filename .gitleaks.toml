@@ -1,0 +1,40 @@
+# =============================================================================
+#  .gitleaks.toml — secret-scan config for `gitleaks protect --staged`.
+#  Used by .githooks/pre-commit when gitleaks is installed, and by CI.
+#  Without gitleaks the hook falls back to its own narrower pattern set.
+# =============================================================================
+title = "vantry"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "supabase-service-role"
+description = "Supabase service_role key (bypasses row-level security)"
+regex = '''(?i)(service_role|SUPABASE_SERVICE_ROLE_KEY)['"\s:=]{1,10}(eyJ[A-Za-z0-9_-]{20,})'''
+tags = ["supabase", "privileged"]
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key"
+regex = '''sk-ant-[A-Za-z0-9_-]{20,}'''
+tags = ["llm"]
+
+[[rules]]
+id = "postgres-url-with-password"
+description = "Postgres connection string with an inline password"
+regex = '''postgres(ql)?://[^:\s]+:[^@\s]{6,}@[^\s/]+'''
+tags = ["database"]
+
+[allowlist]
+description = "Examples, fixtures and this file itself are not leaks"
+paths = [
+  '''\.gitleaks\.toml$''',
+  '''\.env\.example$''',
+  '''(^|/)(fixtures?|__fixtures__|evals)/''',
+  '''(^|/)docs/''',
+  '''\.githooks/pre-commit$''',
+]
+regexes = [
+  '''EXAMPLE|PLACEHOLDER|CHANGEME|<your-.*>|xxxxxxxx''',
+]

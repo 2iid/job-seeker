@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background: oklch(0.90 0.004 275); }
+  * { box-sizing: border-box; }
+  a { color: oklch(0.47 0.115 210); text-decoration: none; }
+  a:hover { color: oklch(0.36 0.11 210); text-decoration: underline; }
+  p, h1, h2, h3, h4 { margin:0; text-wrap: pretty; }
+</style>
+</helmet>
+
+<section style="padding:56px 64px 110px;font-family:Epilogue,system-ui,sans-serif;color:oklch(0.235 0.02 275);display:flex;flex-direction:column;gap:56px;width:max-content;font-variant-numeric:tabular-nums">
+
+  <div style="max-width:1000px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#FFF;background:oklch(0.30 0.02 275);padding:4px 9px">4a</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Tour 4 — priorités 2 et 3 · la matière et la profondeur</span>
+      <span style="height:1px;flex:1;background:oklch(0.72 0.006 275)"></span>
+    </div>
+    <h1 style="font-size:38px;font-weight:600;letter-spacing:-0.025em;line-height:1.1">Huit écrans en 1280</h1>
+    <p style="font-size:16px;line-height:1.6;color:oklch(0.36 0.018 275)">Console en phrases éditables, studio CV avec vue de différence et confirmation d'extraction, bibliothèque de réponses, contacts en mode assisté, analyse, préparation d'entretien, réglages, entrée. Les deux écrans qui ont besoin d'air — studio CV et analyse — sont en clair : c'est l'échelle de densité du système mise à l'épreuve, pas une préférence.</p>
+  </div>
+
+  <!-- ══ 6 · CONSOLE DE L'AGENT ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écran 6 · Console de l'agent — <span style="text-transform:none;letter-spacing:0.04em">des phrases qu'on modifie, pas un formulaire de 40 champs</span></h2>
+    <div style="width:1280px;height:800px;background:#111218;color:#EBECF2;display:grid;grid-template-columns:1fr 320px;overflow:hidden;border:1px solid #373942">
+      <div style="display:flex;flex-direction:column;border-right:1px solid #373942;min-width:0">
+        <header style="padding:12px 24px;border-bottom:1px solid #373942;background:#181920;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:baseline;gap:14px">
+            <h1 style="font-size:19px;font-weight:600;letter-spacing:-0.015em">Mes règles</h1>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">9 règles actives · dernière modification hier 18:04</span>
+          </div>
+          <button style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#EBECF2;background:transparent;border:1px solid #E88F87;border-radius:3px;padding:12px 16px;cursor:pointer;min-height:44px">■ Arrêt d'urgence</button>
+        </header>
+        <div style="flex:1;padding:18px 24px;display:flex;flex-direction:column;gap:16px;min-height:0;overflow:hidden">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">CE QUE JE CHERCHE</span>
+            <p style="font-size:17px;line-height:1.75">Je cherche des postes de <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">développeuse front-end</span> ou <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">ingénieure produit</span>, à <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">Paris et 40 km autour</span> ou en <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">télétravail complet</span>, payés au moins <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">52 000 €</span> par an.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">CE QUE J'ÉCARTE</span>
+            <p style="font-size:17px;line-height:1.75">J'écarte les <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">agences de placement</span>, les offres mentionnant <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">« astreinte le week-end »</span>, et <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">3 entreprises</span> que vous m'avez nommées — <span style="color:#BABCC4;font-size:15px">dont votre employeur actuel, pour que rien ne remonte chez lui.</span></p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">MON RYTHME</span>
+            <p style="font-size:17px;line-height:1.75">Je postule au maximum <span style="background:#1C1E25;border:1px solid #86E2F2;padding:2px 7px;font-family:'IBM Plex Mono',monospace;font-size:16px">12</span> fois par jour, entre <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">8 h</span> et <span style="border-bottom:1px dashed #59C2D4;color:#59C2D4">22 h</span>, heure de Paris.</p>
+            <div style="border:1px solid #6B6E7B;background:#1C1E25;padding:13px;display:flex;flex-direction:column;gap:10px;max-width:520px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.1em;color:#86E2F2">MODIFICATION EN COURS · ÉCHAP POUR ANNULER</span>
+              <div style="display:flex;align-items:center;gap:12px">
+                <input type="range" min="1" max="20" value="12" style="flex:1;accent-color:#59C2D4" />
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;width:34px;text-align:right">12</span>
+              </div>
+              <p style="font-size:12.5px;line-height:1.5;color:#BABCC4">Au-delà de 15 envois par jour, le taux de réponse de vos candidatures baisse — mesuré sur vos 214 envois. Je peux monter, je préfère vous le dire.</p>
+              <div style="display:flex;gap:8px"><button style="font-family:Epilogue,sans-serif;font-size:13.5px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:44px;padding:0 18px;cursor:pointer">Enregistrer</button><button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#BABCC4;background:transparent;border:1px solid #373942;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Annuler</button></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">MON AUTONOMIE, CANAL PAR CANAL</span>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:center;padding:11px 0;border-top:1px solid #2A2C33">
+                <p style="font-size:15px;line-height:1.5">Sur le <strong style="font-weight:600">formulaire de l'employeur</strong>, j'envoie après votre accord.</p>
+                <div style="display:flex;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em">
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">OBSERVE</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">PROPOSE</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;background:#59C2D4;color:#0D0E13;font-weight:600">ACCORD</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">SEUL</span>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:center;padding:11px 0;border-top:1px solid #2A2C33">
+                <p style="font-size:15px;line-height:1.5">Sur les <strong style="font-weight:600">offres à fort score, palier A, au-delà de 90</strong>, j'envoie seul pour ne pas perdre l'avance.</p>
+                <div style="display:flex;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em">
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">OBSERVE</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">PROPOSE</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">ACCORD</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;background:#E4AF6C;color:#0D0E13;font-weight:600">SEUL</span>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:center;padding:11px 0;border-top:1px solid #2A2C33;border-bottom:1px solid #2A2C33">
+                <p style="font-size:15px;line-height:1.5">Pour <strong style="font-weight:600">écrire à un recruteur</strong>, je rédige et vous envoyez. <span style="color:#BABCC4">Ce cran n'est pas déplaçable.</span></p>
+                <div style="display:flex;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.06em;opacity:0.75">
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px solid #373942;color:#9799A1">OBSERVE</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;background:#59C2D4;color:#0D0E13;font-weight:600">PROPOSE</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px dashed #373942;color:#6B6E7B">ACCORD</span>
+                  <span style="flex:1;text-align:center;padding:9px 0;border:1px dashed #373942;color:#6B6E7B">SEUL</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:13px;line-height:1.5;color:#9799A1;margin-top:auto;border-top:1px solid #373942;padding-top:12px">Chaque valeur soulignée s'édite sur place. Aucune règle ne s'applique avant que vous ayez enregistré, et chaque modification est datée dans le journal.</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;background:#181920;min-width:0">
+        <div style="padding:12px 16px;border-bottom:1px solid #373942"><h2 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Journal des règles</h2></div>
+        <div style="flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:13px;min-height:0;overflow:hidden">
+          <div style="display:flex;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#59C2D4;flex:none;width:60px">hier 18:04</span><p style="font-size:12.5px;line-height:1.5">Vous avez exclu « astreinte le week-end » après 3 refus. <span style="color:#9799A1">7 offres écartées depuis.</span></p></div>
+          <div style="display:flex;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#59C2D4;flex:none;width:60px">12 août</span><p style="font-size:12.5px;line-height:1.5">J'ai proposé de monter le plancher à 52 000 €. Vous avez accepté.</p></div>
+          <div style="display:flex;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#BABCC4;flex:none;width:60px">4 août</span><p style="font-size:12.5px;line-height:1.5;color:#BABCC4">Autonomie passée du cran 2 au cran 3 sur le formulaire employeur.</p></div>
+          <div style="border-top:1px solid #373942;padding-top:12px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">CE QUE JE NE FERAI JAMAIS</span>
+            <p style="font-size:12.5px;line-height:1.6;color:#BABCC4">Contourner un anti-robot · envoyer un email à votre place · relancer sans votre accord · postuler chez une entreprise exclue · dépasser votre quota</p>
+          </div>
+          <div style="margin-top:auto;border:1px solid #373942;padding:12px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#E88F87">ARRÊT D'URGENCE</span>
+            <p style="font-size:12.5px;line-height:1.5;color:#BABCC4">Coupe la veille, l'envoi et les brouillons dans la seconde. Ce qui est déjà parti reste parti — je vous dirai quoi exactement.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 7 · STUDIO CV ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écran 7 · Studio CV — <span style="text-transform:none;letter-spacing:0.04em">vue de différence : ce que la machine a changé, refusable ligne à ligne</span></h2>
+    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">1280 · clair · l'écran qui a besoin d'air</span>
+        <div style="width:1280px;height:800px;background:#F1F2F7;color:#1B1D28;display:flex;flex-direction:column;overflow:hidden;border:1px solid #D2D4DC">
+          <header style="padding:14px 26px;border-bottom:1px solid #D2D4DC;background:#F8F9FC;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:baseline;gap:16px">
+              <h1 style="font-size:20px;font-weight:600;letter-spacing:-0.02em">Studio CV</h1>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#4D4F5A">Profil canonique · 4 variantes · lisibilité ATS 92 / 100</span>
+            </div>
+            <div style="display:flex;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#4D4F5A">
+              <span style="border:1px solid #888B99;border-radius:3px;padding:8px 11px;color:#1B1D28">PRODUIT</span>
+              <span style="border:1px solid #D2D4DC;border-radius:3px;padding:8px 11px">PLATEFORME</span>
+              <span style="border:1px solid #D2D4DC;border-radius:3px;padding:8px 11px">DIRECTION TECHNIQUE</span>
+              <span style="border:1px solid #D2D4DC;border-radius:3px;padding:8px 11px">+ NOUVELLE</span>
+            </div>
+          </header>
+          <div style="padding:12px 26px;border-bottom:1px solid #D2D4DC;background:#FFFFFF;display:flex;align-items:center;gap:16px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">ADAPTÉ POUR</span>
+            <span style="font-size:14px;font-weight:600">Ingénieure front-end · Alma Santé</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#006B7E">3 modifications proposées</span>
+            <span style="margin-left:auto;display:flex;gap:8px">
+              <button style="font-family:Epilogue,sans-serif;font-size:13.5px;font-weight:600;color:#FDFDFF;background:#804E00;border:none;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Tout accepter</button>
+              <button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Garder le CV maître</button>
+            </span>
+          </div>
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 300px;min-height:0">
+            <div style="border-right:1px solid #D2D4DC;display:flex;flex-direction:column;min-width:0;background:#FFFFFF">
+              <div style="padding:11px 20px;border-bottom:1px solid #D2D4DC;display:flex;justify-content:space-between"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">CV MAÎTRE — LA VÉRITÉ DE CARRIÈRE</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#666872">V. 12</span></div>
+              <div style="padding:16px 20px;display:flex;flex-direction:column;gap:13px;font-size:13px;line-height:1.6;color:#4D4F5A">
+                <div><p style="font-size:15px;font-weight:600;color:#1B1D28">Clara Mahé</p><p>Développeuse front-end · Paris</p></div>
+                <div style="padding:10px 12px;background:#E9EBF1">Développeuse front-end senior — Lumen Data · 2021 → aujourd'hui<br><span style="color:#666872">J'ai construit le design system utilisé par 40 développeurs et réduit le temps de chargement de 2,4 s à 0,9 s.</span></div>
+                <div style="padding:10px 12px;background:#E9EBF1">Compétences — React, TypeScript, Node, GraphQL, tests end-to-end, accessibilité WCAG</div>
+                <div style="padding:10px 12px;background:#E9EBF1">Loisirs — course à pied, photographie argentique</div>
+              </div>
+            </div>
+            <div style="border-right:1px solid #D2D4DC;display:flex;flex-direction:column;min-width:0;background:#FFFFFF">
+              <div style="padding:11px 20px;border-bottom:1px solid #D2D4DC;display:flex;justify-content:space-between"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#006B7E">VERSION ADAPTÉE — CE QUE J'ENVOIE</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#666872">3 DIFF.</span></div>
+              <div style="padding:16px 20px;display:flex;flex-direction:column;gap:13px;font-size:13px;line-height:1.6;color:#4D4F5A">
+                <div><p style="font-size:15px;font-weight:600;color:#1B1D28">Clara Mahé</p><p>Développeuse front-end · Paris</p></div>
+                <div style="border-left:2px solid #006B7E;padding:10px 12px;background:#FFFFFF;border-top:1px solid #D2D4DC;border-right:1px solid #D2D4DC;border-bottom:1px solid #D2D4DC">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#006B7E">MODIFIÉ · 1</span><span style="display:flex;gap:9px"><a href="#4a" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px">GARDER</a><a href="#4a" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#983432">REFUSER</a></span></div>
+                  Développeuse front-end senior — Lumen Data · 2021 → aujourd'hui<br><span style="color:#1B1D28">J'ai construit le design system utilisé par 40 développeurs, dans un produit de <strong style="font-weight:600">santé soumis à l'accès aux données patients</strong>, et réduit le temps de chargement de 2,4 s à 0,9 s.</span>
+                  <p style="font-size:12px;color:#666872;margin-top:7px">Pourquoi : l'annonce insiste deux fois sur l'accès aux données de santé.</p>
+                </div>
+                <div style="border-left:2px solid #006B7E;padding:10px 12px;border-top:1px solid #D2D4DC;border-right:1px solid #D2D4DC;border-bottom:1px solid #D2D4DC">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#006B7E">RÉORDONNÉ · 2</span><span style="display:flex;gap:9px"><a href="#4a" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px">GARDER</a><a href="#4a" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#983432">REFUSER</a></span></div>
+                  Compétences — <strong style="font-weight:600;color:#1B1D28">React, TypeScript, accessibilité WCAG</strong>, GraphQL, Node, tests end-to-end
+                  <p style="font-size:12px;color:#666872;margin-top:7px">Pourquoi : les trois premières sont exigées dans l'annonce ; l'ATS lit les six premiers termes.</p>
+                </div>
+                <div style="border-left:2px solid #983432;padding:10px 12px;border-top:1px solid #D2D4DC;border-right:1px solid #D2D4DC;border-bottom:1px solid #D2D4DC">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px"><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;color:#983432">RETIRÉ · 3</span><span style="display:flex;gap:9px"><a href="#4a" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px">GARDER RETIRÉ</a><a href="#4a" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#006B7E">REMETTRE</a></span></div>
+                  <span style="text-decoration:line-through;color:#666872">Loisirs — course à pied, photographie argentique</span>
+                  <p style="font-size:12px;color:#666872;margin-top:7px">Pourquoi : deux pages maximum demandées, et cette ligne n'apporte rien à cette annonce. Rien n'est supprimé du CV maître.</p>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;min-width:0;background:#F8F9FC">
+              <div style="padding:11px 18px;border-bottom:1px solid #D2D4DC"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">ÉCART DE MOTS-CLÉS</span></div>
+              <div style="padding:14px 18px;display:flex;flex-direction:column;gap:11px;flex:1">
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:8px;border-bottom:1px solid #D2D4DC"><span style="display:flex;align-items:center;gap:8px"><span style="color:#006B7E">✓</span>React</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#4D4F5A">annonce 4× · CV 6×</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:8px;border-bottom:1px solid #D2D4DC"><span style="display:flex;align-items:center;gap:8px"><span style="color:#006B7E">✓</span>Accessibilité</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#4D4F5A">annonce 2× · CV 2×</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:8px;border-bottom:1px solid #D2D4DC"><span style="display:flex;align-items:center;gap:8px"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #804E00"></span>Kubernetes</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#804E00">annonce 1× · CV 0</span></div>
+                <p style="font-size:12.5px;line-height:1.55;color:#4D4F5A">Je n'ajoute jamais une compétence que vous n'avez pas. Si vous avez touché à Kubernetes, dites-le moi et je l'écris — sinon on part sans.</p>
+                <div style="border-top:1px solid #D2D4DC;padding-top:12px;display:flex;flex-direction:column;gap:9px">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">FORMAT DU MARCHÉ VISÉ · FRANCE</span>
+                  <p style="font-size:12.5px;line-height:1.6;color:#4D4F5A">Photo : facultative, retirée par défaut · date de naissance : retirée · nationalité : retirée · longueur : 2 pages<br><a href="#4a">Voir les conventions par pays</a></p>
+                </div>
+                <div style="margin-top:auto;border-top:1px solid #D2D4DC;padding-top:12px"><p style="font-size:12.5px;line-height:1.55;color:#4D4F5A">Lisibilité ATS <span style="font-family:'IBM Plex Mono',monospace;color:#1B1D28">92 / 100</span> — deux colonnes évitées, polices standard, pas de tableau. <a href="#4a">Ce qui coûte les 8 points</a></p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">1280 · clair · confirmation d'extraction — l'écran souvent bâclé</span>
+        <div style="width:1280px;height:700px;background:#F1F2F7;color:#1B1D28;display:flex;flex-direction:column;overflow:hidden;border:1px solid #D2D4DC">
+          <header style="padding:14px 26px;border-bottom:1px solid #D2D4DC;background:#F8F9FC;display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <h1 style="font-size:20px;font-weight:600;letter-spacing:-0.02em">J'ai lu votre CV. Corrigez-moi avant qu'on continue.</h1>
+              <p style="font-size:13px;color:#4D4F5A;margin-top:5px">CV_Clara_Mahe_2026.pdf · 2 pages · <span style="font-family:'IBM Plex Mono',monospace">3 champs incertains sur 24</span></p>
+            </div>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#666872">ÉTAPE 2 SUR 4</span>
+          </header>
+          <div style="flex:1;display:grid;grid-template-columns:420px 1fr;min-height:0">
+            <div style="border-right:1px solid #D2D4DC;background:#E9EBF1;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">VOTRE DOCUMENT · PAGE 1</span>
+              <div style="flex:1;background:repeating-linear-gradient(135deg,#FFFFFF 0 8px,#F1F2F7 8px 16px);border:1px solid #D2D4DC;display:flex;align-items:center;justify-content:center">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#666872;background:#FFFFFF;border:1px solid #D2D4DC;padding:8px 12px">aperçu du PDF déposé</span>
+              </div>
+              <p style="font-size:12.5px;line-height:1.5;color:#4D4F5A">Cliquer un champ à droite surligne l'endroit du document d'où je l'ai tiré.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;min-width:0;background:#FFFFFF">
+              <div style="flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden">
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#804E00">CE DONT JE NE SUIS PAS SÛR — À VÉRIFIER</span>
+                  <div style="border:1px solid #888B99;padding:12px 14px;display:flex;align-items:center;gap:16px">
+                    <span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #804E00;flex:none"></span>
+                    <span style="flex:1;font-size:13.5px;line-height:1.4">Poste actuel<br><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#1B1D28">Développeuse front-end senior</span> <span style="font-size:12.5px;color:#4D4F5A">— j'ai hésité avec « Lead front-end », écrit ligne 14</span></span>
+                    <button style="font-family:Epilogue,sans-serif;font-size:13px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer;flex:none">Corriger</button>
+                  </div>
+                  <div style="border:1px solid #888B99;padding:12px 14px;display:flex;align-items:center;gap:16px">
+                    <span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #804E00;flex:none"></span>
+                    <span style="flex:1;font-size:13.5px;line-height:1.4">Dates chez Néos Studio<br><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#1B1D28">2018 – 2021</span> <span style="font-size:12.5px;color:#4D4F5A">— le document dit « 2018 – 21 », j'ai complété</span></span>
+                    <button style="font-family:Epilogue,sans-serif;font-size:13px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer;flex:none">Corriger</button>
+                  </div>
+                  <div style="border:1px solid #888B99;padding:12px 14px;display:flex;align-items:center;gap:16px">
+                    <span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #804E00;flex:none"></span>
+                    <span style="flex:1;font-size:13.5px;line-height:1.4">Diplôme<br><span style="font-size:12.5px;color:#4D4F5A">Je n'ai rien trouvé. Ce n'est pas grave — beaucoup d'annonces ne l'exigent pas.</span></span>
+                    <button style="font-family:Epilogue,sans-serif;font-size:13px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer;flex:none">Ajouter</button>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">CE QUE J'AI LU SANS DOUTE — 21 CHAMPS</span>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px;color:#4D4F5A">
+                    <span style="display:flex;justify-content:space-between;border-bottom:1px solid #E9EBF1;padding-bottom:6px"><span>Nom</span><span style="color:#1B1D28">Clara Mahé</span></span>
+                    <span style="display:flex;justify-content:space-between;border-bottom:1px solid #E9EBF1;padding-bottom:6px"><span>Ville</span><span style="color:#1B1D28">Paris</span></span>
+                    <span style="display:flex;justify-content:space-between;border-bottom:1px solid #E9EBF1;padding-bottom:6px"><span>Employeur actuel</span><span style="color:#1B1D28">Lumen Data</span></span>
+                    <span style="display:flex;justify-content:space-between;border-bottom:1px solid #E9EBF1;padding-bottom:6px"><span>Expérience</span><span style="color:#1B1D28">8 ans</span></span>
+                    <span style="display:flex;justify-content:space-between;border-bottom:1px solid #E9EBF1;padding-bottom:6px"><span>Compétences</span><span style="color:#1B1D28">14 reconnues</span></span>
+                    <span style="display:flex;justify-content:space-between;border-bottom:1px solid #E9EBF1;padding-bottom:6px"><span>Langues</span><span style="color:#1B1D28">FR, EN</span></span>
+                  </div>
+                  <a href="#4a" style="font-size:13px">Tout revoir champ par champ</a>
+                </div>
+                <div style="border:1px solid #D2D4DC;background:#F8F9FC;padding:12px 14px;margin-top:auto">
+                  <p style="font-size:12.5px;line-height:1.55;color:#4D4F5A">Ce document ne quittera pas votre compte tant que vous n'avez pas approuvé une candidature. <a href="#4a">Ce que je conserve et pour combien de temps</a></p>
+                </div>
+              </div>
+              <footer style="border-top:1px solid #D2D4DC;background:#F8F9FC;padding:12px 24px;display:flex;align-items:center;gap:10px">
+                <button style="font-family:Epilogue,sans-serif;font-size:15px;font-weight:600;color:#FDFDFF;background:#804E00;border:none;border-radius:3px;height:48px;padding:0 22px;cursor:pointer">C'est juste, continuer</button>
+                <button style="font-family:Epilogue,sans-serif;font-size:14px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:48px;padding:0 18px;cursor:pointer">Reprendre les 3 champs</button>
+                <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#666872">TOUT EST MODIFIABLE PLUS TARD</span>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 8 · BIBLIOTHÈQUE DE RÉPONSES ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écran 8 · Bibliothèque de réponses — <span style="text-transform:none;letter-spacing:0.04em">ce qui manque ici devient une escalade là-bas</span></h2>
+    <div style="width:1280px;height:660px;background:#111218;color:#EBECF2;display:grid;grid-template-columns:1fr 340px;overflow:hidden;border:1px solid #373942">
+      <div style="display:flex;flex-direction:column;border-right:1px solid #373942;min-width:0">
+        <header style="padding:12px 24px;border-bottom:1px solid #373942;background:#181920;display:flex;align-items:baseline;justify-content:space-between">
+          <h1 style="font-size:19px;font-weight:600;letter-spacing:-0.015em">Réponses aux questions de screening</h1>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">18 validées · 2 manquantes · réutilisées 96 fois</span>
+        </header>
+        <div style="flex:1;padding:14px 24px;display:flex;flex-direction:column;min-height:0;overflow:hidden">
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#9799A1;border-bottom:1px solid #373942;padding-bottom:9px"><span>Question</span><span>Votre réponse validée</span><span>Réutilisée</span><span>Langue</span></div>
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span>Prétentions salariales</span><span style="color:#BABCC4"><span style="font-family:'IBM Plex Mono',monospace;color:#EBECF2">55 000 €</span> — ouverte selon le périmètre</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#BABCC4">31×</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">FR · EN</span></div>
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span>Autorisation de travail</span><span style="color:#BABCC4">Ressortissante française, aucun visa requis dans l'UE</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#BABCC4">28×</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">FR · EN</span></div>
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span>Disponibilité</span><span style="color:#BABCC4">Préavis de 2 mois, négociable à 6 semaines</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#BABCC4">24×</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">FR · EN</span></div>
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span>Mobilité</span><span style="color:#BABCC4">Jusqu'à 2 jours sur site par semaine, Paris et couronne</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#BABCC4">13×</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">FR</span></div>
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #2A2C33;font-size:13.5px;background:#1C1E25;margin:0 -24px;padding-left:24px;padding-right:24px;border-left:2px solid #E4AF6C"><span style="display:flex;align-items:center;gap:9px"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C;flex:none"></span>Situation de conflit en équipe</span><span style="color:#E4AF6C">Aucune réponse validée — <span style="color:#BABCC4">m'a bloqué chez Vireo à 03:14</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9799A1">—</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#E4AF6C">RÉDIGER</span></div>
+          <div style="display:grid;grid-template-columns:250px 1fr 92px 84px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:9px"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C;flex:none"></span>Numéro d'ordre professionnel</span><span style="color:#E4AF6C">Manquante — <span style="color:#BABCC4">demandée par 3 formulaires ce mois</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9799A1">—</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#E4AF6C">AJOUTER</span></div>
+          <div style="padding-top:14px;display:flex;flex-direction:column;gap:10px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">RÉPONSE OUVERTE — BROUILLON QUE J'AI PRÉPARÉ, À VALIDER</span>
+            <div style="border:1px solid #6B6E7B;background:#1C1E25;padding:13px;font-size:13px;line-height:1.6;color:#BABCC4">« Sur un projet de refonte, une désaccord persistait entre l'équipe design et la mienne sur la profondeur de la navigation. J'ai proposé de trancher par un test à cinq utilisateurs plutôt que par argument… »<br><span style="color:#9799A1;font-size:12px">Rédigé d'après votre expérience chez Lumen Data. Rien n'est inventé : si un fait vous semble faux, corrigez-le, je ne l'utiliserai pas tel quel.</span></div>
+            <div style="display:flex;gap:8px"><button style="font-family:Epilogue,sans-serif;font-size:13.5px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:44px;padding:0 18px;cursor:pointer">Valider cette réponse</button><button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Réécrire moi-même</button></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;background:#181920;min-width:0">
+        <div style="padding:12px 16px;border-bottom:1px solid #373942"><h2 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Documents demandés</h2></div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:11px;border-bottom:1px solid #373942">
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="display:flex;align-items:center;gap:9px"><span style="color:#59C2D4">✓</span>Lettre de motivation type</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">3 variantes</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="display:flex;align-items:center;gap:9px"><span style="color:#59C2D4">✓</span>Portfolio · lien</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">vérifié</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:#BABCC4"><span style="display:flex;align-items:center;gap:9px"><span style="font-family:'IBM Plex Mono',monospace;color:#9799A1">—</span>Références</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#59C2D4">AJOUTER</span></div>
+        </div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:11px;flex:1">
+          <h3 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Pourquoi ça compte</h3>
+          <p style="font-size:13px;line-height:1.55;color:#BABCC4">Chaque réponse manquante est une candidature que je ne peux pas finir seul. Sur 30 jours : <span style="color:#EBECF2">4 escalades</span>, toutes dues à une question sans réponse validée.</p>
+          <p style="font-size:13px;line-height:1.55;color:#BABCC4">Les deux réponses manquantes ci-contre couvriraient <span style="color:#EBECF2">3 des 4 cas</span>.</p>
+          <div style="margin-top:auto;border-top:1px solid #373942;padding-top:12px;font-size:12.5px;line-height:1.55;color:#9799A1">Je ne réutilise une réponse que si la question est la même à 95 %. Sinon je vous demande.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 9 · CONTACTS RECRUTEURS ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écran 9 · Contacts recruteurs — <span style="text-transform:none;letter-spacing:0.04em">mode assisté : je rédige, vous envoyez. Un par un.</span></h2>
+    <div style="width:1280px;height:700px;background:#111218;color:#EBECF2;display:grid;grid-template-columns:1fr 460px;overflow:hidden;border:1px solid #373942">
+      <div style="display:flex;flex-direction:column;border-right:1px solid #373942;min-width:0">
+        <header style="padding:12px 24px;border-bottom:1px solid #373942;background:#181920;display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <h1 style="font-size:19px;font-weight:600;letter-spacing:-0.015em">Personnes identifiées</h1>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">7 contacts · 2 brouillons prêts · 0 envoi automatique</span>
+          </div>
+          <p style="font-size:13px;line-height:1.5;color:#BABCC4">Un message à la fois, écrit pour une offre précise, envoyé depuis votre boîte. <strong style="color:#EBECF2;font-weight:600">Pas d'envoi groupé, pas de relance automatique</strong> — ce produit n'est pas un outil de prospection.</p>
+        </header>
+        <div style="flex:1;padding:14px 24px;display:flex;flex-direction:column;min-height:0;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1fr 190px 150px 110px;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#9799A1;border-bottom:1px solid #373942;padding-bottom:9px"><span>Personne</span><span>Certitude de l'adresse</span><span>Rattaché à</span><span>État</span></div>
+          <div style="display:grid;grid-template-columns:1fr 190px 150px 110px;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #2A2C33">
+            <span style="font-size:13.5px;line-height:1.4">Aurélie Mercier<br><span style="font-size:12.5px;color:#BABCC4">Lead recruiter · Cartaya</span></span>
+            <span style="display:flex;align-items:center;gap:8px;font-size:12.5px"><span style="color:#59C2D4">✓</span>Vérifiée — <span style="color:#BABCC4">réponse reçue de cette adresse</span></span>
+            <span style="font-size:12.5px;color:#BABCC4">Dev produit · 88</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#E4AF6C">BROUILLON</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 190px 150px 110px;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #2A2C33">
+            <span style="font-size:13.5px;line-height:1.4">Geneviève Lapointe<br><span style="font-size:12.5px;color:#BABCC4">Acquisition de talents · CHU Sainte-Foy</span></span>
+            <span style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#E4AF6C"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C;flex:none;margin-top:4px"></span><span>Devinée — <span style="color:#BABCC4">schéma prénom.nom, non testée</span></span></span>
+            <span style="font-size:12.5px;color:#BABCC4">Soins intensifs · 91</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#E4AF6C">BROUILLON</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 190px 150px 110px;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #2A2C33">
+            <span style="font-size:13.5px;line-height:1.4">Marc Vasseur<br><span style="font-size:12.5px;color:#BABCC4">Directeur technique · Vireo</span></span>
+            <span style="display:flex;align-items:center;gap:8px;font-size:12.5px"><span style="color:#59C2D4">✓</span>Vérifiée</span>
+            <span style="font-size:12.5px;color:#BABCC4">Front senior · 81</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#59C2D4">A RÉPONDU</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 190px 150px 110px;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #2A2C33">
+            <span style="font-size:13.5px;line-height:1.4;color:#BABCC4">Contact inconnu<br><span style="font-size:12.5px;color:#9799A1">Alma Santé — personne identifiée : aucune</span></span>
+            <span style="font-size:12.5px;color:#9799A1">Je n'invente pas d'adresse</span>
+            <span style="font-size:12.5px;color:#BABCC4">Front-end · 92</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9799A1">—</span>
+          </div>
+          <div style="margin-top:auto;border-top:1px solid #373942;padding-top:13px;display:flex;flex-direction:column;gap:9px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">CADRE DE CONFORMITÉ</span>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px 22px;font-size:12.5px;line-height:1.5;color:#BABCC4">
+              <span>· Un seul destinataire par message, jamais de copie cachée</span>
+              <span>· Objet et signature à votre nom, depuis votre adresse</span>
+              <span>· Une seule prise de contact par entreprise et par mois</span>
+              <span>· Mention de désinscription dans chaque message</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;background:#181920;min-width:0">
+        <div style="padding:12px 18px;border-bottom:1px solid #373942;display:flex;align-items:baseline;justify-content:space-between"><h2 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Brouillon · Geneviève Lapointe</h2><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#E4AF6C">NON ENVOYÉ</span></div>
+        <div style="flex:1;padding:14px 18px;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden">
+          <div style="border:1px solid #E4AF6C;padding:11px;display:flex;gap:10px;align-items:flex-start">
+            <span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C;flex:none;margin-top:4px"></span>
+            <p style="font-size:12.5px;line-height:1.5">L'adresse est <strong style="font-weight:600">devinée</strong>. Elle peut rebondir : ce n'est ni une faute de votre part, ni un signal négatif pour l'employeur.</p>
+          </div>
+          <div style="border:1px solid #373942;display:flex;flex-direction:column">
+            <div style="padding:10px 12px;border-bottom:1px solid #2A2C33;display:flex;gap:10px;font-size:12.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9799A1;width:46px;flex:none">DE</span><span>marie-josee.tremblay@…  <span style="color:#9799A1">votre boîte</span></span></div>
+            <div style="padding:10px 12px;border-bottom:1px solid #2A2C33;display:flex;gap:10px;font-size:12.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9799A1;width:46px;flex:none">À</span><span>g.lapointe@chusaintefoy.qc.ca</span></div>
+            <div style="padding:10px 12px;display:flex;gap:10px;font-size:12.5px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9799A1;width:46px;flex:none">OBJET</span><span>Candidature — infirmière en soins intensifs</span></div>
+          </div>
+          <div style="background:#0B0C11;border:1px solid #373942;padding:13px;font-size:12.5px;line-height:1.7;color:#BABCC4;flex:1;overflow:hidden">
+            Bonjour Madame Lapointe,<br><br>J'ai postulé ce matin au poste d'infirmière en soins intensifs. Votre unité passe à 22 lits en janvier ; j'ai accompagné une montée en charge comparable à l'Hôtel-Dieu, où nous avons formé six infirmières en douze semaines.<br><br>Je reste disponible si un échange vous semble utile.<br><br>Marie-Josée Tremblay<br><span style="color:#9799A1;font-size:11.5px">Si vous préférez ne plus recevoir de message de ma part, dites-le moi : je n'écrirai plus.</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button style="flex:1;font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:46px;cursor:pointer">Ouvrir dans ma boîte</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:46px;padding:0 14px;cursor:pointer">Modifier</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:13.5px;color:#BABCC4;background:transparent;border:1px solid #373942;border-radius:3px;height:46px;padding:0 14px;cursor:pointer">Jeter</button>
+          </div>
+          <p style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#9799A1;text-align:center">JE N'AI PAS ACCÈS À L'ENVOI. VOUS RELISEZ, VOUS ENVOYEZ.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 10 · ANALYSE ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écran 10 · Analyse — <span style="text-transform:none;letter-spacing:0.04em">aucun graphique qui ne débouche sur une décision</span></h2>
+    <div style="width:1280px;height:700px;background:#F1F2F7;color:#1B1D28;display:flex;flex-direction:column;overflow:hidden;border:1px solid #D2D4DC">
+      <header style="padding:14px 26px;border-bottom:1px solid #D2D4DC;background:#F8F9FC;display:flex;align-items:baseline;justify-content:space-between">
+        <div><h1 style="font-size:20px;font-weight:600;letter-spacing:-0.02em">Ce que vos 214 candidatures m'ont appris</h1><p style="font-size:13px;color:#4D4F5A;margin-top:5px">30 juillet → 25 août · assez de données pour trois décisions, pas plus</p></div>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#666872">AUCUN TAUX DE REJET AFFICHÉ</span>
+      </header>
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;min-height:0">
+        <div style="border-right:1px solid #D2D4DC;padding:18px 22px;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;min-width:0">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">L'ENTONNOIR</span>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:100%;max-width:230px;height:26px;background:#006B7E"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;flex:none">214</span></div>
+            <span style="font-size:12.5px;color:#4D4F5A">Envoyées</span>
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:100%;max-width:96px;height:26px;background:#006B7E"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;flex:none">89</span></div>
+            <span style="font-size:12.5px;color:#4D4F5A">Consultées <span style="color:#666872">· 42 %</span></span>
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:100%;max-width:34px;height:26px;background:#006B7E"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;flex:none">31</span></div>
+            <span style="font-size:12.5px;color:#4D4F5A">Réponses <span style="color:#666872">· 14 %</span></span>
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:100%;max-width:14px;height:26px;background:#006B7E"></span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;flex:none">9</span></div>
+            <span style="font-size:12.5px;color:#4D4F5A">Entretiens</span>
+          </div>
+          <div style="border:1px solid #D2D4DC;background:#F8F9FC;padding:12px;margin-top:auto">
+            <p style="font-size:13px;line-height:1.55"><strong style="font-weight:600">Le goulot est entre « consultée » et « réponse ».</strong> Votre dossier est ouvert, puis abandonné. C'est un problème de contenu, pas de volume — inutile de postuler plus.</p>
+            <a href="#4a" style="font-size:13px;display:inline-block;margin-top:8px">Travailler l'accroche du CV →</a>
+          </div>
+        </div>
+        <div style="border-right:1px solid #D2D4DC;padding:18px 22px;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;min-width:0">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">RÉPONSES PAR VARIANTE DE CV</span>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>« Produit »</span><span style="font-family:'IBM Plex Mono',monospace">19 %</span></div><span style="height:8px;background:#E9EBF1;display:block"><span style="display:block;width:76%;height:8px;background:#006B7E"></span></span><span style="font-size:12px;color:#666872">84 envois</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>« Plateforme »</span><span style="font-family:'IBM Plex Mono',monospace">11 %</span></div><span style="height:8px;background:#E9EBF1;display:block"><span style="display:block;width:44%;height:8px;background:#006B7E"></span></span><span style="font-size:12px;color:#666872">71 envois</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>« Direction technique »</span><span style="font-family:'IBM Plex Mono',monospace;color:#666872">4 %</span></div><span style="height:8px;background:#E9EBF1;display:block"><span style="display:block;width:16%;height:8px;background:#888B99"></span></span><span style="font-size:12px;color:#666872">27 envois — <span style="color:#804E00">échantillon faible</span></span></div>
+          </div>
+          <div style="border:1px solid #D2D4DC;background:#F8F9FC;padding:12px;margin-top:auto">
+            <p style="font-size:13px;line-height:1.55"><strong style="font-weight:600">« Produit » répond presque deux fois mieux.</strong> Je peux la passer par défaut sur les offres mixtes — c'est votre décision, pas la mienne.</p>
+            <div style="display:flex;gap:8px;margin-top:9px"><button style="font-family:Epilogue,sans-serif;font-size:13px;font-weight:600;color:#FDFDFF;background:#804E00;border:none;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">La passer par défaut</button><button style="font-family:Epilogue,sans-serif;font-size:13px;color:#1B1D28;background:#FFFFFF;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 12px;cursor:pointer">Laisser</button></div>
+          </div>
+        </div>
+        <div style="padding:18px 22px;display:flex;flex-direction:column;gap:14px;background:#F8F9FC;min-width:0">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">DÉLAI ET HEURE D'ENVOI</span>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:9px;border-bottom:1px solid #D2D4DC"><span>Délai médian jusqu'à la 1ʳᵉ réponse</span><span style="font-family:'IBM Plex Mono',monospace">6 j</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:9px;border-bottom:1px solid #D2D4DC"><span>Envois dans les 15 min d'une parution</span><span style="font-family:'IBM Plex Mono',monospace">31 %</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:9px;border-bottom:1px solid #D2D4DC"><span>Réponses sur ces envois rapides</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:600">23 %</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#4D4F5A">Réponses sur les envois tardifs</span><span style="font-family:'IBM Plex Mono',monospace;color:#4D4F5A">9 %</span></div>
+          </div>
+          <div style="border:1px solid #D2D4DC;background:#FFFFFF;padding:12px">
+            <p style="font-size:13px;line-height:1.55"><strong style="font-weight:600">Le palier A paie.</strong> Sur les offres relevées en moins de 15 minutes, vous répondez deux fois et demie mieux. Douze boards sont surveillés à ce rythme ; on peut en ajouter.</p>
+            <a href="#4a" style="font-size:13px;display:inline-block;margin-top:8px">Ajouter des boards en palier A →</a>
+          </div>
+          <div style="border:1px solid #D2D4DC;background:#FFFFFF;padding:12px;margin-top:auto">
+            <p style="font-size:12.5px;line-height:1.55;color:#4D4F5A">Les 183 candidatures restées sans réponse ne sont pas un score. Elles sont classées ; le marché n'a pas répondu, et cela ne dit rien de votre valeur.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 11 + 12 · ENTRETIEN & RÉGLAGES ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écrans 11 et 12 · Préparation d'entretien · Réglages, confidentialité et données</h2>
+    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">1280 · déclenché par le passage en entretien</span>
+        <div style="width:1280px;height:620px;background:#111218;color:#EBECF2;display:grid;grid-template-columns:1fr 1fr 340px;overflow:hidden;border:1px solid #373942">
+          <div style="border-right:1px solid #373942;display:flex;flex-direction:column;min-width:0">
+            <header style="padding:12px 22px;border-bottom:1px solid #373942;background:#181920">
+              <h1 style="font-size:18px;font-weight:600;letter-spacing:-0.015em">Mardi 14 h — CHU Sainte-Foy</h1>
+              <p style="font-size:12.5px;color:#BABCC4;margin-top:5px">Soins intensifs · visioconférence · <span style="font-family:'IBM Plex Mono',monospace">dans 3 jours</span></p>
+            </header>
+            <div style="flex:1;padding:14px 22px;display:flex;flex-direction:column;gap:13px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">CE QUI S'EST PASSÉ CHEZ EUX</span>
+              <div style="display:flex;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#59C2D4;flex:none;width:52px">12 août</span><p style="font-size:13px;line-height:1.5">L'unité passe de 16 à 22 lits en janvier.</p></div>
+              <div style="display:flex;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#59C2D4;flex:none;width:52px">4 août</span><p style="font-size:13px;line-height:1.5">Sept postes ouverts en soins critiques en trois semaines.</p></div>
+              <div style="display:flex;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#BABCC4;flex:none;width:52px">28 juil.</span><p style="font-size:13px;line-height:1.5;color:#BABCC4">Nouvelle directrice des soins infirmiers.</p></div>
+              <div style="border-top:1px solid #373942;padding-top:12px;display:flex;flex-direction:column;gap:11px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">VOS INTERLOCUTEURS</span>
+                <div style="display:flex;gap:11px;align-items:flex-start"><span style="width:30px;height:30px;background:#1C1E25;border:1px solid #373942;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;flex:none">SB</span><p style="font-size:13px;line-height:1.45">Sylvie Bergeron — chef d'unité<br><span style="color:#BABCC4;font-size:12.5px">15 ans dans l'établissement · source : leur site</span></p></div>
+                <div style="display:flex;gap:11px;align-items:flex-start"><span style="width:30px;height:30px;background:#1C1E25;border:1px solid #373942;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;flex:none">GL</span><p style="font-size:13px;line-height:1.45">Geneviève Lapointe — RH<br><span style="color:#BABCC4;font-size:12.5px">a accusé réception de votre dossier</span></p></div>
+              </div>
+            </div>
+          </div>
+          <div style="border-right:1px solid #373942;display:flex;flex-direction:column;min-width:0">
+            <header style="padding:12px 22px;border-bottom:1px solid #373942;background:#181920"><h2 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Six questions probables</h2></header>
+            <div style="flex:1;padding:14px 22px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;flex-direction:column;gap:5px;padding-bottom:11px;border-bottom:1px solid #2A2C33"><p style="font-size:14px;line-height:1.4">« Comment gérez-vous une montée en charge d'unité ? »</p><p style="font-size:12.5px;color:#BABCC4;line-height:1.5">Votre expérience à l'Hôtel-Dieu répond directement. <a href="#4a" style="color:#59C2D4">Préparer 3 phrases</a></p></div>
+              <div style="display:flex;flex-direction:column;gap:5px;padding-bottom:11px;border-bottom:1px solid #2A2C33"><p style="font-size:14px;line-height:1.4">« Pourquoi quitter votre poste actuel ? »</p><p style="font-size:12.5px;color:#BABCC4;line-height:1.5">Question de contrôle. <a href="#4a" style="color:#59C2D4">Voir une réponse factuelle</a></p></div>
+              <div style="display:flex;flex-direction:column;gap:5px;padding-bottom:11px;border-bottom:1px solid #2A2C33"><p style="font-size:14px;line-height:1.4">« Êtes-vous à l'aise avec les quarts de 12 heures ? »</p><p style="font-size:12.5px;color:#BABCC4;line-height:1.5">Vos règles excluent la nuit — dites-le tôt, c'est un critère, pas un défaut.</p></div>
+              <div style="display:flex;flex-direction:column;gap:5px"><p style="font-size:14px;line-height:1.4">« Quelles sont vos attentes salariales ? »</p><p style="font-size:12.5px;color:#BABCC4;line-height:1.5">Votre réponse validée : <span style="font-family:'IBM Plex Mono',monospace;color:#EBECF2">82 000 CAD</span>. La fourchette annoncée va jusqu'à 86 000.</p></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#181920;min-width:0">
+            <header style="padding:12px 18px;border-bottom:1px solid #373942"><h2 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Ce que vous avez envoyé</h2></header>
+            <div style="flex:1;padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+              <p style="font-size:13px;line-height:1.55;color:#BABCC4">Relisez ce qu'ils ont lu : ils vous interrogeront là-dessus.</p>
+              <div style="border:1px solid #373942;padding:11px;font-size:12.5px;line-height:1.5">CV « Soins critiques » <span style="color:#9799A1">· envoyé le 12 août à 07:41</span><br><a href="#4a" style="color:#59C2D4;font-family:'IBM Plex Mono',monospace;font-size:11px">OUVRIR LE REÇU</a></div>
+              <div style="border:1px solid #373942;padding:11px;font-size:12.5px;line-height:1.55;color:#BABCC4">« Votre unité passe à 22 lits en janvier… » <span style="color:#9799A1">lettre, 132 mots</span></div>
+              <div style="margin-top:auto;border-top:1px solid #373942;padding-top:12px"><p style="font-size:12.5px;line-height:1.55;color:#BABCC4">Je ne prépare rien d'automatique la veille. Si vous voulez un rappel, <a href="#4a" style="color:#59C2D4">dites-le moi</a>.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275)">1280 · réglages · le mode discret est un vrai mode</span>
+        <div style="width:1280px;height:620px;background:#111218;color:#EBECF2;display:grid;grid-template-columns:200px 1fr 1fr;overflow:hidden;border:1px solid #373942">
+          <aside style="border-right:1px solid #373942;background:#181920;padding:16px 14px;display:flex;flex-direction:column;gap:2px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase">
+            <span style="padding:10px;color:#BABCC4">Compte</span>
+            <span style="padding:10px;color:#BABCC4">Intégrations</span>
+            <span style="padding:10px;color:#BABCC4">Notifications</span>
+            <span style="padding:10px;background:#1C1E25;border-left:2px solid #59C2D4;font-weight:600">Confidentialité</span>
+            <span style="padding:10px;color:#BABCC4">Abonnement</span>
+            <span style="padding:10px;color:#BABCC4">Langue · FR</span>
+          </aside>
+          <div style="border-right:1px solid #373942;display:flex;flex-direction:column;min-width:0">
+            <header style="padding:12px 20px;border-bottom:1px solid #373942;background:#181920"><h1 style="font-size:18px;font-weight:600;letter-spacing:-0.015em">Confidentialité et données</h1></header>
+            <div style="flex:1;padding:14px 20px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">MODE DISCRÉTION</span>
+                <div style="display:flex;align-items:flex-start;gap:14px">
+                  <span style="width:44px;height:26px;border:1px solid #59C2D4;border-radius:3px;display:flex;align-items:center;padding:3px;justify-content:flex-end;flex:none"><span style="width:18px;height:18px;background:#59C2D4"></span></span>
+                  <p style="font-size:13px;line-height:1.55;color:#BABCC4">Les noms d'entreprise deviennent des initiales, les montants sont masqués, les notifications ne montrent plus l'objet. <strong style="color:#EBECF2;font-weight:600">Un geste depuis n'importe quel écran</strong> — on consulte ce produit en open space.</p>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #373942;padding-top:13px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">VOTRE EMPLOYEUR ACTUEL</span>
+                <p style="font-size:13px;line-height:1.55;color:#BABCC4">Lumen Data est exclu de la veille et de toute prise de contact. Aucune candidature, aucun message, aucune trace.</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #373942;padding-top:13px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">CONSERVATION</span>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:8px;border-bottom:1px solid #2A2C33"><span style="color:#BABCC4">CV et documents</span><span>tant que le compte existe</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding-bottom:8px;border-bottom:1px solid #2A2C33"><span style="color:#BABCC4">Reçus de candidature</span><span>3 ans, puis anonymisés</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#BABCC4">Journal d'audit</span><span>13 mois</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#181920;min-width:0">
+            <header style="padding:12px 18px;border-bottom:1px solid #373942"><h2 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9799A1">Vos droits, en un clic chacun</h2></header>
+            <div style="flex:1;padding:14px 18px;display:flex;flex-direction:column;gap:11px">
+              <button style="text-align:left;font-family:Epilogue,sans-serif;font-size:13.5px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;min-height:52px;padding:11px 14px;cursor:pointer;line-height:1.4">Exporter toutes mes données<br><span style="font-size:12px;color:#BABCC4">un fichier lisible, envoyé sous 24 h</span></button>
+              <button style="text-align:left;font-family:Epilogue,sans-serif;font-size:13.5px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;min-height:52px;padding:11px 14px;cursor:pointer;line-height:1.4">Consulter le journal d'audit<br><span style="font-size:12px;color:#BABCC4">chaque action de l'agent, datée, avec son contenu</span></button>
+              <button style="text-align:left;font-family:Epilogue,sans-serif;font-size:13.5px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;min-height:52px;padding:11px 14px;cursor:pointer;line-height:1.4">Retirer mon CV des candidatures en cours<br><span style="font-size:12px;color:#BABCC4">j'écris aux employeurs concernés à votre place</span></button>
+              <button style="text-align:left;font-family:Epilogue,sans-serif;font-size:13.5px;color:#E88F87;background:transparent;border:1px solid #E88F87;border-radius:3px;min-height:52px;padding:11px 14px;cursor:pointer;line-height:1.4">Supprimer mon compte et mes données<br><span style="font-size:12px;color:#BABCC4">immédiat, irréversible ; les envois déjà partis restent partis</span></button>
+              <p style="font-size:12.5px;line-height:1.55;color:#9799A1;margin-top:auto;border-top:1px solid #373942;padding-top:12px">Aucun de ces boutons ne mène à un formulaire de rétention ou à un appel commercial.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 13 · ENTRÉE ══ -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">Écran 13 · Le point culminant de l'entrée — <span style="text-transform:none;letter-spacing:0.04em">l'agent trouve la première offre en direct, sans rien envoyer</span></h2>
+    <div style="width:1280px;height:640px;background:#111218;color:#EBECF2;display:flex;flex-direction:column;overflow:hidden;border:1px solid #373942">
+      <header style="padding:12px 26px;border-bottom:1px solid #373942;background:#181920;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:#9799A1">ÉTAPE 4 SUR 4 · JE COMMENCE À CHERCHER</span>
+        <div style="display:flex;gap:4px"><span style="width:40px;height:3px;background:#59C2D4"></span><span style="width:40px;height:3px;background:#59C2D4"></span><span style="width:40px;height:3px;background:#59C2D4"></span><span style="width:40px;height:3px;background:#59C2D4"></span></div>
+      </header>
+      <div style="flex:1;display:grid;grid-template-columns:1fr 520px;min-height:0">
+        <div style="border-right:1px solid #373942;padding:26px;display:flex;flex-direction:column;gap:18px;min-width:0">
+          <div>
+            <h1 style="font-size:26px;font-weight:600;letter-spacing:-0.025em;line-height:1.2;max-width:520px">Je relève 34 sources. Regardez : la première offre qui vous correspond arrive ici.</h1>
+            <p style="font-size:14px;line-height:1.55;color:#BABCC4;margin-top:11px;max-width:520px">Rien ne partira. Au premier jour, je suis au cran « je propose » : je cherche, je note, je vous montre. C'est vous qui déciderez si je passe la vitesse supérieure.</p>
+          </div>
+          <div style="border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#59C2D4">RELEVÉ EN COURS</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">00:07</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;align-items:center;gap:11px"><span style="color:#59C2D4">✓</span><span style="flex:1">12 boards d'entreprise · palier A</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">41 offres lues</span></div>
+              <div style="display:flex;align-items:center;gap:11px"><span style="color:#59C2D4">✓</span><span style="flex:1">18 agrégateurs · palier B</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#BABCC4">112 offres lues</span></div>
+              <div style="display:flex;align-items:center;gap:11px"><span style="width:8px;height:8px;border:1.5px solid #BABCC4;border-radius:50%"></span><span style="flex:1;color:#BABCC4">4 plateformes fermées · palier C</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#9799A1">assistance seule</span></div>
+            </div>
+            <div style="display:flex;gap:2px;height:8px">
+              <span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#59C2D4"></span><span style="flex:1;background:#373942"></span><span style="flex:1;background:#373942"></span><span style="flex:1;background:#373942"></span>
+            </div>
+          </div>
+          <p style="font-size:13px;line-height:1.55;color:#9799A1;margin-top:auto">Pas de confettis, pas de compte à rebours. Le produit démarre comme il fonctionnera tous les jours.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;background:#181920;min-width:0;padding:26px;gap:16px;justify-content:center">
+          <div style="border:1px solid #6B6E7B;background:#1C1E25;padding:18px;display:flex;flex-direction:column;gap:13px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="display:flex;align-items:flex-end;gap:2px;height:13px"><span style="width:4px;height:13px;background:#59C2D4"></span><span style="width:4px;height:10px;background:#59C2D4"></span><span style="width:4px;height:7px;background:#59C2D4"></span><span style="width:4px;height:5px;background:#59C2D4"></span></span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.08em;color:#59C2D4">TROUVÉE À L'INSTANT · PALIER A · PARUE IL Y A 2 MIN</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:40px;font-weight:600;letter-spacing:-0.03em;line-height:1">86</span>
+              <span style="display:flex;align-items:flex-end;gap:3px;height:28px"><span style="width:7px;height:10px;background:#59C2D4"></span><span style="width:7px;height:16px;background:#59C2D4"></span><span style="width:7px;height:22px;background:#59C2D4"></span><span style="width:7px;height:28px;background:#6B6E7B"></span><span style="width:7px;height:28px;background:#6B6E7B"></span></span>
+              <span style="flex:1;font-size:12.5px;line-height:1.45;color:#BABCC4">3 correspondances<br>1 manque · rien de rédhibitoire</span>
+            </div>
+            <div>
+              <p style="font-size:19px;font-weight:600;letter-spacing:-0.02em;line-height:1.25">Ingénieure front-end</p>
+              <p style="font-size:13.5px;color:#BABCC4;margin-top:5px">Hodei · Paris 2ᵉ · hybride · <span style="font-family:'IBM Plex Mono',monospace;color:#EBECF2">54 – 62 k€</span></p>
+            </div>
+            <p style="font-size:13.5px;line-height:1.55;color:#BABCC4;border-top:1px solid #373942;padding-top:12px">Je peux préparer votre CV et une lettre pour cette offre. <strong style="color:#EBECF2;font-weight:600">Vous relirez avant que quoi que ce soit ne parte.</strong></p>
+            <div style="display:flex;gap:8px">
+              <button style="flex:1;font-family:Epilogue,sans-serif;font-size:15px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:48px;cursor:pointer">Prépare, je relirai</button>
+              <button style="font-family:Epilogue,sans-serif;font-size:14px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:48px;padding:0 16px;cursor:pointer">Voir l'offre</button>
+            </div>
+          </div>
+          <p style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#9799A1;text-align:center">VOUS POUVEZ M'ARRÊTER MAINTENANT ET REPRENDRE PLUS TARD</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1000px;border-top:1px solid oklch(0.72 0.006 275);padding-top:22px">
+    <p style="font-size:15px;line-height:1.6;color:oklch(0.36 0.018 275)">Suite : les cinq composants signature spécifiés, puis les deux parcours en 390, puis les user stories.</p>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

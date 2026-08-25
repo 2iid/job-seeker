@@ -1,0 +1,67 @@
+# =============================================================================
+#  distribution.txt — the single inventory of what an adopter receives.
+#
+#  This file exists because the installer used to carry its own hardcoded list,
+#  and that list drifted: `evidence.yml` shipped as a feature in v3.13.0 and was
+#  never added, so for two versions every adopter's PR evidence gate silently did
+#  not exist. `vendor/`, `THIRD_PARTY_NOTICES.md`, `docs/engineering/` and the
+#  eval suite were missing the same way.
+#
+#  One list, read by:
+#    · scripts/adopt/install.sh   — what to copy
+#    · scripts/adopt/upgrade.sh   — what it owns
+#    · scripts/test/test-install-safety.sh — asserts every line arrives
+#
+#  Adding a capability without adding it here now fails a test rather than
+#  quietly not shipping.
+#
+#  Syntax: one path per line, relative to the kit root. A directory copies
+#  recursively. `?` prefix = optional (absent from a trimmed checkout is fine).
+# =============================================================================
+
+# ---- the working agreement every tool reads as law --------------------------
+AGENTS.md
+agents
+skills
+
+# ---- the inventory ships ITSELF ----------------------------------------------
+# upgrade.sh reads it to know what the kit owns, and the install-safety test
+# reads it to assert every line arrived. A manifest that does not travel leaves
+# an adopted repo unable to answer either question.
+distribution.txt
+
+# ---- the machinery -----------------------------------------------------------
+scripts
+.githooks
+.gitleaks.toml
+vantry.yml.example
+VERSION
+
+# ---- documentation the playbooks reference by path ---------------------------
+docs/_templates
+?docs/engineering
+
+# ---- Claude Code: settings are PRESERVED if the target already has them ------
+#      (.claude/agents and .claude/skills are DERIVED — sync-adapters.sh builds
+#       them after the copy, so the mirror can never be installed stale.)
+.claude/settings.json
+.claude/hooks
+
+# ---- GitHub: every workflow, not a subset ------------------------------------
+#      evidence.yml is a SEPARATE workflow on purpose: it needs the `edited`
+#      trigger, and merging it into verify.yml made a title edit cost five
+#      minutes of the month's Actions budget.
+.github/pull_request_template.md
+.github/workflows/verify.yml
+.github/workflows/evidence.yml
+# vulnerabilities AND code quality — two scans, one workflow
+.github/workflows/vulnerabilities.yml
+
+# ---- third-party instructions, vendored and pinned ---------------------------
+#      Shipping the manifest without the content, or the content without the
+#      licence, would both fail scripts/check-vendored.sh in the adopter's repo.
+?vendor
+?THIRD_PARTY_NOTICES.md
+
+# ---- behavioural evaluations -------------------------------------------------
+?evals

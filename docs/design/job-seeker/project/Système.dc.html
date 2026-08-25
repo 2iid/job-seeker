@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background: oklch(0.90 0.004 275); }
+  * { box-sizing: border-box; }
+  a { color: oklch(0.47 0.115 210); text-decoration: none; border-bottom: 1px solid oklch(0.78 0.06 210); }
+  a:hover { color: oklch(0.36 0.11 210); border-bottom-color: oklch(0.47 0.115 210); }
+  p, h1, h2, h3, h4 { margin:0; text-wrap: pretty; }
+  table { border-collapse: collapse; }
+</style>
+</helmet>
+
+<section style="padding:56px 64px 110px;font-family:Epilogue,system-ui,sans-serif;color:oklch(0.235 0.02 275);display:flex;flex-direction:column;gap:56px;width:max-content">
+
+  <div style="max-width:980px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#FFF;background:oklch(0.30 0.02 275);padding:4px 9px">2a</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Tour 2 — le système</span>
+      <span style="height:1px;flex:1;background:oklch(0.72 0.006 275)"></span>
+    </div>
+    <h1 style="font-family:Epilogue,sans-serif;font-size:38px;font-weight:600;letter-spacing:-0.025em;line-height:1.1">La Cabine — système, sombre et clair à parité</h1>
+    <p style="font-size:16px;line-height:1.6;color:oklch(0.36 0.018 275)">Direction retenue : l'ossature de <a href="Directions de marque.dc.html">1b</a>, la voix de 1c dans les zones de décision. Chaque rôle porte une valeur dans les deux thèmes ; aucun rôle n'est défini d'un seul côté. Les contrastes ci-dessous sont <strong style="font-weight:600">calculés</strong> (conversion oklch → sRGB, formule WCAG 2.1), arrondis au centième, jamais estimés.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.03em">
+      <span style="border:1px solid oklch(0.80 0.01 275);padding:6px 10px;background:#FFF">Epilogue — titres, corps, boutons</span>
+      <span style="border:1px solid oklch(0.80 0.01 275);padding:6px 10px;background:#FFF">IBM Plex Mono — heures, scores, montants, libellés</span>
+      <span style="border:1px solid oklch(0.80 0.01 275);padding:6px 10px;background:#FFF">La prose revient à Epilogue : la voix de l'agent doit se lire, pas se déchiffrer</span>
+    </div>
+  </div>
+
+  <!-- ─────────── TOKENS ─────────── -->
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">01 · Tokens sémantiques — nommés par rôle</h2>
+    <table style="width:1520px;background:#FFF;border:1px solid oklch(0.80 0.01 275);font-size:13px">
+      <thead>
+        <tr style="background:oklch(0.96 0.004 275)">
+          <th style="text-align:left;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.80 0.01 275);width:230px">Rôle</th>
+          <th style="text-align:left;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.80 0.01 275);border-left:1px solid oklch(0.88 0.008 275)">Sombre — valeur</th>
+          <th style="text-align:left;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.80 0.01 275);width:150px">Mesuré</th>
+          <th style="text-align:left;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.80 0.01 275);border-left:1px solid oklch(0.88 0.008 275)">Clair — valeur</th>
+          <th style="text-align:left;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.80 0.01 275);width:150px">Mesuré</th>
+          <th style="text-align:left;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.80 0.01 275);border-left:1px solid oklch(0.88 0.008 275);width:340px">Emploi</th>
+        </tr>
+      </thead>
+      <tbody style="font-family:'IBM Plex Mono',monospace;font-size:12px">
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500;color:oklch(0.235 0.02 275)">--surface-page</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#111218;border:1px solid oklch(0.80 0.01 275)"></span>#111218 <span style="color:oklch(0.52 0.016 275)">L 0.185 · C 0.012 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">fond de référence</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#F1F2F7;border:1px solid oklch(0.80 0.01 275)"></span>#F1F2F7 <span style="color:oklch(0.52 0.016 275)">L 0.962 · C 0.006 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">fond de référence</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Le vide entre les modules. Jamais blanc pur en clair : le filet de 1 px doit rester visible.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--surface-module</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#1C1E25;border:1px solid oklch(0.80 0.01 275)"></span>#1C1E25 <span style="color:oklch(0.52 0.016 275)">L 0.235 · C 0.014 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">—</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#FFFFFF;border:1px solid oklch(0.80 0.01 275)"></span>#FFFFFF <span style="color:oklch(0.52 0.016 275)">L 1 · C 0 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">—</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Le module lui-même. Le sombre monte, le clair monte aussi : dans les deux cas le contenu est plus clair que la page.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--surface-chrome</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#181920;border:1px solid oklch(0.80 0.01 275)"></span>#181920 <span style="color:oklch(0.52 0.016 275)">L 0.215</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">—</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#F8F9FC;border:1px solid oklch(0.80 0.01 275)"></span>#F8F9FC <span style="color:oklch(0.52 0.016 275)">L 0.983</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">—</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">En-tête d'écran, barre d'action fixe, pied de module.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--surface-sunken</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#0B0C11;border:1px solid oklch(0.80 0.01 275)"></span>#0B0C11 <span style="color:oklch(0.52 0.016 275)">L 0.155</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">—</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#E9EBF1;border:1px solid oklch(0.80 0.01 275)"></span>#E9EBF1 <span style="color:oklch(0.52 0.016 275)">L 0.940</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">—</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Champ de saisie, squelette de chargement, zone de citation.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--border-module</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#373942;border:1px solid oklch(0.80 0.01 275)"></span>#373942 <span style="color:oklch(0.52 0.016 275)">L 0.345</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">1,61 : 1 <span style="color:oklch(0.62 0.016 275)">/ page</span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#D2D4DC;border:1px solid oklch(0.80 0.01 275)"></span>#D2D4DC <span style="color:oklch(0.52 0.016 275)">L 0.870</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">1,48 : 1 <span style="color:oklch(0.62 0.016 275)">/ module</span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)"><strong style="font-weight:600">Structure seule.</strong> Sous 3:1, donc jamais seule frontière d'un contrôle ni seul porteur d'une information.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--rule-inner</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#2A2C33;border:1px solid oklch(0.80 0.01 275)"></span>#2A2C33 <span style="color:oklch(0.52 0.016 275)">L 0.293 · C 0.014 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">1,19 : 1 <span style="color:oklch(0.62 0.016 275)">/ module</span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#E9EBF1;border:1px solid oklch(0.80 0.01 275)"></span>#E9EBF1 <span style="color:oklch(0.52 0.016 275)">L 0.940 · C 0.008 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.52 0.016 275)">1,19 : 1 <span style="color:oklch(0.62 0.016 275)">/ module</span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Filet <strong style="font-weight:600">à l'intérieur</strong> d'un module : lignes de la ligne de vie, lignes de tableau, séparateurs de liste. Plus discret que --border-module. Structure seule, jamais porteur d'information.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--surface-colonne-active</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#171920;border:1px solid oklch(0.80 0.01 275)"></span>#171920 <span style="color:oklch(0.52 0.016 275)">L 0.213 · C 0.014 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">14,89 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#F5F6F9;border:1px solid oklch(0.80 0.01 275)"></span>#F5F6F9 <span style="color:oklch(0.52 0.016 275)">L 0.9725 · C 0.005 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">15,51 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Colonne de kanban qui demande une action (en file, entretien). Teinte de fond seule : la colonne porte aussi son libellé et sa forme de statut. Ratios mesurés avec le texte principal ; texte discret 6,17 / 5,13.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--border-control</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#6B6E7B;border:1px solid oklch(0.80 0.01 275)"></span>#6B6E7B <span style="color:oklch(0.52 0.016 275)">L 0.540 · C 0.020 · H 275</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">3,28 : 1 ✓ <span style="color:oklch(0.62 0.016 275);font-weight:400">/ module</span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#888B99;border:1px solid oklch(0.80 0.01 275)"></span>#888B99 <span style="color:oklch(0.52 0.016 275)">L 0.640</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">3,39 : 1 ✓ <span style="color:oklch(0.62 0.016 275);font-weight:400">/ module</span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Bordure de bouton, de champ, de bascule. Mesuré sur le pire cas — la surface la plus proche : sombre 3,28 module · 3,45 chrome · 3,69 page ; clair 3,39 module · 3,22 chrome · 3,03 page. Cible 3:1 tenue sur les trois surfaces, dans les deux thèmes.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--text-primary</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#EBECF2;border:1px solid oklch(0.80 0.01 275)"></span>#EBECF2 <span style="color:oklch(0.52 0.016 275)">L 0.945</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">14,20 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#1B1D28;border:1px solid oklch(0.80 0.01 275)"></span>#1B1D28 <span style="color:oklch(0.52 0.016 275)">L 0.235</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">16,70 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Titres, phrases de l'agent, valeurs. Mesuré sur --surface-module.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--text-secondary</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#BABCC4;border:1px solid oklch(0.80 0.01 275)"></span>#BABCC4 <span style="color:oklch(0.52 0.016 275)">L 0.795</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">8,77 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#4D4F5A;border:1px solid oklch(0.80 0.01 275)"></span>#4D4F5A <span style="color:oklch(0.52 0.016 275)">L 0.430</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">8,13 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Corps secondaire, entreprise, lieu, sous-titre de ligne.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--text-muted</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#9799A1;border:1px solid oklch(0.80 0.01 275)"></span>#9799A1 <span style="color:oklch(0.52 0.016 275)">L 0.685</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">5,90 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#666872;border:1px solid oklch(0.80 0.01 275)"></span>#666872 <span style="color:oklch(0.52 0.016 275)">L 0.520</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">5,52 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Libellés de colonne, horodatage. Tenu au-dessus de 4,5:1 : rien de lisible n'est « gris décoratif ».</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500;color:oklch(0.47 0.115 210)">--accent-machine</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#59C2D4;border:1px solid oklch(0.80 0.01 275)"></span>#59C2D4 <span style="color:oklch(0.52 0.016 275)">L 0.760 · C 0.100 · H 210</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">8,05 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#006B7E;border:1px solid oklch(0.80 0.01 275)"></span>#006B7E <span style="color:oklch(0.52 0.016 275)">L 0.470 · C 0.115 · H 210</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">6,20 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)"><strong style="font-weight:600">Ce que la machine a fait.</strong> Teinte conservée, clarté descendue de 0,760 à 0,470 pour le clair.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500;color:oklch(0.47 0.11 72)">--accent-attente</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#E4AF6C;border:1px solid oklch(0.80 0.01 275)"></span>#E4AF6C <span style="color:oklch(0.52 0.016 275)">L 0.790 · C 0.105 · H 72</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">8,51 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#804E00;border:1px solid oklch(0.80 0.01 275)"></span>#804E00 <span style="color:oklch(0.52 0.016 275)">L 0.470 · C 0.110 · H 72</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">6,97 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)"><strong style="font-weight:600">Ce qui attend un humain.</strong> File d'approbation, escalade. Jamais employé pour la fraîcheur.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500;color:oklch(0.47 0.135 25)">--accent-critique</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#E88F87;border:1px solid oklch(0.80 0.01 275)"></span>#E88F87 <span style="color:oklch(0.52 0.016 275)">L 0.740 · C 0.110 · H 25</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">6,91 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#983432;border:1px solid oklch(0.80 0.01 275)"></span>#983432 <span style="color:oklch(0.52 0.016 275)">L 0.470 · C 0.135 · H 25</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">7,32 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Échec technique, suppression de données, arrêt. Apparaît par événement, jamais en permanence.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);font-weight:500">--text-on-fill</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#0D0E13;border:1px solid oklch(0.80 0.01 275)"></span>#0D0E13 <span style="color:oklch(0.52 0.016 275)">L 0.165</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">9,82 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#FDFDFF;border:1px solid oklch(0.80 0.01 275)"></span>#FDFDFF <span style="color:oklch(0.52 0.016 275)">L 0.995</span></span></td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);color:oklch(0.32 0.09 150);font-weight:500">6,87 : 1 ✓</td>
+          <td style="padding:9px 14px;border-bottom:1px solid oklch(0.93 0.006 275);border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Texte sur aplat d'accent. Mesuré sur --accent-attente, le pire cas des trois.</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 14px;font-weight:500">--focus-ring</td>
+          <td style="padding:9px 14px;border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#86E2F2;border:1px solid oklch(0.80 0.01 275)"></span>#86E2F2 <span style="color:oklch(0.52 0.016 275)">L 0.860 · C 0.090 · H 210</span></span></td>
+          <td style="padding:9px 14px;color:oklch(0.32 0.09 150);font-weight:500">11,23 : 1 ✓</td>
+          <td style="padding:9px 14px;border-left:1px solid oklch(0.88 0.008 275)"><span style="display:inline-flex;align-items:center;gap:9px"><span style="width:24px;height:24px;background:#006B7E;border:1px solid oklch(0.80 0.01 275)"></span>#006B7E <span style="color:oklch(0.52 0.016 275)">L 0.470 · C 0.115 · H 210</span></span></td>
+          <td style="padding:9px 14px;color:oklch(0.32 0.09 150);font-weight:500">6,20 : 1 ✓</td>
+          <td style="padding:9px 14px;border-left:1px solid oklch(0.88 0.008 275);font-family:Epilogue,sans-serif;font-size:12.5px;color:oklch(0.36 0.018 275)">Trait de 2 px + décalage de 2 px pris sur la surface porteuse. Jamais <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">outline: none</span> sans remplacement visible.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="display:flex;gap:26px;flex-wrap:wrap">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;width:736px;display:flex;flex-direction:column;gap:12px">
+        <h3 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Tokens de score et de palier</h3>
+        <table style="width:100%;font-size:12.5px">
+          <tbody style="font-family:'IBM Plex Mono',monospace;font-size:12px">
+            <tr><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275);width:190px">--score-tick-plein</td><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:Epilogue,sans-serif;color:oklch(0.36 0.018 275)">= --accent-machine. Le score se lit d'abord au chiffre, ensuite au nombre de barres remplies.</td></tr>
+            <tr><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275)">--score-tick-vide</td><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:Epilogue,sans-serif;color:oklch(0.36 0.018 275)">= --border-control. Cinq crans, jamais un dégradé.</td></tr>
+            <tr><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275)">--palier-a</td><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:Epilogue,sans-serif;color:oklch(0.36 0.018 275)">= --accent-machine + histogramme à 4 barres. Board d'entreprise, relevé toutes les 2 à 5 min.</td></tr>
+            <tr><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275)">--palier-b</td><td style="padding:7px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:Epilogue,sans-serif;color:oklch(0.36 0.018 275)">= --text-secondary + 2 barres. Agrégateur ou portail public, 15 à 60 min.</td></tr>
+            <tr><td style="padding:7px 0">--palier-c</td><td style="padding:7px 0;font-family:Epilogue,sans-serif;color:oklch(0.36 0.018 275)">= --text-muted + 1 barre creuse. Plateforme non couverte : je vous assiste, je ne postule pas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;width:736px;display:flex;flex-direction:column;gap:12px">
+        <h3 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Espacements, rayons, mouvement</h3>
+        <div style="display:flex;flex-direction:column;gap:11px;font-size:13px;color:oklch(0.36 0.018 275)">
+          <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275);width:110px;flex:none">--space-1…8</span><span style="display:flex;align-items:flex-end;gap:4px">
+            <span style="width:4px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:8px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:12px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:16px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:22px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:30px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:44px;height:12px;background:oklch(0.47 0.115 210)"></span><span style="width:64px;height:12px;background:oklch(0.47 0.115 210)"></span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">4 8 12 16 22 30 44 64</span></div>
+          <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275);width:110px;flex:none">--radius-*</span><span style="display:flex;align-items:center;gap:10px">
+            <span style="width:38px;height:26px;background:oklch(0.90 0.01 275);border:1px solid oklch(0.64 0.02 275);border-radius:0"></span><span style="width:38px;height:26px;background:oklch(0.90 0.01 275);border:1px solid oklch(0.64 0.02 275);border-radius:3px"></span><span style="width:38px;height:26px;background:oklch(0.90 0.01 275);border:1px solid oklch(0.64 0.02 275);border-radius:6px"></span><span style="width:26px;height:26px;background:oklch(0.90 0.01 275);border:1px solid oklch(0.64 0.02 275);border-radius:50%"></span></span><span style="font-size:12.5px">module 0 · contrôle 3 · pastille 6 · état rond 50 %</span></div>
+          <div style="display:flex;align-items:baseline;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275);width:110px;flex:none">--duration-*</span><span style="font-size:12.5px">120 ms bascule · 180 ms changement d'état · 260 ms panneau · 0 ms sous <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">prefers-reduced-motion</span>, où le changement est porté par le texte et la forme.</span></div>
+          <div style="display:flex;align-items:baseline;gap:12px"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275);width:110px;flex:none">--touch-min</span><span style="font-size:12.5px">44 px de hauteur et de largeur, 8 px d'écart réel entre deux cibles voisines. Les lignes de tableau tactiles font 52 px.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────── TYPO ─────────── -->
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">02 · Échelle typographique — un cas d'usage par palier</h2>
+    <div style="display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap">
+      <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);width:1000px">
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:11px 20px;background:oklch(0.96 0.004 275);border-bottom:1px solid oklch(0.80 0.01 275);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)"><span>Palier</span><span>Spécimen</span><span>Cas d'usage unique</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">D1 · 26/1,15<br>600 · −0,02em</span><span style="font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.15">Cette nuit, j'ai postulé une fois</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Titre d'écran en 1280. Un seul par écran.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">D2 · 22/1,2<br>600 · −0,018em</span><span style="font-size:22px;font-weight:600;letter-spacing:-0.018em;line-height:1.2">Ingénieure front-end</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Titre d'écran en 390, titre d'offre.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">T1 · 17/1,3<br>600 · −0,015em</span><span style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Puis-je postuler chez Alma Santé pour vous ?</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">La question de décision. Réservé aux zones où l'agent demande quelque chose.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">B1 · 15/1,5<br>400</span><span style="font-size:15px;line-height:1.5">J'ai adapté deux lignes de votre CV et écrit une lettre de 140 mots.</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Corps de décision — la voix de l'agent, en phrases complètes.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">B2 · 13,5/1,45<br>400</span><span style="font-size:13.5px;line-height:1.45">Comptable général · Dakar · présentiel · 1 200 000 FCFA / mois</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Corps dense : lignes de suivi, listes, tableaux. Plancher de lisibilité du produit.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">L1 · 12/1,3<br>Mono 500 · +0,06em</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.06em">03:12 · TEAMTAILOR · PALIER A</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Donnée d'appui : heure, source, palier, identifiant.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">L2 · 10,5/1,3<br>Mono 500 · +0,12em</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase">Poste / entreprise · fraîcheur · statut</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Titre de colonne et de module. Le seul palier sous 12 px : jamais une phrase, jamais une donnée.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;border-bottom:1px solid oklch(0.93 0.006 275);align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">N1 · 20<br>Mono 600 · tabulaire</span><span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;letter-spacing:-0.02em;font-variant-numeric:tabular-nums">92 · 88 · 81 · 04:00</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Score en liste, montant, compteur.</span></div>
+        <div style="display:grid;grid-template-columns:92px 1fr 300px;gap:18px;padding:15px 20px;align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.43 0.018 275)">N2 · 40<br>Mono 600 · tabulaire</span><span style="font-family:'IBM Plex Mono',monospace;font-size:40px;font-weight:600;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;line-height:1">92</span><span style="font-size:12.5px;color:oklch(0.36 0.018 275)">Score déplié sur le détail d'une offre. Toujours accompagné de ses preuves.</span></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;width:472px">
+        <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <h3 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Chiffres tabulaires</h3>
+          <p style="font-size:13px;line-height:1.5;color:oklch(0.36 0.018 275)"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275)">font-variant-numeric: tabular-nums</span> est appliqué à la racine : scores, heures, montants et compteurs s'alignent en colonne sans réglage local. Les montants sont cadrés à droite, les heures à gauche.</p>
+          <div style="border:1px solid oklch(0.87 0.012 275);font-family:'IBM Plex Mono',monospace;font-size:13px;font-variant-numeric:tabular-nums">
+            <div style="display:flex;justify-content:space-between;padding:7px 11px;border-bottom:1px solid oklch(0.93 0.006 275)"><span>03:12</span><span>92</span><span style="width:132px;text-align:right">55 000 – 65 000 €</span></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 11px;border-bottom:1px solid oklch(0.93 0.006 275)"><span>11:48</span><span>8</span><span style="width:132px;text-align:right">1 200 000 FCFA</span></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 11px"><span>21:05</span><span>100</span><span style="width:132px;text-align:right">78 000 CAD</span></div>
+          </div>
+        </div>
+        <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+          <h3 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Grille et points de rupture</h3>
+          <table style="width:100%;font-size:12.5px;color:oklch(0.36 0.018 275)">
+            <tbody>
+              <tr><td style="padding:6px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275);width:74px">390</td><td style="padding:6px 0;border-bottom:1px solid oklch(0.93 0.006 275)">4 colonnes · marge 16 · gouttière 12 · une seule colonne de contenu, barre d'action fixe en bas</td></tr>
+              <tr><td style="padding:6px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275)">768</td><td style="padding:6px 0;border-bottom:1px solid oklch(0.93 0.006 275)">8 colonnes · marge 24 · gouttière 16 · rail de navigation replié en barre haute</td></tr>
+              <tr><td style="padding:6px 0;border-bottom:1px solid oklch(0.93 0.006 275);font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275)">1280</td><td style="padding:6px 0;border-bottom:1px solid oklch(0.93 0.006 275)">rail 196 + 12 colonnes · marge 22 · gouttière 16 · panneau latéral 300</td></tr>
+              <tr><td style="padding:6px 0;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.235 0.02 275)">1600</td><td style="padding:6px 0">rail 220 + contenu plafonné à 1 180 + panneau 300 · le surplus va à la marge, pas à la ligne de texte</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:12.5px;line-height:1.5;color:oklch(0.36 0.018 275);border-top:1px solid oklch(0.93 0.006 275);padding-top:11px">Un tableau de 1280 réduit à 390 n'est pas responsive. Sous 768, tout tableau devient une liste de lignes de 52 px avec deux valeurs visibles et le reste au dépliage.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────── STATUTS ─────────── -->
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">03 · Langage de statut — forme + libellé, jamais la couleur seule</h2>
+    <div style="display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start">
+      <div style="width:1000px;background:#111218;border:1px solid oklch(0.345 0.016 275);padding:22px;display:flex;flex-direction:column;gap:2px;color:#EBECF2;font-family:Epilogue,sans-serif">
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#9799A1;padding-bottom:11px;border-bottom:1px solid #373942"><span>Statut</span><span>Ce que ça veut dire pour l'utilisateur</span><span>Sans couleur</span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="width:9px;height:9px;border:1.5px solid #BABCC4;border-radius:50%"></span>Détectée</span><span style="color:#BABCC4">Je l'ai vue, je ne l'ai pas encore jugée.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="width:9px;height:9px;border:1.5px solid #BABCC4;border-radius:50%"></span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">cercle creux</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="width:9px;height:9px;background:#E4AF6C;transform:rotate(45deg)"></span>En file — votre accord</span><span style="color:#BABCC4">Prête, rien n'est parti. J'attends.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="width:9px;height:9px;background:#E4AF6C;transform:rotate(45deg)"></span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">losange plein</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #E4AF6C"></span>Escalade — je rends la main</span><span style="color:#BABCC4">Le formulaire m'a bloqué. Je vous dis où et pourquoi.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #E4AF6C"></span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">triangle</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="width:9px;height:9px;background:#59C2D4"></span>Envoyée</span><span style="color:#BABCC4">Partie, avec un reçu horodaté.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="width:9px;height:9px;background:#59C2D4"></span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">carré plein</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;color:#59C2D4;width:9px">✓</span>Consultée</span><span style="color:#BABCC4">Quelqu'un a ouvert votre dossier.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="font-family:'IBM Plex Mono',monospace;color:#59C2D4;width:9px">✓</span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">coche</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="width:9px;height:9px;border:2.5px solid #59C2D4"></span>Entretien</span><span style="color:#BABCC4">Un rendez-vous est pris. Je prépare le brief.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="width:9px;height:9px;border:2.5px solid #59C2D4"></span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">carré épais creux</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;border-bottom:1px solid #2A2C33;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;color:#BABCC4;width:9px">—</span>Sans réponse</span><span style="color:#BABCC4">Le marché n'a pas répondu. Ce n'est pas votre échec.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="font-family:'IBM Plex Mono',monospace;color:#BABCC4;width:9px">—</span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">tiret</span></span></div>
+        <div style="display:grid;grid-template-columns:220px 1fr 210px;gap:16px;align-items:center;padding:10px 0;font-size:13.5px"><span style="display:flex;align-items:center;gap:10px"><span style="font-family:'IBM Plex Mono',monospace;color:#E88F87;width:9px">✕</span>Échec technique</span><span style="color:#BABCC4">L'envoi n'est pas passé. Voici quoi, pourquoi, et quoi faire.</span><span style="display:flex;align-items:center;gap:10px;filter:grayscale(1)"><span style="font-family:'IBM Plex Mono',monospace;color:#E88F87;width:9px">✕</span><span style="color:#9799A1;font-family:'IBM Plex Mono',monospace;font-size:11.5px">croix</span></span></div>
+      </div>
+
+      <div style="width:472px;display:flex;flex-direction:column;gap:20px">
+        <div style="background:#FFF;border:1px solid oklch(0.80 0.01 275);padding:18px 20px;display:flex;flex-direction:column;gap:13px">
+          <h3 style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.43 0.018 275)">Indicateur de fraîcheur — le palier avec l'âge, toujours</h3>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:oklch(0.96 0.004 275);border:1px solid oklch(0.87 0.012 275);border-radius:3px">
+              <span style="display:flex;align-items:flex-end;gap:2px;height:14px;flex:none"><span style="width:4px;height:14px;background:oklch(0.47 0.115 210)"></span><span style="width:4px;height:11px;background:oklch(0.47 0.115 210)"></span><span style="width:4px;height:8px;background:oklch(0.60 0.07 210)"></span><span style="width:4px;height:5px;background:oklch(0.72 0.04 210)"></span></span>
+              <span style="font-size:12.5px;line-height:1.4"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;color:oklch(0.47 0.115 210)">PALIER A · IL Y A 4 MIN</span><br>Board de l'entreprise, relevé toutes les 2 à 5 min. <strong style="font-weight:600">Vous êtes parmi les premiers dossiers.</strong></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:oklch(0.96 0.004 275);border:1px solid oklch(0.87 0.012 275);border-radius:3px">
+              <span style="display:flex;align-items:flex-end;gap:2px;height:14px;flex:none"><span style="width:4px;height:14px;background:oklch(0.43 0.018 275)"></span><span style="width:4px;height:11px;background:oklch(0.43 0.018 275)"></span><span style="width:4px;height:8px;border:1px solid oklch(0.64 0.02 275);border-bottom:none"></span><span style="width:4px;height:5px;border:1px solid oklch(0.64 0.02 275);border-bottom:none"></span></span>
+              <span style="font-size:12.5px;line-height:1.4"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;color:oklch(0.43 0.018 275)">PALIER B · VUE IL Y A 22 MIN</span><br>Agrégateur, relevé toutes les 15 à 60 min. <strong style="font-weight:600">Publiée avant, je ne sais pas quand.</strong> Aucune promesse de rang.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:oklch(0.96 0.004 275);border:1px solid oklch(0.87 0.012 275);border-radius:3px">
+              <span style="display:flex;align-items:flex-end;gap:2px;height:14px;flex:none"><span style="width:4px;height:14px;border:1px dashed oklch(0.52 0.016 275);border-bottom:none"></span></span>
+              <span style="font-size:12.5px;line-height:1.4"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;color:oklch(0.52 0.016 275)">PALIER C · SANS RELEVÉ</span><br>Plateforme que je ne peux pas parcourir. <strong style="font-weight:600">Je vous assiste, je ne postule pas.</strong></span>
+            </div>
+          </div>
+          <p style="font-size:12.5px;line-height:1.5;color:oklch(0.36 0.018 275);border-top:1px solid oklch(0.93 0.006 275);padding-top:11px">Pas de compte à rebours, pas de rouge, pas de clignotement. L'histogramme décroît : c'est une mesure, pas une alarme. Et jamais de rang chiffré — « 3ᵉ candidat » est une information que nous n'avons pas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────── QUATRE ÉTATS ─────────── -->
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <h2 style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:oklch(0.43 0.018 275);border-bottom:1px solid oklch(0.70 0.008 275);padding-bottom:10px">04 · Les quatre états de tout composant de données — les deux thèmes</h2>
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275);width:120px;flex:none;padding-top:12px">Chargement</span>
+        <div style="width:400px;height:236px;background:#111218;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">FLUX D'OPPORTUNITÉS</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#59C2D4">JE RELÈVE 34 SOURCES…</span></div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;gap:12px;align-items:center"><span style="width:34px;height:20px;background:#0B0C11"></span><span style="flex:1;height:12px;background:#0B0C11"></span><span style="width:56px;height:12px;background:#0B0C11"></span></div>
+            <div style="display:flex;gap:12px;align-items:center"><span style="width:34px;height:20px;background:#0B0C11"></span><span style="flex:1;height:12px;background:#0B0C11"></span><span style="width:56px;height:12px;background:#0B0C11"></span></div>
+            <div style="display:flex;gap:12px;align-items:center;opacity:0.6"><span style="width:34px;height:20px;background:#0B0C11"></span><span style="flex:1;height:12px;background:#0B0C11"></span><span style="width:56px;height:12px;background:#0B0C11"></span></div>
+            <div style="display:flex;gap:12px;align-items:center;opacity:0.3"><span style="width:34px;height:20px;background:#0B0C11"></span><span style="flex:1;height:12px;background:#0B0C11"></span><span style="width:56px;height:12px;background:#0B0C11"></span></div>
+          </div>
+          <p style="font-family:Epilogue,sans-serif;font-size:12px;color:#9799A1;margin-top:auto">Le squelette a la forme exacte des lignes à venir : trois colonnes, hauteur 52 px. Aucun spinner.</p>
+        </div>
+        <div style="width:400px;height:236px;background:#F1F2F7;border:1px solid #D2D4DC;padding:16px;display:flex;flex-direction:column;gap:12px;color:#1B1D28">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">FLUX D'OPPORTUNITÉS</span><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.06em;color:#006B7E">JE RELÈVE 34 SOURCES…</span></div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;gap:12px;align-items:center"><span style="width:34px;height:20px;background:#E9EBF1"></span><span style="flex:1;height:12px;background:#E9EBF1"></span><span style="width:56px;height:12px;background:#E9EBF1"></span></div>
+            <div style="display:flex;gap:12px;align-items:center"><span style="width:34px;height:20px;background:#E9EBF1"></span><span style="flex:1;height:12px;background:#E9EBF1"></span><span style="width:56px;height:12px;background:#E9EBF1"></span></div>
+            <div style="display:flex;gap:12px;align-items:center;opacity:0.6"><span style="width:34px;height:20px;background:#E9EBF1"></span><span style="flex:1;height:12px;background:#E9EBF1"></span><span style="width:56px;height:12px;background:#E9EBF1"></span></div>
+            <div style="display:flex;gap:12px;align-items:center;opacity:0.3"><span style="width:34px;height:20px;background:#E9EBF1"></span><span style="flex:1;height:12px;background:#E9EBF1"></span><span style="width:56px;height:12px;background:#E9EBF1"></span></div>
+          </div>
+          <p style="font-family:Epilogue,sans-serif;font-size:12px;color:#666872;margin-top:auto">Mêmes formes, mêmes hauteurs. Le squelette en clair est un creux, pas un gris flottant.</p>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:oklch(0.36 0.018 275);width:300px;padding-top:6px">Sous <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px">prefers-reduced-motion</span>, le squelette ne pulse pas : il reste fixe et le texte « je relève 34 sources » porte l'information d'activité.</p>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275);width:120px;flex:none;padding-top:12px">Vide<br><span style="color:oklch(0.52 0.016 275);letter-spacing:0.04em;text-transform:none">= onboarding</span></span>
+        <div style="width:400px;height:236px;background:#111218;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:11px;color:#EBECF2">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">FLUX D'OPPORTUNITÉS</span>
+          <h4 style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Je ne sais pas encore ce que je cherche pour vous.</h4>
+          <p style="font-size:13px;line-height:1.5;color:#BABCC4">Donnez-moi un intitulé de poste et une zone : je commence à relever les boards dans la minute, et vous verrez la première offre arriver ici.</p>
+          <div style="display:flex;gap:8px;margin-top:auto">
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Définir ma cible</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Importer mon CV d'abord</button>
+          </div>
+        </div>
+        <div style="width:400px;height:236px;background:#FFFFFF;border:1px solid #D2D4DC;padding:16px;display:flex;flex-direction:column;gap:11px;color:#1B1D28">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">FLUX D'OPPORTUNITÉS</span>
+          <h4 style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Je ne sais pas encore ce que je cherche pour vous.</h4>
+          <p style="font-size:13px;line-height:1.5;color:#4D4F5A">Donnez-moi un intitulé de poste et une zone : je commence à relever les boards dans la minute, et vous verrez la première offre arriver ici.</p>
+          <div style="display:flex;gap:8px;margin-top:auto">
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#FDFDFF;background:#804E00;border:none;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Définir ma cible</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;color:#1B1D28;background:transparent;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Importer mon CV d'abord</button>
+          </div>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:oklch(0.36 0.018 275);width:300px;padding-top:6px">Tout état vide porte une action et dit ce qui se passera ensuite. Aucun état vide n'est un paragraphe gris. C'est le premier écran d'un nouveau compte : il n'y a pas d'autre onboarding que celui-là.</p>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275);width:120px;flex:none;padding-top:12px">Erreur<br><span style="color:oklch(0.52 0.016 275);letter-spacing:0.04em;text-transform:none">= escalade</span></span>
+        <div style="width:400px;height:236px;background:#111218;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:11px;color:#EBECF2">
+          <span style="display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#E4AF6C"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C"></span>ESCALADE · 03:14</span>
+          <h4 style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Je me suis arrêté chez Vireo : le formulaire demande une réponse que je n'ai pas.</h4>
+          <p style="font-size:13px;line-height:1.5;color:#BABCC4">« Décrivez une situation de conflit en équipe. » Rien d'approchant dans votre bibliothèque de réponses. Je n'ai rien envoyé. <span style="color:#EBECF2">Un anti-robot n'est jamais contourné : si j'en croise un, je m'arrête aussi.</span></p>
+          <div style="display:flex;gap:8px;margin-top:auto">
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#0D0E13;background:#E4AF6C;border:none;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Répondre et reprendre</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;color:#EBECF2;background:transparent;border:1px solid #6B6E7B;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Voir le formulaire</button>
+          </div>
+        </div>
+        <div style="width:400px;height:236px;background:#FFFFFF;border:1px solid #D2D4DC;padding:16px;display:flex;flex-direction:column;gap:11px;color:#1B1D28">
+          <span style="display:flex;align-items:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#804E00"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #804E00"></span>ESCALADE · 03:14</span>
+          <h4 style="font-size:17px;font-weight:600;letter-spacing:-0.015em;line-height:1.3">Je me suis arrêté chez Vireo : le formulaire demande une réponse que je n'ai pas.</h4>
+          <p style="font-size:13px;line-height:1.5;color:#4D4F5A">« Décrivez une situation de conflit en équipe. » Rien d'approchant dans votre bibliothèque de réponses. Je n'ai rien envoyé. <span style="color:#1B1D28">Un anti-robot n'est jamais contourné : si j'en croise un, je m'arrête aussi.</span></p>
+          <div style="display:flex;gap:8px;margin-top:auto">
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;font-weight:600;color:#FDFDFF;background:#804E00;border:none;border-radius:3px;height:44px;padding:0 16px;cursor:pointer">Répondre et reprendre</button>
+            <button style="font-family:Epilogue,sans-serif;font-size:14px;color:#1B1D28;background:transparent;border:1px solid #888B99;border-radius:3px;height:44px;padding:0 14px;cursor:pointer">Voir le formulaire</button>
+          </div>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:oklch(0.36 0.018 275);width:300px;padding-top:6px">L'erreur dit ce qui a échoué, pourquoi, et ce que l'utilisateur peut faire — en une action réparatrice. L'escalade est un état de première classe : elle apparaît dans la ligne de vie, dans la file, et dans la notification.</p>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:flex-start">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.43 0.018 275);width:120px;flex:none;padding-top:12px">Trop de données</span>
+        <div style="width:400px;height:236px;background:#111218;border:1px solid #373942;padding:16px;display:flex;flex-direction:column;gap:10px;color:#EBECF2">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#9799A1">SUIVI</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-variant-numeric:tabular-nums">214 candidatures</span></div>
+          <h4 style="font-size:15px;font-weight:600;line-height:1.35">4 demandent votre attention aujourd'hui. Le reste est archivé et consultable.</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px">
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#1C1E25;border-left:2px solid #E4AF6C"><span style="display:flex;align-items:center;gap:8px"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #E4AF6C"></span>Escalade — Vireo</span><span style="color:#BABCC4">03:14</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#1C1E25"><span style="display:flex;align-items:center;gap:8px"><span style="color:#59C2D4">✓</span>Réponse — Cartaya</span><span style="color:#BABCC4">hier</span></div>
+          </div>
+          <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#9799A1;border-top:1px solid #373942;padding-top:9px"><span>210 AUTRES · GROUPÉES PAR MOIS</span><span style="color:#59C2D4">DÉPLIER</span></div>
+        </div>
+        <div style="width:400px;height:236px;background:#FFFFFF;border:1px solid #D2D4DC;padding:16px;display:flex;flex-direction:column;gap:10px;color:#1B1D28">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:#666872">SUIVI</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-variant-numeric:tabular-nums">214 candidatures</span></div>
+          <h4 style="font-size:15px;font-weight:600;line-height:1.35">4 demandent votre attention aujourd'hui. Le reste est archivé et consultable.</h4>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px">
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F1F2F7;border-left:2px solid #804E00"><span style="display:flex;align-items:center;gap:8px"><span style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #804E00"></span>Escalade — Vireo</span><span style="color:#4D4F5A">03:14</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F1F2F7"><span style="display:flex;align-items:center;gap:8px"><span style="color:#006B7E">✓</span>Réponse — Cartaya</span><span style="color:#4D4F5A">hier</span></div>
+          </div>
+          <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#666872;border-top:1px solid #D2D4DC;padding-top:9px"><span>210 AUTRES · GROUPÉES PAR MOIS</span><span style="color:#006B7E">DÉPLIER</span></div>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:oklch(0.36 0.018 275);width:300px;padding-top:6px">À 200 lignes, l'écran répond à une seule question — <em>qu'est-ce qui demande mon attention aujourd'hui ?</em> Le volume est annoncé en chiffre, jamais étalé. Aucun compteur de refus n'est mis en avant.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1000px;border-top:1px solid oklch(0.72 0.006 275);padding-top:22px;display:flex;flex-direction:column;gap:10px">
+    <p style="font-size:15px;line-height:1.6;color:oklch(0.36 0.018 275)">Suite immédiate : les cinq écrans de priorité 1 en 1280 et 390, avec le poste de commande et la file d'approbation livrés dans les deux thèmes, et les états — première journée, nuit calme, journée chargée, agent bloqué, 200 candidatures. Les décisions du tour 2 sont intégrées au système : devise de l'offre et conversion identifiée, fuseau du candidat, langue du document liée à l'offre, format de CV par marché, palier de veille sur chaque offre, escalade de première classe, contact recruteur en mode assisté.</p>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

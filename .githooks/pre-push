@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+# =============================================================================
+#  pre-push — THE universal verification gate.
+#
+#  This is the backbone of the whole method, and it is deliberately a GIT hook
+#  rather than a Claude Code hook: Cursor, Codex, Copilot, Gemini, Windsurf and
+#  a human at a terminal have no shared hook system — but every one of them
+#  pushes. Whatever wrote the code, it stops here.
+#
+#  The Claude Code Stop hook runs the SAME check earlier and more politely.
+#  This one is the guarantee.
+#
+#  Escape hatches, in order of preference:
+#    scripts/verify.sh                          — do the thing
+#    scripts/verify.sh --override "<why>"       — a reviewed, committed decision
+#    VANTRY_SKIP_GATE=1 git push                — loud, logged, for emergencies
+#    git push --no-verify                       — git's own, always available
+# =============================================================================
+set -uo pipefail
+
+# Answer the reachability probe from scripts/lib/enable-hooks.sh --status. This
+# is how "is vantry's stage actually reached?" becomes a fact instead of a grep.
+[ "${VANTRY_HOOK_PROBE:-}" = "1" ] && { echo "VANTRY_HOOK_REACHED:pre-push"; exit 0; }
+
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[ -f "$ROOT/vantry.yml" ] || exit 0            # not a Vantry project → stay out of the way
+[ -x "$ROOT/scripts/verify.sh" ] || exit 0
+
+if [ "${VANTRY_SKIP_GATE:-0}" = "1" ]; then
+  echo "⚠ VANTRY_SKIP_GATE=1 — verification gate bypassed on purpose." >&2
+  [ -f "$ROOT/scripts/lib/vantry-common.sh" ] && {
+    . "$ROOT/scripts/lib/vantry-common.sh"; vantry_log "gate.skip" "pre-push VANTRY_SKIP_GATE"
+  }
+  exit 0
+fi
+
+# git feeds every ref being pushed on STDIN:
+#   <local ref> <local sha> <remote ref> <remote sha>
+# This hook never read it, so it gated whatever branch you happened to be
+# STANDING on. Verified `main`, then `git push origin feat/y` from `main`, and an
+# unverified branch went out with exit 0 and not a word. `git push --all` and any
+# /next fan-out whose orchestrator sits on trunk defeated it the same way.
+#
+# Gate every ref actually being pushed, and keep the standing-branch check as the
+# fallback for the case git gives us nothing (a manual invocation, or a probe).
+rc=0
+refs=""
+tag_refs=""
+saw_any=0
+while read -r local_ref local_sha _ _; do   # remote ref/sha are unused here
+  [ -n "$local_ref" ] || continue
+  saw_any=1
+  case "$local_sha" in
+    0000000000000000000000000000000000000000) continue ;;   # a deletion pushes nothing
+  esac
+  case "$local_ref" in
+    refs/heads/*) refs="$refs ${local_ref#refs/heads/}" ;;
+    refs/tags/*)
+      # "A tag carries no changeset" is true only when its commit is ALREADY on
+      # the trunk. `git tag v1 <sha>` on an unpushed commit and `git push origin
+      # v1` publishes that commit — and in this kit a v-tag is what /release
+      # acts on. So: allow a tag that points at history the remote already has;
+      # gate one that does not.
+      # A release tag must agree with the VERSION file it ships.
+      #
+      # This is not hypothetical: v3.17.0 through v3.21.1 were all tagged while
+      # VERSION still said 3.19.0, so every adopter's manifest recorded the wrong
+      # kit version and the README pin — derived from VERSION — froze three
+      # releases behind. The cause was mundane: a compound command that wrote
+      # VERSION was refused by a guard, nothing in it ran, and only the verify
+      # step was re-run afterwards. Exactly the kind of drift a human does not
+      # notice and a check does.
+      _tagname="${local_ref#refs/tags/}"
+      case "$_tagname" in
+        v[0-9]*.[0-9]*.[0-9]*)
+          _fv="$(tr -d '[:space:]' < "$ROOT/VERSION" 2>/dev/null || true)"
+          if [ -n "$_fv" ] && [ "v$_fv" != "$_tagname" ]; then
+            cat >&2 <<MSG
+
+  TAG REFUSED — $_tagname does not match the VERSION file, which says $_fv.
+
+  Everything downstream reads VERSION, not the tag: the adopter's manifest, the
+  README pin, and the "is a newer release out?" check. Tagging past it ships a
+  kit that misreports its own version.
+
+  Fix:  printf '%s\n' "${_tagname#v}" > VERSION
+        ./scripts/sync-adapters.sh          # rewrites the README pin
+        scripts/verify.sh                   # the receipt covers VERSION too
+        git commit -am "chore: VERSION $_tagname" && git tag -f $_tagname
+MSG
+            exit 1
+          fi ;;
+      esac
+      tagged="$(git rev-parse --verify --quiet "${local_sha}^{commit}" 2>/dev/null)"
+      if [ -n "$tagged" ]; then
+        _b="$(sed -n 's/^  base:[[:space:]]*//p' "$ROOT/vantry.yml" 2>/dev/null | head -1 | sed 's/[[:space:]]*#.*$//')"
+        [ -n "$_b" ] || _b=main
+        if git rev-parse --verify --quiet "origin/$_b" >/dev/null 2>&1 &&
+           git merge-base --is-ancestor "$tagged" "origin/$_b" 2>/dev/null; then
+          : # already on the published trunk — the tag adds no code
+        else
+          echo "⚠ tag ${local_ref#refs/tags/} points at $(printf '%.8s' "$tagged"), which is NOT on origin/$_b." >&2
+          echo "  A tag publishes that commit and /release acts on it, so it is gated like a branch." >&2
+          tag_refs="$tag_refs $tagged"
+        fi
+      fi ;;
+    *)            : ;;
+  esac
+done
+
+# "stdin listed only tags" and "stdin was empty" are different situations and
+# this conflated them: a lone `git push origin v1.2.3` fell through to gating
+# whatever branch you happened to be standing on, and was refused if that
+# branch's receipt was stale. A tag carries no changeset — there is nothing to
+# gate. Only a genuinely empty stdin (a manual invocation, a probe) falls back
+# to the standing branch.
+# A tag whose commit is not yet on the trunk still owes a verification. Judge it
+# by the BRANCH that has verified that commit, not by the commit itself: receipts
+# are keyed on a branch slug, so asking for `.vantry/receipts/<sha>.json` would
+# look for something that can never exist — a gate nothing could ever satisfy.
+#
+# The question that is both meaningful and answerable: is the commit this tag
+# publishes contained in the branch we are standing on, and does that branch
+# hold a current passing receipt?
+if [ -n "$tag_refs" ]; then
+  for t in $tag_refs; do
+    if ! git merge-base --is-ancestor "$t" HEAD 2>/dev/null; then
+      echo "  The tagged commit is not contained in $(git rev-parse --abbrev-ref HEAD)." >&2
+      echo "  Check out the branch that holds it, verify there, then push the tag." >&2
+      rc=2; continue
+    fi
+    "$ROOT/scripts/verify.sh" --gate --pre-push
+    r=$?
+    [ "$r" -gt "$rc" ] && rc=$r
+  done
+fi
+
+# Only tags, and all of them already published: nothing to gate.
+if [ "$saw_any" = "1" ] && [ -z "$refs" ] && [ -z "$tag_refs" ]; then
+  exit 0
+fi
+
+if [ -z "$refs" ] && [ -n "$tag_refs" ]; then
+  case "$rc" in
+    0) exit 0 ;;
+    1) echo "⚠ tagging unverified work (strictness: relaxed)." >&2; exit 0 ;;
+    *) echo "  TAG REFUSED — it publishes a commit this branch never verified." >&2; exit 1 ;;
+  esac
+fi
+
+if [ -n "$refs" ]; then
+  for b in $refs; do
+    "$ROOT/scripts/verify.sh" --gate --pre-push --ref "$b"
+    r=$?
+    [ "$r" -gt "$rc" ] && rc=$r
+  done
+else
+  "$ROOT/scripts/verify.sh" --gate --pre-push
+  rc=$?
+fi
+
+case "$rc" in
+  0) exit 0 ;;
+  1) echo "⚠ pushing an unverified change (strictness: relaxed)." >&2; exit 0 ;;
+  *)
+    cat >&2 <<'MSG'
+
+  PUSH REFUSED — a branch in this push has never been verified in its current state.
+
+  A passing test suite is not a verification. Run the software:
+      scripts/verify.sh
+
+MSG
+    exit 1 ;;
+esac

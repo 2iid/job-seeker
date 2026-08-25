@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# =============================================================================
+#  commit-msg — Conventional Commits, enforced.
+#
+#  AGENTS.md has mandated Conventional Commits since v1 with nothing checking
+#  it, which is why no changelog was ever generatable. This is the check.
+# =============================================================================
+set -uo pipefail
+
+# Answer the reachability probe from scripts/lib/enable-hooks.sh --status. This
+# is how "is vantry's stage actually reached?" becomes a fact instead of a grep.
+[ "${VANTRY_HOOK_PROBE:-}" = "1" ] && { echo "VANTRY_HOOK_REACHED:commit-msg"; exit 0; }
+
+MSGFILE="${1:-}"
+[ -f "$MSGFILE" ] || exit 0
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[ -f "$ROOT/vantry.yml" ] || exit 0
+
+# First non-comment, non-empty line.
+SUBJECT="$(grep -v '^#' "$MSGFILE" | grep -v '^[[:space:]]*$' | head -1)"
+[ -z "$SUBJECT" ] && exit 0
+
+# Merges, reverts, fixups and rebases are git's own wording — not ours to police.
+case "$SUBJECT" in
+  Merge*|Revert*|"fixup!"*|"squash!"*|"Applying"*) exit 0 ;;
+esac
+
+TYPES='feat|fix|chore|docs|test|refactor|perf|build|ci|style|revert'
+if printf '%s' "$SUBJECT" | grep -qE "^($TYPES)(\([a-z0-9._/-]+\))?!?: .{1,}$"; then
+  LEN="${#SUBJECT}"
+  [ "$LEN" -gt 72 ] && echo "⚠ subject is $LEN chars (>72). Consider trimming." >&2
+  exit 0
+fi
+
+cat >&2 <<MSG
+
+  COMMIT REFUSED — the subject is not a Conventional Commit.
+
+    got:      $SUBJECT
+    expected: <type>[(scope)][!]: <description>
+    types:    ${TYPES//|/, }
+
+  e.g.  feat(orders): show carrier status on the order page
+        fix(auth): reject an expired session on the server, not just in the UI
+
+  Bypass:  git commit --no-verify
+MSG
+exit 1
