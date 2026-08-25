@@ -1,0 +1,108 @@
+/* ENGENDRÉ par packages/ui/scripts/build-css.ts — ne pas éditer à la main.
+   Source : packages/ui/src/tokens.ts · système : docs/design/design-system.md */
+
+:root {
+  --surface-page: #F1F2F7;
+  --surface-module: #FFFFFF;
+  --surface-chrome: #F8F9FC;
+  --surface-sunken: #E9EBF1;
+  --surface-colonne-active: #F4F5F9;
+  --border-module: #D2D4DC;
+  --rule-inner: #E9EBF1;
+  --border-control: #888B99;
+  --text-primary: #1B1D28;
+  --text-secondary: #4D4F5A;
+  --text-muted: #666872;
+  --text-on-fill: #FDFDFF;
+  --accent-machine: #006B7E;
+  --accent-attente: #804E00;
+  --accent-critique: #983432;
+  --focus-ring: #006B7E;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 22px;
+  --space-6: 30px;
+  --space-7: 44px;
+  --space-8: 64px;
+  --radius-module: 0px;
+  --radius-control: 3px;
+  --radius-pill: 6px;
+  --duration-toggle: 120ms;
+  --duration-state: 180ms;
+  --duration-panel: 260ms;
+  --touch-min: 44px;
+  --touch-gap: 8px;
+  --touch-row: 52px;
+}
+
+/* Le sombre est le mode d'origine : l'agent travaille la nuit, l'interface aussi. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-page: #111218;
+    --surface-module: #1C1E25;
+    --surface-chrome: #181920;
+    --surface-sunken: #0B0C11;
+    --surface-colonne-active: #161720;
+    --border-module: #373942;
+    --rule-inner: #2A2C34;
+    --border-control: #6B6E7A;
+    --text-primary: #EBECF2;
+    --text-secondary: #BABCC4;
+    --text-muted: #9799A1;
+    --text-on-fill: #0D0E13;
+    --accent-machine: #59C2D4;
+    --accent-attente: #E4AF6C;
+    --accent-critique: #E88F87;
+    --focus-ring: #86E2F2;
+  }
+}
+
+/* Le choix explicite prime sur la préférence système, dans les deux sens. */
+:root[data-theme='dark'] {
+  --surface-page: #111218;
+  --surface-module: #1C1E25;
+  --surface-chrome: #181920;
+  --surface-sunken: #0B0C11;
+  --surface-colonne-active: #161720;
+  --border-module: #373942;
+  --rule-inner: #2A2C34;
+  --border-control: #6B6E7A;
+  --text-primary: #EBECF2;
+  --text-secondary: #BABCC4;
+  --text-muted: #9799A1;
+  --text-on-fill: #0D0E13;
+  --accent-machine: #59C2D4;
+  --accent-attente: #E4AF6C;
+  --accent-critique: #E88F87;
+  --focus-ring: #86E2F2;
+}
+
+:root[data-theme='light'] {
+  --surface-page: #F1F2F7;
+  --surface-module: #FFFFFF;
+  --surface-chrome: #F8F9FC;
+  --surface-sunken: #E9EBF1;
+  --surface-colonne-active: #F4F5F9;
+  --border-module: #D2D4DC;
+  --rule-inner: #E9EBF1;
+  --border-control: #888B99;
+  --text-primary: #1B1D28;
+  --text-secondary: #4D4F5A;
+  --text-muted: #666872;
+  --text-on-fill: #FDFDFF;
+  --accent-machine: #006B7E;
+  --accent-attente: #804E00;
+  --accent-critique: #983432;
+  --focus-ring: #006B7E;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-toggle: 0ms;
+    --duration-state: 0ms;
+    --duration-panel: 0ms;
+  }
+}

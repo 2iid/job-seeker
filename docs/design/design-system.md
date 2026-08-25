@@ -9,7 +9,9 @@
 - **Typographie :** Epilogue (titres, corps, boutons) · IBM Plex Mono (heures, scores, montants, libellés)
 - **Principe fondateur :** chaque rôle porte une valeur **dans les deux thèmes**. Aucun rôle défini
   d'un seul côté. Les contrastes ci-dessous sont **calculés** (oklch → sRGB, formule WCAG 2.1),
-  jamais estimés.
+  jamais estimés — et depuis `JOB-011`, **recalculés par un test** à chaque exécution de la suite
+  (`packages/ui/src/tokens.test.ts`). Si un chiffre de ce tableau s'écarte de la mesure de plus de
+  0,06, la suite échoue : ce document ne peut plus mentir sur l'accessibilité sans casser le build.
 
 ---
 
@@ -24,17 +26,17 @@ Nommés par rôle. Un composant qui écrit une valeur littérale au lieu d'un to
 | `--surface-chrome` | `#181920` | `#F8F9FC` | En-tête d'écran, barre d'action fixe, pied de module. |
 | `--surface-sunken` | `#0B0C11` | `#E9EBF1` | Champ de saisie, squelette de chargement, zone de citation. |
 | `--surface-colonne-active` | `#161720` | `#F4F5F9` | Colonne de kanban demandant une action. Teinte **en plus** du libellé et de la forme, jamais à leur place. |
-| `--border-module` | `#373942` | `#D2D4DC` | Structure seule. **Sous 3:1** (1,61 / 1,48) → jamais seule frontière d'un contrôle ni seul porteur d'information. |
+| `--border-module` | `#373942` | `#D2D4DC` | Structure seule. **Sous 3:1** (1,45 / 1,48 sur module ; 1,63 / 1,32 sur page) → jamais seule frontière d'un contrôle ni seul porteur d'information. |
 | `--rule-inner` | `#2A2C34` | `#E9EBF1` | Filet **intérieur** à un module. Structure seule. |
-| `--border-control` | `#60636F` | `#888B99` | Bordure de bouton, champ, bascule. **3,10 / 3,37** — cible 3:1 tenue. |
-| `--text-primary` | `#EBECF2` | `#1B1D28` | Titres, phrases de l'agent, valeurs. **14,20 / 16,70** |
-| `--text-secondary` | `#BABCC4` | `#4D4F5A` | Entreprise, lieu, sous-titre. **8,77 / 8,13** |
-| `--text-muted` | `#9799A1` | `#666872` | Libellés de colonne, horodatage. **5,90 / 5,52** — rien de lisible n'est « gris décoratif ». |
-| `--accent-machine` | `#59C2D4` | `#006B7E` | **Ce que la machine a fait.** Teinte conservée (H 210), clarté descendue de 0,760 à 0,470. **8,05 / 6,20** |
-| `--accent-attente` | `#E4AF6C` | `#804E00` | **Ce qui attend un humain.** H 72. Jamais employé pour la fraîcheur. **8,51 / 6,97** |
-| `--accent-critique` | `#E88F87` | `#983432` | Échec technique, suppression, arrêt. **Par événement, jamais en permanence.** **6,91 / 7,32** |
-| `--text-on-fill` | `#0D0E13` | `#FDFDFF` | Texte sur aplat d'accent. Mesuré sur `--accent-attente`, le pire cas. **9,82 / 6,87** |
-| `--focus-ring` | `#86E2F2` | `#006B7E` | 2 px + décalage 2 px. **11,23 / 6,20**. `outline: none` sans remplacement visible = ticket rejeté. |
+| `--border-control` | `#6B6E7A` | `#888B99` | Bordure de bouton, champ, bascule. **3,28 / 3,39** sur `--surface-module` — cible 3:1 tenue. ⚠ corrigé : `#60636F` ne tenait que **2,78:1** sur un module, la valeur annoncée était mesurée contre la page. |
+| `--text-primary` | `#EBECF2` | `#1B1D28` | Titres, phrases de l'agent, valeurs. **14,12 / 16,76** |
+| `--text-secondary` | `#BABCC4` | `#4D4F5A` | Entreprise, lieu, sous-titre. **8,78 / 8,13** |
+| `--text-muted` | `#9799A1` | `#666872` | Libellés de colonne, horodatage. **5,85 / 5,54** — rien de lisible n'est « gris décoratif ». |
+| `--accent-machine` | `#59C2D4` | `#006B7E` | **Ce que la machine a fait.** Teinte conservée (H 210), clarté descendue de 0,760 à 0,470. **8,00 / 6,17** |
+| `--accent-attente` | `#E4AF6C` | `#804E00` | **Ce qui attend un humain.** H 72. Jamais employé pour la fraîcheur. **8,44 / 6,98** |
+| `--accent-critique` | `#E88F87` | `#983432` | Échec technique, suppression, arrêt. **Par événement, jamais en permanence.** **6,90 / 7,31** |
+| `--text-on-fill` | `#0D0E13` | `#FDFDFF` | Texte sur aplat d'accent. Mesuré sur `--accent-attente`, le pire cas. **9,77 / 6,87** |
+| `--focus-ring` | `#86E2F2` | `#006B7E` | 2 px + décalage 2 px. **11,23 / 6,17**. `outline: none` sans remplacement visible = ticket rejeté. |
 
 ### Score et paliers
 

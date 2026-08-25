@@ -29,6 +29,9 @@ importers:
       '@job-seeker/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@job-seeker/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       next:
         specifier: ^15.1.6
         version: 15.5.23(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -66,6 +69,12 @@ importers:
         version: 5.9.3
 
   packages/env:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/ui:
     devDependencies:
       typescript:
         specifier: ^5.7.3

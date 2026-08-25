@@ -50,8 +50,19 @@ echo "$HTML" | grep -q "Le socle tient debout" \
 echo "$HTML" | grep -q "lang=\"fr\"" \
   || fail "la page ne déclare pas sa langue — lecteurs d'écran et césure cassés"
 
+echo "→ [smoke] le système de design atteint vraiment le navigateur"
+CSS_HREF="$(printf '%s' "$HTML" | grep -o '/_next/static/css/[^"]*\.css' | head -1)"
+[ -n "$CSS_HREF" ] || fail "aucune feuille de style liée dans la page — les tokens ne partent pas"
+CSS="$(curl -sf --max-time 5 "http://localhost:$PORT$CSS_HREF" || true)"
+echo "$CSS" | grep -q -- '--accent-machine' \
+  || fail "la feuille servie ne contient pas --accent-machine : le système n'est pas câblé"
+echo "$CSS" | grep -q 'prefers-color-scheme:dark\|prefers-color-scheme: dark' \
+  || fail "aucun bloc sombre dans la feuille servie — la parité des thèmes n'arrive pas au navigateur"
+echo "$CSS" | grep -q 'prefers-reduced-motion' \
+  || fail "prefers-reduced-motion absent de la feuille servie"
+
 echo "→ [smoke] l'en-tête de sécurité est réellement servi"
 curl -sfI --max-time 5 "http://localhost:$PORT/" | grep -qi "x-content-type-options: nosniff" \
   || fail "X-Content-Type-Options absent — next.config.ts le déclare mais il n'arrive pas"
 
-echo "  ✓ smoke: la page se rend, l'API répond, les en-têtes sont servis"
+echo "  ✓ smoke: la page se rend, l'API répond, les tokens des deux thèmes sont servis, les en-têtes aussi"

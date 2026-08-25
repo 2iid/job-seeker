@@ -1,31 +1,10 @@
 /*
- * Les tokens viennent de docs/design/design-system.md — chaque rôle porte une
- * valeur dans LES DEUX thèmes. JOB-011 les livrera en entier ; ce fichier ne
- * porte que ce dont la première page a besoin, avec les mêmes noms.
+ * Les tokens viennent de @job-seeker/ui, engendrés depuis packages/ui/src/tokens.ts,
+ * eux-mêmes transcrits de docs/design/design-system.md. Une couleur écrite ici
+ * serait une quatrième source de vérité pour la même décision — le test
+ * tests/design/valeurs-en-dur.test.ts la refuse.
  */
-:root {
-  --surface-page: #F1F2F7;
-  --surface-module: #FFFFFF;
-  --border-module: #D2D4DC;
-  --text-primary: #1B1D28;
-  --text-secondary: #4D4F5A;
-  --text-muted: #666872;
-  --accent-machine: #006B7E;
-  --focus-ring: #006B7E;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --surface-page: #111218;
-    --surface-module: #1C1E25;
-    --border-module: #373942;
-    --text-primary: #EBECF2;
-    --text-secondary: #BABCC4;
-    --text-muted: #9799A1;
-    --accent-machine: #59C2D4;
-    --focus-ring: #86E2F2;
-  }
-}
+@import '@job-seeker/ui/tokens.css';
 
 * { box-sizing: border-box; }
 
@@ -38,11 +17,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* G2 : l'anneau de focus n'est pas décoratif. Le retirer sans remplacement
+   visible est la régression d'accessibilité la plus courante d'un système. */
 :focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
+/* G4 : rien d'important n'est porté par le seul mouvement. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
