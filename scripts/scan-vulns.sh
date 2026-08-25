@@ -77,7 +77,13 @@ if [ "$JSON" != "1" ]; then
   echo "══ known vulnerabilities ═══════════════════════════════════════"
 fi
 
-[ -f package.json ]      && run_native "npm audit"    npm audit --audit-level=high --omit=dev
+# L'outil natif d'un projet JS est celui qui a ÉCRIT le lockfile. `npm audit`
+# ne sait pas lire pnpm-lock.yaml ni yarn.lock : il sort ENOLOCK, que ce script
+# rapportait alors comme une panne de scanner plutôt que comme un scan propre.
+if   [ -f pnpm-lock.yaml ]; then run_native "pnpm audit" pnpm audit --audit-level=high --prod
+elif [ -f yarn.lock ];      then run_native "yarn npm audit" yarn npm audit --severity high
+elif [ -f package.json ];   then run_native "npm audit"  npm audit --audit-level=high --omit=dev
+fi
 [ -f requirements.txt ] || [ -f pyproject.toml ] && run_native "pip-audit" pip-audit --strict
 [ -f Cargo.toml ]        && run_native "cargo audit"  cargo audit
 [ -f go.mod ]            && run_native "govulncheck"  govulncheck ./...

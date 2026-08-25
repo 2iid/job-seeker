@@ -68,7 +68,14 @@ def npm(root):
                 cur = None
     p = root / "pnpm-lock.yaml"
     if p.exists():
-        for m in re.finditer(r"^\s+/([^:@\s][^:]*?)@([0-9][^:\s(]*)", p.read_text(errors="ignore"), re.M):
+        # Two lockfile shapes, both seen in the wild:
+        #   v6 and older : "  /@scope/name@1.2.3:"   (leading slash, unquoted)
+        #   v9 and newer : "  '@scope/name@1.2.3':"  (quoted, no slash)
+        # Matching only the first silently scanned ZERO packages on any modern
+        # pnpm project and still reported "no lockfile found" — a clean bill of
+        # health for a scan that never happened.
+        pat = re.compile(r"^\s+'?/?((?:@[^/\s']+/)?[^@'\s/]+)@([0-9][^:'\s(]*)'?:", re.M)
+        for m in pat.finditer(p.read_text(errors="ignore")):
             out.append(("npm", m.group(1), m.group(2)))
     return out
 
