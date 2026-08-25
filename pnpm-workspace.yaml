@@ -9,3 +9,17 @@ packages:
 allowBuilds:
   esbuild: true
   sharp: true
+
+# Correctifs de sécurité sur des dépendances TRANSITIVES que Next.js épingle
+# lui-même. Chaque ligne cite l'avis qu'elle ferme ; une ligne sans avis n'a
+# rien à faire ici, et chacune disparaît dès que Next remonte sa propre borne.
+#
+#   postcss <8.5.23 — GHSA-6g55-p6wh-862q et sa correction incomplète :
+#                     lecture de fichier arbitraire et traversée de chemin via
+#                     un sourceMappingURL contrôlé par l'attaquant (3 avis,
+#                     dont 2 hauts), plus XSS via </style> non échappé.
+#   sharp   <0.35.0 — vulnérabilités héritées de libvips (CVE-2026-33327,
+#                     CVE-2026-33328, CVE-2026-355xx). Haute.
+overrides:
+  postcss: ">=8.5.23"
+  sharp: ">=0.35.0"
