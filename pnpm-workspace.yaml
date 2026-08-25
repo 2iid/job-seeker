@@ -1,0 +1,11 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Scripts d'installation autorisés — liste explicite, jamais un blanc-seing.
+# Un paquet absent de cette liste ne peut exécuter aucun script à l'installation.
+#   esbuild : binaire natif requis par vitest
+#   sharp   : optimisation d'images de Next.js
+allowBuilds:
+  esbuild: true
+  sharp: true

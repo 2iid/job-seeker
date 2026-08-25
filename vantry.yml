@@ -1,0 +1,78 @@
+# =============================================================================
+#  vantry.yml — comment CE projet se vérifie.
+#
+#  La seule étape que rien ne peut deviner. Sans ce fichier, verify.sh sort 2
+#  et déclare la vérification UNDEFINED — délibérément fatal, parce qu'un reçu
+#  fondé sur une supposition ne prouve rien.
+# =============================================================================
+version: 2
+stack: "Next.js 15 (App Router, TypeScript) + Supabase (Postgres/RLS/Auth/Storage) + Stripe + API Claude, avec un worker conteneurisé distinct — voir docs/architecture/decisions/0001"
+project_type: web
+strictness: standard
+
+run:
+  install: pnpm install --frozen-lockfile
+  test: pnpm test
+  build: pnpm build
+  start: pnpm --filter @job-seeker/web start
+  ready: curl -sf http://localhost:3100/api/health
+  # Le smoke construit, démarre, et vérifie qu'une VRAIE page se rend et qu'une
+  # VRAIE requête aboutit. Une suite de tests verte n'est pas une vérification :
+  # c'est exactement à quoi ressemblait l'échec que cette porte existe pour
+  # empêcher.
+  smoke: bash tests/smoke/smoke.sh
+  logs: .vantry/state/app.log
+
+gates:
+  verify_change: block
+  security_review: block_on_sensitive
+  code_review: warn
+  design_review: warn
+
+dispatch:
+  max_parallel: 2
+  confirm_before_fanout: true
+  batch_prs: 1
+
+merge:
+  authority: human
+  base: main
+
+# Modifiable sans devoir une vérification : ni comportement, ni sécurité.
+trivial_paths:
+  - "README.md"
+  - "LICENSE"
+  - "LICENSES/**"
+  - "THIRD_PARTY_NOTICES.md"
+  - ".gitignore"
+  - "docs/design/job-seeker/**"      # planches livrées par l'outil de design
+  - "docs/planning/**"
+  - "**/*.vantry-bak-*"
+
+# Touche à l'authentification, à l'envoi sortant, à l'argent, aux données
+# personnelles ou au contexte d'un modèle → revue de sécurité obligatoire.
+# Cette liste alimente trois consommateurs : la porte locale, le job CI, et le
+# routage de la revue humaine. Elle a une seule définition.
+sensitive_paths:
+  - "packages/env/**"
+  - "packages/auth/**"
+  - "packages/audit/**"
+  - "packages/llm-guard/**"
+  - "packages/billing/**"
+  - "packages/ratelimit/**"
+  - "packages/retention/**"
+  - "packages/mandate/**"
+  - "apps/web/app/api/**"
+  - "apps/web/app/auth/**"
+  - "apps/worker/src/submission/**"
+  - "apps/worker/src/contacts/**"
+  - "apps/worker/src/mailbox/**"
+  - "apps/worker/src/governance/**"
+  - "apps/worker/src/receipts/**"
+  - "apps/worker/src/documents/**"
+  - "supabase/migrations/**"
+  - "tests/rls/**"
+  - ".github/workflows/**"
+  - ".githooks/**"
+  - "vantry.yml"
+  - ".env.example"

@@ -1,0 +1,51 @@
+/*
+ * Les tokens viennent de docs/design/design-system.md — chaque rôle porte une
+ * valeur dans LES DEUX thèmes. JOB-011 les livrera en entier ; ce fichier ne
+ * porte que ce dont la première page a besoin, avec les mêmes noms.
+ */
+:root {
+  --surface-page: #F1F2F7;
+  --surface-module: #FFFFFF;
+  --border-module: #D2D4DC;
+  --text-primary: #1B1D28;
+  --text-secondary: #4D4F5A;
+  --text-muted: #666872;
+  --accent-machine: #006B7E;
+  --focus-ring: #006B7E;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-page: #111218;
+    --surface-module: #1C1E25;
+    --border-module: #373942;
+    --text-primary: #EBECF2;
+    --text-secondary: #BABCC4;
+    --text-muted: #9799A1;
+    --accent-machine: #59C2D4;
+    --focus-ring: #86E2F2;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: Epilogue, system-ui, -apple-system, sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

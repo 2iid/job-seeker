@@ -1,0 +1,24 @@
+{
+  "name": "job-seeker",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "dev:web": "pnpm --filter @job-seeker/web dev",
+    "dev:worker": "pnpm --filter @job-seeker/worker dev",
+    "smoke": "bash tests/smoke/smoke.sh"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.21.0",
+    "vitest": "^3.0.4"
+  }
+}
