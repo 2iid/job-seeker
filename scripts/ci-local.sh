@@ -106,8 +106,25 @@ else
       RH="$(grep -o '"head"[[:space:]]*:[[:space:]]*"[0-9a-f]*"' "$R" | head -1 | sed 's/.*"\([0-9a-f]*\)"$/\1/')"
       if [ "$V" != "pass" ]; then fail "la revue de sécurité rend le verdict « $V »" "sensitive paths"
       elif [ -z "$RH" ]; then fail "la revue ne nomme pas le commit relu — un verdict sans commit ne vaut rien" "sensitive paths"
-      elif [ "$RH" != "${HEAD_SHA:0:${#RH}}" ]; then fail "la revue porte sur $RH, pas sur ${HEAD_SHA:0:8} — elle est périmée" "sensitive paths"
-      else pass "revue de sécurité « pass » sur ${RH:0:8}"; fi
+      elif ! git merge-base --is-ancestor "$RH" "$HEAD_SHA" 2>/dev/null; then
+        fail "la revue porte sur $RH, qui n'est pas un ancêtre de ${HEAD_SHA:0:8}" "sensitive paths"
+      else
+        # La règle du job CI, reproduite : la revue n'a pas à porter sur le
+        # commit de tête — elle doit en être un ancêtre ET aucun fichier
+        # SENSIBLE ne doit avoir bougé depuis. Sinon le verdict décrit du code
+        # qui n'est plus celui qu'on fusionne.
+        LATE=""
+        while IFS= read -r f; do
+          [ -n "$f" ] || continue
+          vantry_is_sensitive "$f" && LATE="$LATE $f"
+        done <<< "$(git diff --name-only "$RH" "$HEAD_SHA")"
+        if [ -n "$LATE" ]; then
+          echo "  fichiers sensibles modifiés APRÈS la revue :"; for f in $LATE; do echo "      $f"; done
+          fail "le verdict est périmé — refaire la revue" "sensitive paths"
+        else
+          pass "revue « pass » sur ${RH:0:8}, ancêtre de ${HEAD_SHA:0:8}, aucun changement sensible depuis"
+        fi
+      fi
     fi
   fi
 fi
