@@ -46,13 +46,16 @@ Le blocage n'était pas une panne mais le jour zéro : les deux contrôles en é
 | # | ce qui a arrêté | pourquoi c'est un arrêt |
 |---|---|---|
 | A | **Préflight** (étape 1) | `verify.sh` UNDEFINED sur le tronc. Levé par cette PR. |
+| C | **CI indisponible — compte GitHub verrouillé** | Étape 4, *« CI unavailable »*. La CI de la PR #2 rapporte, sur chaque job : `The job was not started because your account is locked due to a billing issue.` Ce n'est **pas** le quota de minutes : un compte verrouillé bloque Actions **même sur un dépôt public**, ce qui invalide l'hypothèse ayant motivé le passage en public. Seul 2iD peut lever cela (GitHub → Settings → Billing). Tant que la CI ne tourne pas, aucune PR ne peut être fusionnée sur preuve, et l'exécution autonome n'a pas de garde-fou distant. |
 | B | **`JOB-002` — pointe technique ATS** | Étape 4, *« anything irreversible »*. L'issue demande **vingt soumissions réelles sur des formulaires d'employeurs réels** : des candidatures qui arrivent chez de vraies personnes, au nom d'un vrai candidat. `SECURITY.md` l'interdit explicitement (*« Never submit a real job application as part of a test »*). Aucun agent autonome ne peut l'exécuter. Elle demande un humain, ou un bac à sable avec des formulaires de test fournis par les ATS. |
 
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
 - **En attente :** PR #1 (docs `JOB-008`) et la PR de fondation (`JOB-001`, `JOB-003`, `JOB-007`).
-- **Minutes Actions dépensées :** 0 côté quota — le dépôt est public, les runners standard y sont gratuits.
+- **Minutes Actions dépensées :** 0 — aucun job n'a démarré, le compte est verrouillé pour facturation.
 - **Reste au tableau :** 79 issues, dont `JOB-002` qui ne peut pas être automatisée.
+- **Préflight rejoué après la fondation :** `validate-config` exit 0 · `lint-kanban` exit 0 ·
+  `verify.sh --gate` exit 0. Les trois contrôles locaux passent désormais ; seule la CI bloque.
 - `merge.authority` n'a **jamais** été passé à `agent` : l'exécution s'est arrêtée au préflight, donc
   l'étape 0 n'a pas eu lieu et aucune autonomie n'a été accordée. `.vantry/autopilot.json` n'existe pas.
