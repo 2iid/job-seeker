@@ -1,0 +1,59 @@
+{
+  "schema": "vantry.review/1",
+  "kind": "security",
+  "verdict": "pass",
+  "reviewer": "security-engineer",
+  "at": "2026-08-25T22:58:04Z",
+  "head": "fc4d6e5f282a8a1924e5d1acf7a63e75896121c7",
+  "checklist": [
+    "data-authz",
+    "privileged-credential",
+    "boundary-validation",
+    "secrets-pii",
+    "webhooks",
+    "storage",
+    "headers-csp",
+    "ai-context",
+    "owasp-top-10"
+  ],
+  "scope": [
+    "packages/env/** — lecture et validation de l'environnement",
+    "apps/web/app/api/health/route.ts — unique route publique",
+    "vantry.yml — la définition des chemins sensibles elle-même",
+    ".env.example — modèle sans valeur réelle"
+  ],
+  "notes": [
+    "data-authz : sans objet à ce commit — aucune table, aucune RLS, aucune requête utilisateur. JOB-005 porte le socle deny-by-default et ses tests allow/deny.",
+    "webhooks, storage : sans objet, aucun n'existe encore.",
+    "ai-context : sans objet à ce commit, mais F1 pré-cible les deux chemins qui en porteront."
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "id": "F1",
+      "file": "vantry.yml",
+      "line": 62,
+      "summary": "sensitive_paths omettait packages/parsing/** et apps/worker/src/matching/**. Le premier extrait le CV — la PII la plus lourde du produit (parcours, salaires, recherche menée en poste). Le second construit le contexte d'un LLM à partir du profil ET du texte d'offre, qui est une entrée hostile écrite par un tiers. Ni l'un ni l'autre n'aurait déclenché de revue de sécurité.",
+      "fix": "Les deux chemins ont été ajoutés dans ce même commit, motif en commentaire. Cette liste a une seule définition et alimente trois consommateurs : la porte locale, le job CI et le routage de la revue humaine.",
+      "status": "corrigé"
+    },
+    {
+      "severity": "low",
+      "id": "F2",
+      "file": "packages/env/src/index.ts",
+      "line": 47,
+      "summary": "SUPABASE_ANON_KEY est déclarée requise par le runtime web mais n'a pas le préfixe NEXT_PUBLIC_. Dans Next.js, seules les variables NEXT_PUBLIC_* atteignent le navigateur. Aujourd'hui rien n'appelle loadEnv('web') depuis un composant client, donc rien ne casse.",
+      "fix": "Au moment où le client Supabase navigateur arrive (JOB-006), renommer en NEXT_PUBLIC_SUPABASE_ANON_KEY et la reclasser explicitement comme publique. SUPABASE_SERVICE_ROLE_KEY ne doit JAMAIS suivre le même chemin : elle reste requise par le seul runtime worker.",
+      "status": "reporté à JOB-006"
+    },
+    {
+      "severity": "low",
+      "id": "F3",
+      "file": "apps/web/app/api/health/route.ts",
+      "line": 12,
+      "summary": "/api/health est publique, non authentifiée et sans limitation de débit.",
+      "fix": "Acceptable pour une sonde qui ne divulgue rien — ni version, ni identifiant de build, ni détail de dépendance — c'est délibéré et commenté dans le fichier. JOB-073 doit la couvrir explicitement.",
+      "status": "reporté à JOB-073"
+    }
+  ]
+}
