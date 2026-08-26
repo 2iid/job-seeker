@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T13:05:44Z",
-  "head": "e0007a5e068fb547766cc68cf82ec3de43a00190",
+  "at": "2026-08-26T13:27:14Z",
+  "head": "cfa34e47743c5028158f4963f338c20db5dd5845",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -32,7 +32,8 @@
     "supabase/migrations/20260826020000_registre_employeurs.sql — registre PARTAGÉ entre tous les comptes",
     "packages/llm/** — appels de modele, cles d API, journalisation des couts",
     "packages/env/** — OPENROUTER_API_KEY declaree comme secret optionnel",
-    "packages/llm-guard/** — frontiere contre l injection et controle des destinations"
+    "packages/llm-guard/** — frontiere contre l injection et controle des destinations",
+    "apps/worker/src/matching/** — contexte de modele construit a partir de texte tiers"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -53,7 +54,8 @@
     "data-authz sur un registre PARTAGE : worker.employeurs est le premier objet du produit lu par tous les comptes. Un identifiant de profil qui s y glisserait serait un canal de fuite entre comptes, et il aurait l air parfaitement normal. Un test interroge information_schema et refuse toute colonne dont le nom evoque un utilisateur ; un autre verifie qu aucun role client n a de privilege sur le schema worker. Le lien « qui suit qui » vit dans public sous RLS, avec ses tests allow et deny.",
     "privileged-credential : ANTHROPIC_API_KEY et OPENROUTER_API_KEY sont declarees `secret: true`, donc readOptional REFUSE de leur donner une valeur par defaut. readOptionalSecret renvoie undefined quand la cle manque — jamais un repli, parce qu un secret par defaut est un secret commite. Les deux cles restent requises du seul runtime worker : aucune ne porte le prefixe NEXT_PUBLIC_ et aucune ne peut donc atteindre le navigateur.",
     "ai-context : la bascule ne joue que sur les PANNES. Un refus du modele remonte tel quel et n est jamais rejoue chez un autre fournisseur — contourner un refus en changeant de fournisseur serait du magasinage de complaisance. Trois tests verrouillent cette regle.",
-    "ai-context : la frontiere est posee et EPROUVEE contre un vrai modele, pas seulement contre des doubles. La propriete la plus importante n est pas la consigne — c est que le contenu tiers ne peut pas sortir de son bloc, et que la destination d une action ne vient jamais du modele."
+    "ai-context : la frontiere est posee et EPROUVEE contre un vrai modele, pas seulement contre des doubles. La propriete la plus importante n est pas la consigne — c est que le contenu tiers ne peut pas sortir de son bloc, et que la destination d une action ne vient jamais du modele.",
+    "ai-context sur JOB-035 : le texte d offre n atteint le modele QUE par encadrer() de llm-guard, et la consigne de frontiere est en tete du systeme. Aucune action ne derive de la sortie : le score est borne a 0-100, les preuves sont filtrees sur verification de citation, et les REDHIBITOIRES — les seuls criteres qui autorisent ou interdisent une candidature automatique — sont calcules par du code et jamais demandes au modele. Un test verifie qu un score de 99 ne leve pas un redhibitoire."
   ],
   "findings": [
     {
@@ -163,6 +165,15 @@
       "summary": "Les tarifs du modele sont saisis en dur dans TARIFS. Un tarif qui change rend le cout journalise faux sans que rien ne le signale — et c est ce cout qui mesure l hypothese risquee n 4 du brief.",
       "fix": "Saisis a la main et jamais releves sur le web, precisement pour rester auditables. A revoir a chaque changement de tarif ; JOB-072 (instrumentation du cout) doit prevoir une alerte quand le cout par candidature s ecarte de l attendu.",
       "status": "accepté, documenté"
+    },
+    {
+      "severity": "low",
+      "id": "F19",
+      "file": "apps/worker/src/matching/score.ts",
+      "line": 0,
+      "summary": "Le profil du candidat est inséré en clair dans le message envoyé au modèle. C est necessaire pour scorer, mais cela signifie que du CV, des employeurs et des dates partent chez un sous-traitant a chaque evaluation.",
+      "fix": "Minimiser ce qui part : JOB-037 (reproductibilite du score) doit definir un RESUME de profil dedie au scoring plutot que d envoyer le profil complet, et OBL-1 impose de nommer le fournisseur de modele comme sous-traitant dans le registre des traitements. A rappeler dans les criteres de JOB-037 et JOB-057.",
+      "status": "reporté à JOB-037 et JOB-057"
     }
   ]
 }
