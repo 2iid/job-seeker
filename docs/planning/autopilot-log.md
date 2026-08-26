@@ -68,6 +68,23 @@ F1 (medium, **corrigé**) `sensitive_paths` omettait `packages/parsing/**` et `a
 F2 (low, **reporté à JOB-006**) `SUPABASE_ANON_KEY` devra devenir `NEXT_PUBLIC_*` quand le client navigateur arrive, et la clé de service ne doit jamais suivre ·
 F3 (low, **reporté à JOB-073**) `/api/health` est publique sans limitation de débit — acceptable pour une sonde qui ne divulgue rien.
 
+## Exécution 3 — 2026-08-25 · le backlog avance
+
+2iD signale que Supabase tourne en local et lève l'arrêt annoncé. Vérifié : CLI 2.111, Docker actif,
+trois piles déjà en service. `JOB-004` et `JOB-005` redeviennent faisables.
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 12 | JOB-004 | Ports de la pile locale | **Plage dédiée 545xx** | Ports par défaut 5432x | ASSUMED | 5432x, 5434x et 5442x sont occupés par `win-e-commerce`, `teranga-voice` et `daffa-industrie`. Une plage par projet est réversible et évite d'arrêter le travail des autres. |
+| 13 | JOB-004 | Créer une table maintenant, ou attendre `JOB-030` ? | **`profiles` délibérément pauvre** | Aucune table ; ou le modèle complet | ASSUMED | La RLS a besoin de quelque chose à protéger pour être prouvée. Quatre colonnes ne préemptent aucune décision de `JOB-030`, et une migration additive est réversible. |
+| 14 | JOB-005 | La règle `process.env` attrape le harnais de test | **Ajouter `readOptional` à `packages/env`** | Exempter `tests/**` de la règle | ASSUMED | Exempter aurait percé une seconde porte vers l'environnement — exactement ce que `JOB-003` existe pour empêcher. `readOptional` refuse en outre tout défaut sur une variable déclarée secrète. |
+| 15 | — | Le scan de secrets refuse la chaîne locale | **Exception étroite, attachée à la règle, éprouvée** | `--no-verify` ; exception large | RECOMMENDED | Le playbook interdit de contourner une porte. L'exception exige les deux identifiants par défaut ET l'adresse de bouclage ; les mêmes identifiants sur un hôte distant déclenchent toujours, vérifié. `.gitleaks.toml` entre dans `sensitive_paths` pour qu'aucun futur affaiblissement ne passe sans revue. |
+| 16 | — | Base des PR pendant que `main` est en retard | **Empiler : #4 sur #3** | Brancher sur `main` | ASSUMED | `main` n'a pas les correctifs de sécurité récupérés dans #3 : y brancher ramènerait les 5 vulnérabilités. L'empilement impose un ordre de fusion (#3 puis #4), consigné dans la PR. |
+
+**Constats de sécurité** — `JOB-011` : F4 (contraste `--border-control` sous 3:1, **corrigé**). `JOB-004/005` :
+F5 (exception du scanner, **acceptée, périmètre vérifié sur trois cas**) et F6 (aucun chemin de
+suppression n'existe encore, **reporté à `JOB-059`**).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
