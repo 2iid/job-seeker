@@ -119,13 +119,18 @@ curl -sfI --max-time 5 "http://localhost:$PORT/" | grep -qi "x-content-type-opti
 #  Le worker. Il porte la boucle autonome : sa sonde doit distinguer « vivant »
 #  de « sain », sinon une file bloquée passe pour un service en bonne santé.
 # ---------------------------------------------------------------------------
-echo "→ [smoke] une page protégée renvoie vers la connexion"
-CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT/profil")"
-[ "$CODE" = "307" ] || [ "$CODE" = "302" ] \
-  || fail "/profil a répondu $CODE sans session — une page protégée doit rediriger"
-CIBLE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT/profil")"
-printf '%s' "$CIBLE" | grep -q "/connexion" \
-  || fail "/profil redirige vers « $CIBLE » au lieu de la connexion"
+echo "→ [smoke] toute page protégée renvoie vers la connexion"
+# La liste est explicite, et chaque nouvelle page protégée s'y ajoute. Une
+# vérification qui ne teste que /profil laisserait passer un écran ajouté plus
+# tard — et c'est le dernier écran ajouté qui oublie la garde, pas le premier.
+for CHEMIN in /profil /profil/import; do
+  CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT$CHEMIN")"
+  [ "$CODE" = "307" ] || [ "$CODE" = "302" ] \
+    || fail "$CHEMIN a répondu $CODE sans session — une page protégée doit rediriger"
+  CIBLE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT$CHEMIN")"
+  printf '%s' "$CIBLE" | grep -q "/connexion" \
+    || fail "$CHEMIN redirige vers « $CIBLE » au lieu de la connexion"
+done
 
 echo "→ [smoke] la redirection ouverte est refusée"
 OUVERTE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT/auth/callback?next=https%3A%2F%2Fevil.example")"

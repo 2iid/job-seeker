@@ -66,6 +66,12 @@ importers:
       '@job-seeker/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@job-seeker/llm':
+        specifier: workspace:*
+        version: link:../../packages/llm
+      '@job-seeker/parsing':
+        specifier: workspace:*
+        version: link:../../packages/parsing
       '@job-seeker/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -171,6 +177,12 @@ importers:
 
   packages/parsing:
     dependencies:
+      '@job-seeker/llm':
+        specifier: workspace:*
+        version: link:../llm
+      '@job-seeker/llm-guard':
+        specifier: workspace:*
+        version: link:../llm-guard
       unpdf:
         specifier: ^1.8.1
         version: 1.8.1

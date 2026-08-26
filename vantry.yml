@@ -62,10 +62,6 @@ sensitive_paths:
   #              d'offre, qui est une entrée hostile (REQ-011, OBL-6).
   - "packages/parsing/**"
   - "apps/worker/src/matching/**"
-  # JOB-031 : l'extraction du CV construit un contexte de modèle à partir d'un
-  # document tiers, et décide où le fichier est rangé — donc ce que la
-  # politique du bucket garde.
-  - "apps/worker/src/parsing/**"
   # Une politique posée ici est ce qui sépare un CV de tout le monde. Le
   # constat F14 est né de l'absence d'une seule d'entre elles.
   - "supabase/migrations/**"
@@ -79,6 +75,9 @@ sensitive_paths:
   - "packages/retention/**"
   - "packages/mandate/**"
   - "apps/web/app/api/**"
+  # JOB-032 : reçoit un fichier envoyé par l'utilisateur, le fait lire par un
+  # modèle, puis écrit le profil. Trois raisons plutôt qu'une.
+  - "apps/web/app/profil/import/**"
   - "apps/web/app/auth/**"
   - "apps/worker/src/submission/**"
   - "apps/worker/src/contacts/**"

@@ -13,6 +13,8 @@ export type { Locale } from './messages.ts'
 export { cheminStockage, proprietaireDuChemin, CheminInvalide } from './chemin.ts'
 export { texteDuDocx, texteDuXml, DocxIllisible } from './docx.ts'
 export { textePdf, PdfIllisible } from './pdf.ts'
+export { extraire, champ, ExtractionRefusee } from './extraction.ts'
+export type { Champ, Confiance, ExperienceProposee, Proposition } from './extraction.ts'
 
 import { examiner, type Refus } from './type-fichier.ts'
 import { texteDuDocx, DocxIllisible } from './docx.ts'
@@ -49,3 +51,5 @@ export async function lire(octets: Uint8Array): Promise<Lecture> {
     throw e
   }
 }
+export { lireDate, afficherDate } from './dates.ts'
+export type { DateCv, Precision } from './dates.ts'
