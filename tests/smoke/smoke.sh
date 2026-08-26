@@ -105,6 +105,12 @@ echo "$CSS" | grep -q 'prefers-color-scheme:dark\|prefers-color-scheme: dark' \
 echo "$CSS" | grep -q 'prefers-reduced-motion' \
   || fail "prefers-reduced-motion absent de la feuille servie"
 
+echo "→ [smoke] le theme est pose AVANT la premiere peinture"
+printf '%s' "$HTML" | grep -q "data-theme" \
+  || fail "le script de theme n'est pas dans le HTML servi — clignotement garanti en mode sombre"
+printf '%s' "$HTML" | grep -q "prefers-color-scheme" \
+  || fail "le script servi ne consulte pas la preference systeme"
+
 echo "→ [smoke] l'en-tête de sécurité est réellement servi"
 curl -sfI --max-time 5 "http://localhost:$PORT/" | grep -qi "x-content-type-options: nosniff" \
   || fail "X-Content-Type-Options absent — next.config.ts le déclare mais il n'arrive pas"
