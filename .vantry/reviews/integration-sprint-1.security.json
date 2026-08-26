@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T19:04:20Z",
-  "head": "d8db35252b132ced3ea7c9823435d05201cc1168",
+  "at": "2026-08-26T22:41:51Z",
+  "head": "0728c482dca1115f3f3fccd8df1a73def31ba469",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -43,7 +43,8 @@
     "apps/web/app/criteres/** — ecrit les exclusions, donc ce qui n est jamais montre",
     "apps/web/app/opportunites/** — expose le lien entre une personne et les offres qu on lui a proposees",
     "apps/worker/src/sources/assiste/** — decide qu une candidature ne part pas seule",
-    "apps/web/app/entree/** — c est la que la garde « rien ne sort » se leve"
+    "apps/web/app/entree/** — c est la que la garde « rien ne sort » se leve",
+    "packages/documents/** — engendre ce qui partira en votre nom, a partir de votre parcours"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -98,7 +99,13 @@
     "JOB-081 : `profiles.parcours_termine_le` est la garde qui interdit TOUTE action sortante pendant le parcours d entree, quel que soit le cran affiche — teste cran par cran, les quatre. Elle est en BASE et non dans un etat d ecran : le parcours MONTRE le cadran et invite a le manipuler, pendant que l agent cherche deja pour de vrai. Un composant qui deciderait « le parcours est fini » vit dans le navigateur, ou le worker n a pas acces.",
     "La garde bloque aussi la PREPARATION, pas seulement l envoi : preparer un CV adapte et une lettre, c est deja depenser et ecrire.",
     "`cran_autonomie` vaut « proposer » par defaut, jamais « agir-seul ». Un defaut permissif ne casse rien et ne se remarque pas — d ou un test en base. Le type enumere refuse une valeur inconnue : un formulaire trafique ne peut pas semer un cran que le code ignorerait, ce qui desactiverait la garde en silence.",
-    "REQ-009 tenu : « agir-seul » exige en plus un mandat valide, et terminer son installation ne le remplace pas."
+    "REQ-009 tenu : « agir-seul » exige en plus un mandat valide, et terminer son installation ne le remplace pas.",
+    "JOB-040 : la contrainte de REQ-007 est verifiee SUR LA SORTIE et non demandee au modele. La sortie est structuree (references par identifiant), ce qui rend « ne pas ajouter d experience » verifiable par appartenance a un ensemble plutot que par relecture. Un CV hors contrainte est REFUSE, pas corrige a la marge.",
+    "Le controle des chiffres ferme le cas le plus insidieux : un nombre invente produit une phrase plus convaincante que la vraie, et c est celui qu un recruteur demandera de justifier.",
+    "JOB-044 : la lettre n est pas ecrite dans une langue absente du profil, et la decision est prise AVANT tout appel — le texte du profil ne part donc pas chez un sous-traitant pour un document qu on va refuser.",
+    "Le controle des organisations a ete refait deux fois apres des faux positifs CONSTATES en reel. Un controle qui se declenche sur un document correct apprend a passer outre, et le jour ou il a raison plus personne ne le lit. La portee reduite est assumee et documentee.",
+    "Le texte de l offre passe par encadrer() dans les deux generateurs. Les journaux notent le TYPE des violations, jamais leur contenu : une description de CV ou une phrase de lettre recopiee dans un journal est de la donnee personnelle deplacee vers un endroit qui la lira un jour.",
+    "GATE : `run.test` ne lancait que `vitest run`. Le contrat passait donc au vert avec un lint rouge — constate, pas suppose. Il enchaine desormais lint, typecheck puis tests, et le nouveau gate a ete eprouve en cassant volontairement le formatage."
   ],
   "findings": [
     {
