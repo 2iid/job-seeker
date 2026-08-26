@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T17:29:09Z",
-  "head": "38c8bdce66b877f8fdeafb5f9c8f50417c3c6983",
+  "at": "2026-08-26T19:04:20Z",
+  "head": "d8db35252b132ced3ea7c9823435d05201cc1168",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -42,7 +42,8 @@
     "apps/web/app/profil/** — ecrit de la donnee personnelle",
     "apps/web/app/criteres/** — ecrit les exclusions, donc ce qui n est jamais montre",
     "apps/web/app/opportunites/** — expose le lien entre une personne et les offres qu on lui a proposees",
-    "apps/worker/src/sources/assiste/** — decide qu une candidature ne part pas seule"
+    "apps/worker/src/sources/assiste/** — decide qu une candidature ne part pas seule",
+    "apps/web/app/entree/** — c est la que la garde « rien ne sort » se leve"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -93,7 +94,11 @@
     "JOB-082 : le redhibitoire « plateforme-assistee » est pose par du CODE, se declenche sur le PALIER declare ET sur l hote de l URL de candidature, et ne se leve par AUCUN critere — teste avec les criteres les plus permissifs possibles. La reconnaissance porte sur l HOTE et non sur la chaine : `linkedin.com.attaquant.test` ne passe pas pour LinkedIn, et `?ref=linkedin.com` ne classe pas une offre ordinaire en palier C.",
     "Aucune automatisation headless n est ajoutee sur une plateforme de palier C, et aucun contournement de session ou d anti-robot. Le registre porte le MOTIF juridique de chaque classement ; reclasser une entree demande que le motif ait cesse d etre vrai, pas qu on ait trouve un moyen de contourner.",
     "F18 CLOS. Chaque tarif porte sa date de releve, sa source, et se marque perime au-dela de 120 jours. Un modele inconnu n a PAS de tarif par defaut : ses appels sont comptes a part plutot que factures au prix d un autre.",
-    "JOB-072 : le plafond par candidature REFUSE au lieu d avertir. Le mode d echec vise n est pas une depense visible mais une boucle nocturne sur un compte qui ne regarde pas — la depense se decouvre a la facture, quand elle est faite."
+    "JOB-072 : le plafond par candidature REFUSE au lieu d avertir. Le mode d echec vise n est pas une depense visible mais une boucle nocturne sur un compte qui ne regarde pas — la depense se decouvre a la facture, quand elle est faite.",
+    "JOB-081 : `profiles.parcours_termine_le` est la garde qui interdit TOUTE action sortante pendant le parcours d entree, quel que soit le cran affiche — teste cran par cran, les quatre. Elle est en BASE et non dans un etat d ecran : le parcours MONTRE le cadran et invite a le manipuler, pendant que l agent cherche deja pour de vrai. Un composant qui deciderait « le parcours est fini » vit dans le navigateur, ou le worker n a pas acces.",
+    "La garde bloque aussi la PREPARATION, pas seulement l envoi : preparer un CV adapte et une lettre, c est deja depenser et ecrire.",
+    "`cran_autonomie` vaut « proposer » par defaut, jamais « agir-seul ». Un defaut permissif ne casse rien et ne se remarque pas — d ou un test en base. Le type enumere refuse une valeur inconnue : un formulaire trafique ne peut pas semer un cran que le code ignorerait, ce qui desactiverait la garde en silence.",
+    "REQ-009 tenu : « agir-seul » exige en plus un mandat valide, et terminer son installation ne le remplace pas."
   ],
   "findings": [
     {
