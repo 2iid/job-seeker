@@ -65,6 +65,9 @@ sensitive_paths:
   # Une politique posée ici est ce qui sépare un CV de tout le monde. Le
   # constat F14 est né de l'absence d'une seule d'entre elles.
   - "supabase/migrations/**"
+  # JOB-033 : `evaluerCompletude` décide `peutAutomatiser`. C'est un contrôle,
+  # pas un affichage — l'écran ET le moteur s'y fient.
+  - "packages/profil/**"
   - "packages/auth/**"
   - "packages/audit/**"
   # Un journal est une surface de fuite : c'est là que la PII sort par accident.

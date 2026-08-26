@@ -90,6 +90,38 @@ export async function asAnon<T>(client: pg.Client, fn: (c: pg.Client) => Promise
   }
 }
 
+/**
+ * Comme `asUser`, mais SANS annuler à la fin.
+ *
+ * `asUser` enveloppe tout dans une transaction annulée : c'est ce qu'on veut
+ * pour éprouver une politique, parce que la base repart intacte. Mais cela rend
+ * impossible de tester ce qui doit PERSISTER entre deux appels — un historique,
+ * un compteur, une version. Le test passerait au vert en observant, à chaque
+ * fois, une base vide.
+ *
+ * Réservé aux tests qui ont besoin de durée, et à eux seuls : c'est à
+ * l'appelant de nettoyer, avec la connexion admin, dans son `afterAll`.
+ */
+export async function asUserPersistant<T>(
+  client: pg.Client,
+  userId: string,
+  fn: (c: pg.Client) => Promise<T>,
+): Promise<T> {
+  await client.query('select set_config($1, $2, false)', [
+    'request.jwt.claims',
+    JSON.stringify({ sub: userId, role: 'authenticated' }),
+  ])
+  await client.query('set role authenticated')
+  try {
+    return await fn(client)
+  } finally {
+    // `reset role` d'abord : tant qu'on est `authenticated`, on n'a pas
+    // forcément le droit de remettre la revendication à zéro.
+    await client.query('reset role')
+    await client.query("select set_config('request.jwt.claims', '', false)")
+  }
+}
+
 /** Crée un compte réel dans auth.users et son profil. Renvoie l'id. */
 export async function creerCompte(c: pg.Client, email: string): Promise<string> {
   const { rows } = await c.query<{ id: string }>(

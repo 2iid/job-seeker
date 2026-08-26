@@ -13,6 +13,7 @@
     "@job-seeker/env": "workspace:*",
     "@job-seeker/llm": "workspace:*",
     "@job-seeker/parsing": "workspace:*",
+    "@job-seeker/profil": "workspace:*",
     "@job-seeker/ui": "workspace:*",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",

@@ -72,6 +72,9 @@ importers:
       '@job-seeker/parsing':
         specifier: workspace:*
         version: link:../../packages/parsing
+      '@job-seeker/profil':
+        specifier: workspace:*
+        version: link:../../packages/profil
       '@job-seeker/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -186,6 +189,12 @@ importers:
       unpdf:
         specifier: ^1.8.1
         version: 1.8.1
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/profil:
     devDependencies:
       typescript:
         specifier: ^5.7.3
