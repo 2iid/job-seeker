@@ -4,7 +4,7 @@
   "verdict": "pass",
   "reviewer": "security-engineer",
   "at": "2026-08-26T00:14:25Z",
-  "head": "f6808f9518d56719f48a5050d1fa54d684d7627b",
+  "head": "6b96defd9ae7b688eeb868bb773f3bb3c37a254a",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -27,7 +27,8 @@
     "data-authz : c'est le cœur de ce diff. RLS activée ET forcée, politique par opération, aucune politique for all, DELETE non accordé au client. Douze tests exécutés contre la vraie base, chaque politique avec son test de refus.",
     "privileged-credential : la connexion superutilisateur n'existe que dans le harnais de tests, et elle est employée pour MONTER les cas, jamais pour les vérifier — les assertions passent par les rôles authenticated et anon.",
     "secrets-pii : aucun secret réel n'entre dans le dépôt. .env est ignoré et vérifié comme tel. Les clés de la pile locale sont les clés de démonstration publiques de Supabase.",
-    "boundary-validation : sans objet, aucune route ajoutée. ai-context, webhooks, storage : sans objet."
+    "boundary-validation : sans objet, aucune route ajoutée. ai-context, webhooks, storage : sans objet.",
+    "Rebasé sur main après la fusion en squash de la PR #3 : le verdict portait sur f6808f95, qui n'existe plus. Réémis sur 6b96defd, son équivalent après rebase — même arbre, même diff sensible."
   ],
   "findings": [
     {
