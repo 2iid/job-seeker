@@ -10,15 +10,19 @@
   },
   "dependencies": {
     "@job-seeker/env": "workspace:*",
+    "@job-seeker/ui": "workspace:*",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@job-seeker/ui": "workspace:*"
+    "@job-seeker/auth": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "dotenv": "^17.2.4"
   }
 }

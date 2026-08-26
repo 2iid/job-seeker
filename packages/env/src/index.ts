@@ -37,8 +37,17 @@ const minLength =
 export const SPECS: readonly Spec[] = [
   { name: 'NODE_ENV', required: ['web', 'worker'], secret: false },
   { name: 'APP_URL', required: ['web'], secret: false, validate: isUrl },
-  { name: 'SUPABASE_URL', required: ['web', 'worker'], secret: false, validate: isUrl },
-  { name: 'SUPABASE_ANON_KEY', required: ['web'], secret: false, validate: minLength(20) },
+  // Le préfixe NEXT_PUBLIC_ n'est pas cosmétique : dans Next.js, il est ce qui
+  // décide qu'une valeur part dans le bundle du navigateur. Ces deux-là DOIVENT
+  // y partir — le client Supabase du navigateur en a besoin — et le préfixe
+  // rend ce choix visible à la lecture plutôt qu'implicite.
+  //
+  // Constat F2 de la revue de la PR #2 : la clé de service ne doit JAMAIS
+  // suivre le même chemin. Elle reste requise par le seul runtime worker, sans
+  // préfixe, et `secret: true` interdit qu'on lui donne une valeur par défaut.
+  { name: 'NEXT_PUBLIC_SUPABASE_URL', required: ['web'], secret: false, validate: isUrl },
+  { name: 'NEXT_PUBLIC_SUPABASE_ANON_KEY', required: ['web'], secret: false, validate: minLength(20) },
+  { name: 'SUPABASE_URL', required: ['worker'], secret: false, validate: isUrl },
   { name: 'SUPABASE_SERVICE_ROLE_KEY', required: ['worker'], secret: true, validate: minLength(20) },
   { name: 'ANTHROPIC_API_KEY', required: ['worker'], secret: true, validate: minLength(20) },
 ]

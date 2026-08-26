@@ -73,6 +73,19 @@ curl -sfI --max-time 5 "http://localhost:$PORT/" | grep -qi "x-content-type-opti
 #  Le worker. Il porte la boucle autonome : sa sonde doit distinguer « vivant »
 #  de « sain », sinon une file bloquée passe pour un service en bonne santé.
 # ---------------------------------------------------------------------------
+echo "→ [smoke] une page protégée renvoie vers la connexion"
+CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT/profil")"
+[ "$CODE" = "307" ] || [ "$CODE" = "302" ] \
+  || fail "/profil a répondu $CODE sans session — une page protégée doit rediriger"
+CIBLE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT/profil")"
+printf '%s' "$CIBLE" | grep -q "/connexion" \
+  || fail "/profil redirige vers « $CIBLE » au lieu de la connexion"
+
+echo "→ [smoke] la redirection ouverte est refusée"
+OUVERTE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT/auth/callback?next=https%3A%2F%2Fevil.example")"
+printf '%s' "$OUVERTE" | grep -q "evil.example" \
+  && fail "le callback a suivi une destination externe : REDIRECTION OUVERTE"
+
 echo "→ [smoke] le worker démarre et répond"
 pnpm --filter @job-seeker/worker dev >>"$LOG" 2>&1 &
 PID_WORKER=$!

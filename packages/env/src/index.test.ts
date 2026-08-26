@@ -14,8 +14,9 @@ import { EnvError, readEnv, readOptional, redact } from './index.js'
 const complete = {
   NODE_ENV: 'test',
   APP_URL: 'http://localhost:3100',
+  NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: 'EXAMPLE-inert-no-value',
   SUPABASE_URL: 'https://example.supabase.co',
-  SUPABASE_ANON_KEY: 'EXAMPLE-inert-no-value',
   SUPABASE_SERVICE_ROLE_KEY: 'EXAMPLE-inert-no-value',
   ANTHROPIC_API_KEY: 'EXAMPLE-inert-no-value',
 }
@@ -40,18 +41,19 @@ describe('readEnv', () => {
       expect.unreachable('aurait dû lever')
     } catch (error) {
       expect(error).toBeInstanceOf(EnvError)
+      // SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY
       expect((error as EnvError).problems).toHaveLength(3)
     }
   })
 
   it('valide la forme, pas seulement la présence', () => {
-    expect(() => readEnv('web', { ...complete, SUPABASE_URL: 'pas-une-url' })).toThrowError(
-      /SUPABASE_URL must be a valid URL/,
+    expect(() => readEnv('web', { ...complete, NEXT_PUBLIC_SUPABASE_URL: 'pas-une-url' })).toThrowError(
+      /NEXT_PUBLIC_SUPABASE_URL must be a valid URL/,
     )
   })
 
   it("n'exige d'un runtime que ce dont il a besoin", () => {
-    const { SUPABASE_SERVICE_ROLE_KEY: _s, ANTHROPIC_API_KEY: _a, ...webOnly } = complete
+    const { SUPABASE_SERVICE_ROLE_KEY: _s, ANTHROPIC_API_KEY: _a, SUPABASE_URL: _u, ...webOnly } = complete
     expect(() => readEnv('web', webOnly)).not.toThrow()
   })
 

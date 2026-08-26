@@ -28,6 +28,7 @@
     "vitest": "^3.0.4",
     "@job-seeker/env": "workspace:*",
     "@job-seeker/observability": "workspace:*",
-    "@job-seeker/testing": "workspace:*"
+    "@job-seeker/testing": "workspace:*",
+    "@job-seeker/auth": "workspace:*"
   }
 }

@@ -101,7 +101,10 @@ export async function creerCompte(c: pg.Client, email: string): Promise<string> 
     [email],
   )
   const id = rows[0]?.id
-  if (id === undefined) throw new Error("création de compte impossible")
-  await c.query('insert into public.profiles (user_id, display_name) values ($1, $2)', [id, email])
+  if (id === undefined) throw new Error('creation de compte impossible')
+  // Le profil n'est PAS créé ici : le trigger de la base s'en charge. Le
+  // harnais emprunte donc exactement le chemin du produit, plutôt qu'un
+  // raccourci qui masquerait une régression du provisionnement.
+  await c.query('update public.profiles set display_name = $2 where user_id = $1', [id, email])
   return id
 }
