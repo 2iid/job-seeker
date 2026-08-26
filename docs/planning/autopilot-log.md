@@ -330,6 +330,32 @@ Le navigateur ne renvoie que du contenu.
 **Constat** — F21 (l'action d'analyse déclenche un appel facturé sans limite de débit : à porter par
 `JOB-073`, avec F9/F10 — même mécanisme, déjà prévu).
 
+## Exécution 17 — 2026-08-26 · le profil, et ce qu'il était hier
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 71 | JOB-033 | Une version à chaque écriture, ou à la demande ? | **À la demande**, si le profil a bougé | Un instantané par écriture | ASSUMED | Enregistrer cinq compétences, c'est cinq `INSERT`. Cinq versions identiques à la seconde près rendraient l'historique illisible **exactement au moment où il devient long**. |
+| 72 | JOB-033 | Comment garantir qu'une version figée est juste ? | **Un déclencheur** qui remonte la modification d'une table fille vers le profil | Se fier à l'application pour toucher `updated_at` | *garde-fou* | Sans lui, une expérience ajoutée manquerait à la version figée juste après : un historique **présent, daté, et faux** — le pire cas, et le plus facile à laisser passer. |
+| 73 | JOB-033 | `figer_profil` en `security definer` ? | **Non** | Oui, pour simplifier les droits | *garde-fou* | Une fonction qui fige le profil de n'importe qui contournerait toutes les politiques posées jusqu'ici. Elle s'exécute avec les droits de l'appelant ; un test vérifie qu'elle refuse le profil d'autrui. |
+| 74 | JOB-033 | Où vit la définition de « prêt » ? | **Un paquet partagé** écran + moteur | Chacun la sienne | BRIEF | Deux définitions divergeront, et **c'est le moteur qui aura le dernier mot** : l'écran annoncerait « tout est prêt » pendant que l'agent postule sans autorisation de travail. |
+| 75 | JOB-033 | Une zone géographique est-elle toujours exigée ? | **Non — seulement si une présence est acceptée** | L'exiger systématiquement | BRIEF | Le marché visé est mondial. Imposer une zone à qui ne veut que du distanciel, ce serait la case qui écarte les gens. |
+
+**Ce que les tests ont appris.** Le refus de réécrire une version est **plus fort** que prévu : le
+privilège `update` n'est accordé à personne, donc Postgres refuse *avant* de consulter une politique.
+Une ligne invisible protège tant qu'une politique reste juste ; un privilège absent protège tant qu'on
+ne l'accorde pas. Les assertions ont été corrigées vers la vérité, pas l'inverse.
+
+**Un outil de test manquait.** `asUser` annule sa transaction — juste pour éprouver une politique,
+mais impossible pour tester ce qui doit **durer**. Un historique testé sous rollback passerait au vert
+en observant une base vide à chaque fois. D'où `asUserPersistant`.
+
+**Une course enfin comprise.** `demarrer-web.sh` interrogeait `lsof`, qui rendait le port libre pendant
+que Next échouait dessus. Il **essaie de se lier** désormais, dans les mêmes conditions que Next :
+quatre `verify` enchaînés passent.
+
+**Constat** — F22 (aucune suppression possible d'une expérience saisie par erreur : sur de la donnée
+personnelle, c'est un défaut de maîtrise, pas une protection).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
