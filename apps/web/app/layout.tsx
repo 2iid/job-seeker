@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import { SCRIPT_ANTI_CLIGNOTEMENT, value } from '@job-seeker/ui'
+import { ArretUrgence } from '@/components/ArretUrgence'
+import { BandeauArret } from '@/components/BandeauArret'
+import { etatArret } from '@/app/arret/actions'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -17,7 +20,11 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Lu ici, donc sur TOUS les écrans : REQ-012 exige que l'arrêt soit
+  // atteignable de n'importe où, et un bouton présent sur neuf écrans sur dix
+  // est un bouton qu'on cherchera sur le dixième.
+  const { arrete } = await etatArret()
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
@@ -29,7 +36,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_ANTI_CLIGNOTEMENT }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* PREMIER élément focalisable du document : US-01 exige ≤ 2 Tab, et
+            c'est la position dans le DOM qui le garantit — pas un tabIndex. */}
+        <ArretUrgence arrete={arrete} />
+        <BandeauArret />
+        {children}
+      </body>
     </html>
   )
 }

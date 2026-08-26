@@ -132,6 +132,29 @@ for CHEMIN in /profil /profil/import /criteres /opportunites /entree; do
     || fail "$CHEMIN redirige vers « $CIBLE » au lieu de la connexion"
 done
 
+# JOB-053 / US-01 — l'arrêt d'urgence est un bouton, sur TOUTE page servie.
+# Un bouton présent sur neuf écrans sur dix est un bouton qu'on cherchera sur
+# le dixième, et REQ-012 dit « depuis n'importe quel écran ».
+echo "→ [smoke] l arrêt d urgence est atteignable, et en premier"
+PAGE="$(curl -s --max-time 5 "http://localhost:$PORT/connexion")"
+printf '%s' "$PAGE" | grep -q "Tout arrêter" \
+  || fail "aucun bouton d arrêt d urgence sur /connexion"
+# « ≤ 2 Tab » : le bouton doit précéder tout autre élément FOCALISABLE.
+#
+# Un `<input type="hidden">` n'est pas focalisable, et Next en pose un au tout
+# début de chaque formulaire d'action serveur — y compris celui du bouton
+# d'arrêt lui-même. Comparer au premier `<input>` venu faisait donc échouer un
+# ordre pourtant correct : le contrôle mesurait le balisage, pas ce que la
+# touche Tab atteint.
+POS_ARRET=$(printf '%s' "$PAGE" | grep -bo "Tout arrêter" | head -1 | cut -d: -f1)
+POS_CHAMP=$(printf '%s' "$PAGE" | grep -o '<input[^>]*>' | grep -v 'type="hidden"' | head -1)
+if [ -n "$POS_CHAMP" ]; then
+  POS_CHAMP=$(printf '%s' "$PAGE" | grep -bo -- "$POS_CHAMP" | head -1 | cut -d: -f1)
+  if [ -n "$POS_ARRET" ] && [ -n "$POS_CHAMP" ] && [ "$POS_ARRET" -gt "$POS_CHAMP" ]; then
+    fail "l arrêt d urgence n est pas le premier élément focalisable (US-01 : ≤ 2 Tab)"
+  fi
+fi
+
 echo "→ [smoke] la redirection ouverte est refusée"
 OUVERTE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT/auth/callback?next=https%3A%2F%2Fevil.example")"
 printf '%s' "$OUVERTE" | grep -q "evil.example" \

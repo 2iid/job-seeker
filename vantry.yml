@@ -98,6 +98,9 @@ sensitive_paths:
   - "apps/web/app/criteres/**"
   # JOB-081 : c'est ici que la garde « rien ne sort pendant l'entrée » se lève.
   - "apps/web/app/entree/**"
+  # JOB-053 : l'arrêt d'urgence. Le rendre inopérant serait la pire régression
+  # possible de ce produit.
+  - "apps/web/app/arret/**"
   - "apps/web/app/auth/**"
   - "apps/worker/src/submission/**"
   - "apps/worker/src/contacts/**"
