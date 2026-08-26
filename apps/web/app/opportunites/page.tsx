@@ -4,7 +4,7 @@ import { Erreur, TropDeDonnees, Vide, type TierName } from '@job-seeker/ui'
 import { clientServeur, utilisateurCourant } from '@/lib/supabase/server'
 import { LigneOffre, type EntreeFlux } from './LigneOffre'
 import { BarreFiltres } from './BarreFiltres'
-import { compte, ecrireFiltres, estVide, lireFiltres } from './filtres.ts'
+import { compte, ecrireFiltres, estVide, lireFiltres, motifLike } from './filtres.ts'
 
 export const metadata = { title: 'Opportunités — Cabine' }
 export const dynamic = 'force-dynamic'
@@ -84,7 +84,10 @@ export default async function Opportunites({
     // `ilike` sur le titre : la recherche plein texte viendra avec un index
     // dédié, et l'annoncer plein texte aujourd'hui serait promettre autre
     // chose que ce qu'elle fait.
-    requete = requete.ilike('offres.titre', `%${filtres.recherche}%`)
+    //
+    // Les jokers de la SAISIE sont neutralisés : « % » demanderait à la base
+    // de balayer toute la table, depuis l'URL et sans rien exploiter.
+    requete = requete.ilike('offres.titre', `%${motifLike(filtres.recherche)}%`)
   }
 
   const { data, error, count } = await requete

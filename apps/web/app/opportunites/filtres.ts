@@ -89,3 +89,23 @@ export function compte(f: Filtres): number {
     (f.seulementSansBloquant ? 1 : 0) + (f.recherche === '' ? 0 : 1)
   )
 }
+
+/**
+ * Neutralise les jokers d'un motif `LIKE`.
+ *
+ * `%` et `_` ne sont pas des caractères ordinaires dans un motif : `%` remplace
+ * n'importe quelle suite, `_` n'importe quel caractère. Une recherche venue de
+ * l'URL les transporte tels quels, et quelqu'un qui tape « % » demande à la
+ * base de balayer toute la table — depuis l'extérieur, sans rien exploiter.
+ *
+ * Ce n'est pas une injection : la requête est paramétrée. C'est un coût qu'on
+ * laisserait imposer, et la personne qui tape « 50 % télétravail » ne cherche
+ * pas non plus un joker — elle obtiendrait un résultat qu'elle ne comprendrait
+ * pas.
+ *
+ * L'antislash passe en premier, sinon il échapperait les échappements qu'on
+ * vient de poser.
+ */
+export function motifLike(saisie: string): string {
+  return saisie.replace(/\\/g, '\\\\').replace(/[%_]/g, (c) => `\\${c}`)
+}

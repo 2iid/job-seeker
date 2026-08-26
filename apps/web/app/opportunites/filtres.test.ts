@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { compte, ecrireFiltres, estVide, FILTRES_VIDES, lireFiltres } from './filtres.ts'
+import { compte, ecrireFiltres, estVide, FILTRES_VIDES, lireFiltres, motifLike } from './filtres.ts'
 
 describe('lireFiltres — l’URL est une entrée, pas une configuration', () => {
   it('lit ce qui est connu', () => {
@@ -54,5 +54,29 @@ describe('aller-retour', () => {
   it('compte les critères posés', () => {
     expect(compte(FILTRES_VIDES)).toBe(0)
     expect(compte(lireFiltres({ palier: 'a,b', score: '70', q: 'x' }))).toBe(4)
+  })
+})
+
+describe('motifLike — les jokers ne viennent pas de l’extérieur', () => {
+  it('neutralise % et _', () => {
+    // « % » demanderait à la base de balayer toute la table, depuis l'URL.
+    expect(motifLike('%')).toBe('\\%')
+    expect(motifLike('a_b')).toBe('a\\_b')
+  })
+
+  it('échappe l’antislash EN PREMIER', () => {
+    // Sinon il échapperait les échappements qu'on vient de poser, et « \\% »
+    // redeviendrait un joker.
+    expect(motifLike('\\%')).toBe('\\\\\\%')
+  })
+
+  it('laisse un texte ordinaire intact', () => {
+    expect(motifLike('Product Manager')).toBe('Product Manager')
+  })
+
+  it('une recherche légitime contenant % reste littérale', () => {
+    // Quelqu'un qui tape « 50 % télétravail » ne cherche pas un joker : il
+    // obtiendrait un résultat qu'il ne comprendrait pas.
+    expect(motifLike('50 % télétravail')).toBe('50 \\% télétravail')
   })
 })
