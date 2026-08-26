@@ -87,3 +87,18 @@ describe('readOptional', () => {
     expect(readOptional('CETTE_VARIABLE_N_EXISTE_PAS', 'repli')).toBe('repli')
   })
 })
+
+describe('readOptional en production', () => {
+  it('refuse tout repli quand NODE_ENV vaut production', () => {
+    const avant = process.env['NODE_ENV']
+    try {
+      process.env['NODE_ENV'] = 'production'
+      // Un repli silencieux en production, c'est un service qui démarre en
+      // pointant vers nulle part et dont la panne se découvre par un
+      // utilisateur plutôt que par un déploiement refusé.
+      expect(() => readOptional('VARIABLE_ABSENTE_EN_PROD', 'repli')).toThrowError(/absente/)
+    } finally {
+      process.env['NODE_ENV'] = avant
+    }
+  })
+})

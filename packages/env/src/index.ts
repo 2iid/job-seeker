@@ -124,5 +124,17 @@ export function readOptional(name: string, fallback: string): string {
     )
   }
   const raw = process.env[name]
-  return raw === undefined || raw.trim() === '' ? fallback : raw.trim()
+  if (raw !== undefined && raw.trim() !== '') return raw.trim()
+
+  // Un repli est une commodité de DÉVELOPPEMENT. En production, une variable
+  // absente doit faire échouer bruyamment : un repli silencieux y produirait un
+  // service qui démarre en pointant vers nulle part, et l'incident se
+  // découvrirait par un utilisateur plutôt que par un déploiement refusé.
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error(
+      `${name} est absente. Un repli n'est admis qu'en développement : en ` +
+        'production, une configuration manquante doit refuser de démarrer.',
+    )
+  }
+  return fallback
 }

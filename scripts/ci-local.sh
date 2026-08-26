@@ -64,6 +64,15 @@ if git clone --quiet --shared --no-checkout "$ROOT" "$WORK/repo" 2>/dev/null \
   if [ -d "$WORK/repo/.vantry/receipts" ]; then
     fail "un reçu a survécu au clone — il serait fait confiance à tort" "re-run the verification"
   fi
+  # L'environnement est INJECTÉ dans le clone, exactement comme la CI injecte
+  # ses secrets : ce qui doit être propre, c'est le CODE et l'absence de reçu,
+  # pas la configuration. Sans cela on ne vérifierait que des pages d'erreur.
+  if [ -f "$ROOT/.env" ]; then
+    cp "$ROOT/.env" "$WORK/repo/.env"
+    pass "environnement local injecté dans le clone (comme la CI injecte ses secrets)"
+  else
+    echo "  ⚠ aucun .env à injecter — l'application démarrera sans configuration"
+  fi
   INSTALL="$(vantry_cfg run.install 2>/dev/null || true)"
   ( cd "$WORK/repo" && [ -n "$INSTALL" ] && eval "$INSTALL" ) >"$WORK/install.log" 2>&1
   if [ $? -ne 0 ]; then
