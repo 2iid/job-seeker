@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T01:42:40Z",
-  "head": "872eb659d4a4f828a7769efac8cd4d7d509474fe",
+  "at": "2026-08-26T06:13:54Z",
+  "head": "212ff6c7803aeef8c5872973883680105028c8fa",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -27,7 +27,8 @@
     "apps/web/middleware.ts — rafraîchissement de session",
     "packages/env/** — renommage des clés publiques (F2)",
     "apps/worker/src/sources/** — contrat, registre, normalisation, cadence (aucun chemin sensible, relu par prudence)",
-    "supabase/migrations/20260825180000_modele_profil.sql — sept tables portant de la donnée personnelle"
+    "supabase/migrations/20260825180000_modele_profil.sql — sept tables portant de la donnée personnelle",
+    "apps/worker/src/sources/ats/** — connecteurs, découverte, analyseurs (sortie réseau vers des tiers)"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -43,7 +44,8 @@
     "Verdict réémis : packages/env a été modifié APRÈS la revue précédente, ce que la porte a détecté comme un verdict périmé. Le changement relu ici durcit le comportement — readOptional refuse tout repli quand NODE_ENV vaut production — et ne relâche rien.",
     "ai-context : le moteur de veille manipule du texte de source, qui est une ENTREE HOSTILE (OBL-6). Rien ici ne l'interprete comme une instruction : le registre ne conserve meme pas le message d'une exception levee par un connecteur, et un test verifie qu'il ne fuite pas dans le resultat. Quand JOB-035 fera passer ce texte a un modele, JOB-052 devra poser la frontiere.",
     "Verdict reemis : vantry.yml a bouge (parametrage des ports) apres la revue precedente. Le changement relu ne touche ni les chemins sensibles declares, ni les portes : il rend seulement le port du service configurable, defauts inchanges.",
-    "data-authz sur le modele complet : les tables filles n ont pas de user_id, l appartenance passe par une sous-requete sur profiles — elle-meme soumise a la RLS de profiles, donc une ligne dont le profil n appartient pas a l appelant est invisible et la condition est fausse. 35 tests couvrent les sept tables, chacune avec son test de refus : lecture d autrui, insertion au nom d autrui, acces anonyme, et suppression."
+    "data-authz sur le modele complet : les tables filles n ont pas de user_id, l appartenance passe par une sous-requete sur profiles — elle-meme soumise a la RLS de profiles, donc une ligne dont le profil n appartient pas a l appelant est invisible et la condition est fausse. 35 tests couvrent les sept tables, chacune avec son test de refus : lecture d autrui, insertion au nom d autrui, acces anonyme, et suppression.",
+    "boundary-validation sur les connecteurs ATS : la sortie reseau ne va QUE vers des URL construites par urlBoard a partir d un fournisseur enumere et d un slug lu sur la page carriere — jamais vers une URL fournie par la reponse d une source. C est la meme regle que REQ-011 : aucune destination sortante ne provient du contenu recupere. La reponse est plafonnee a 8 Mo avant d etre chargee."
   ],
   "findings": [
     {
@@ -117,6 +119,15 @@
       "summary": "public.documents enregistre un chemin de stockage, mais les politiques du bucket Supabase Storage ne sont PAS posees par cette migration. Une ligne cloisonnee qui pointe vers un fichier accessible a tous ne protege rien : c est le fichier qui porte le CV.",
       "fix": "JOB-031 (import de CV) doit poser les politiques de stockage dans la MEME PR que l upload, avec leurs tests allow et deny — un utilisateur ne doit pas pouvoir lire le fichier d un autre, meme en connaissant son chemin. A rappeler dans ses criteres d acceptation.",
       "status": "reporté à JOB-031"
+    },
+    {
+      "severity": "low",
+      "id": "F15",
+      "file": "apps/worker/src/sources/ats/decouverte.ts",
+      "line": 0,
+      "summary": "detecterBoard lit un slug dans le HTML d une page carriere, c est-a-dire dans du contenu controle par un tiers. Le slug est ensuite interpole dans une URL d API. Une page hostile pourrait tenter d y glisser autre chose.",
+      "fix": "Le slug est contraint par la classe [A-Za-z0-9_.-] du motif lui-meme, filtre contre une liste de jetons non-slugs, et refuse en dessous de deux caracteres. Il ne peut donc contenir ni schema, ni barre oblique, ni caractere d echappement. A retester si les motifs sont elargis un jour.",
+      "status": "accepté, périmètre vérifié"
     }
   ]
 }
