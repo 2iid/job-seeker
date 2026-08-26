@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head>
+<script type="application/ld+json">{ ceci n est pas du json </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "JobPosting",
+  "title": "Offre valide malgré le voisinage",
+  "url": "https://exemple.test/ok",
+  "__proto__": { "pollue": true },
+  "hiringOrganization": { "name": "Test" }
+}
+</script>
+<script type="application/ld+json">
+{ "@graph": [ { "@graph": [ { "@type": "JobPosting", "title": "Imbriquée", "url": "https://exemple.test/imbriquee", "hiringOrganization": { "name": "Test" } } ] } ] }
+</script>
+</head><body></body></html>

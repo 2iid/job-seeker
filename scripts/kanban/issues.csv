@@ -21,7 +21,7 @@ JOB-019,Contrat de connecteur et registre de sources,EPIC 2 — Moteur de veille
 JOB-020,Normalisation des offres avec devise périodicité et fuseau,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,done,S2,apps/worker/src/sources/normalize/**,REQ-003;REQ-004,no
 JOB-021,Connecteurs ATS du palier A pour cinq fournisseurs,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,done,S2,apps/worker/src/sources/ats/**,REQ-003,no
 JOB-022,Résolution du board ATS depuis la page carrière,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-021,done,S2,apps/worker/src/sources/discovery/**,REQ-003,no
-JOB-023,Lecture des offres schema.org JobPosting,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-022,backlog,S2,apps/worker/src/sources/jsonld/**,REQ-003,no
+JOB-023,Lecture des offres schema.org JobPosting,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-022,done,S2,apps/worker/src/sources/jsonld/**,REQ-003,no
 JOB-024,Connecteurs du palier B agrégateurs et portails multi-pays,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,done,S2,apps/worker/src/sources/aggregators/**,REQ-003,no
 JOB-025,Registre d entreprises partagé et diffusion multi-utilisateurs,EPIC 2 — Moteur de veille,data,database-architect,P0,M,JOB-020,done,S2,supabase/migrations/**;apps/worker/src/registry/**,REQ-003,yes
 JOB-026,Promotion automatique d une entreprise du palier B vers le palier A,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-025;JOB-022,done,S3,apps/worker/src/registry/promote.ts,REQ-003,no
@@ -83,3 +83,4 @@ JOB-081,Parcours d entrée jusqu à la première offre trouvée en direct,EPIC 3
 JOB-082,Palier C plateformes assistées détection sans candidature,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-019,backlog,S3,apps/worker/src/sources/assisted/**,REQ-003,no
 JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-021,backlog,S3,apps/worker/src/sources/ats/**,REQ-003,no
 JOB-084,Harnais de bout en bout et verification G6 au pixel a 390 px,EPIC 1 — Système d interface,frontend,qa-test-engineer,P1,M,JOB-018,backlog,S5,tests/e2e/**,,no
+JOB-085,Rejouer le lecteur JobPosting contre vingt pages carrieres reelles,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-023,backlog,S5,apps/worker/src/sources/jsonld/**,REQ-003,no
