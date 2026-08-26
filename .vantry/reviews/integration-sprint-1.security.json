@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T22:41:51Z",
-  "head": "0728c482dca1115f3f3fccd8df1a73def31ba469",
+  "at": "2026-08-26T23:35:33Z",
+  "head": "ee6d6a0fd29134d7c1df1247d7d1f3ef244003a5",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -44,7 +44,8 @@
     "apps/web/app/opportunites/** — expose le lien entre une personne et les offres qu on lui a proposees",
     "apps/worker/src/sources/assiste/** — decide qu une candidature ne part pas seule",
     "apps/web/app/entree/** — c est la que la garde « rien ne sort » se leve",
-    "packages/documents/** — engendre ce qui partira en votre nom, a partir de votre parcours"
+    "packages/documents/** — engendre ce qui partira en votre nom, a partir de votre parcours",
+    "apps/web/app/arret/** — le rendre inopérant serait la pire régression de ce produit"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -105,7 +106,13 @@
     "JOB-044 : la lettre n est pas ecrite dans une langue absente du profil, et la decision est prise AVANT tout appel — le texte du profil ne part donc pas chez un sous-traitant pour un document qu on va refuser.",
     "Le controle des organisations a ete refait deux fois apres des faux positifs CONSTATES en reel. Un controle qui se declenche sur un document correct apprend a passer outre, et le jour ou il a raison plus personne ne le lit. La portee reduite est assumee et documentee.",
     "Le texte de l offre passe par encadrer() dans les deux generateurs. Les journaux notent le TYPE des violations, jamais leur contenu : une description de CV ou une phrase de lettre recopiee dans un journal est de la donnee personnelle deplacee vers un endroit qui la lira un jour.",
-    "GATE : `run.test` ne lancait que `vitest run`. Le contrat passait donc au vert avec un lint rouge — constate, pas suppose. Il enchaine desormais lint, typecheck puis tests, et le nouveau gate a ete eprouve en cassant volontairement le formatage."
+    "GATE : `run.test` ne lancait que `vitest run`. Le contrat passait donc au vert avec un lint rouge — constate, pas suppose. Il enchaine desormais lint, typecheck puis tests, et le nouveau gate a ete eprouve en cassant volontairement le formatage.",
+    "JOB-046 : `peutEnvoyer` verifie cinq conditions A L INSTANT DE L EXECUTION, comme REQ-009 l exige explicitement. Entre la mise en file et l envoi il peut s ecouler des heures : le mandat peut avoir expire, la personne peut avoir tout arrete, le quota peut avoir ete consomme ailleurs. Une decision prise a la mise en file et jamais reconsideree enverrait dans un monde qui n existe plus.",
+    "Un mandat « agir-seul » sans empreinte d apercu ni echeance est refuse par une CONTRAINTE DE BASE, pas par le code applicatif : un mandat mal forme est exactement ce qu on ne veut pas decouvrir au moment de s en servir. Le mandat le plus recemment accorde l emporte, et un mandat date du futur n est pas en vigueur.",
+    "Un mandat vaut CANAL PAR CANAL : autoriser l envoi de candidatures ne vaut pas autorisation d ecrire a des recruteurs. Teste.",
+    "JOB-053 : l arret est une ECRITURE en base, pas un signal. Un signal suppose un worker joignable et vivant ; la colonne est relue a chaque point de controle, y compris apres un redeploiement — c est la seule forme qui tienne « rien ne redemarre tout seul ».",
+    "JOB-054 : l immuabilite du recu est portee par un DECLENCHEUR et non par une politique, parce que `service_role` contourne la RLS et que c est le role du worker. Teste : meme la connexion superutilisateur ne peut pas corriger un recu.",
+    "La limite de cette immuabilite est nommee : l UPDATE est refuse sans exception, la SUPPRESSION passe par un drapeau de session explicite que seul le parcours d effacement pose. REQ-013 protege de la correction silencieuse ; REQ-014 protege le droit d effacer. Le drapeau n ouvre PAS l UPDATE — sinon « je supprime » deviendrait « je corrige »."
   ],
   "findings": [
     {
