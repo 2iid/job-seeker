@@ -11,8 +11,11 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
-PORT=3100
-PORT_WORKER=3110
+# Parametrables : la contre-verification sur clone propre tourne en meme temps
+# que l hote et ne doit pas lui disputer un port. Un service qui echoue a se
+# lier produit un smoke qui teste le serveur du voisin.
+PORT="${PORT_WEB:-3100}"
+PORT_WORKER="${PORT_WORKER:-3110}"
 LOG=".vantry/state/smoke.log"
 mkdir -p "$(dirname "$LOG")"
 PID=""

@@ -15,7 +15,7 @@ import { stats } from './queue/index.ts'
  * sortantes faites au nom de quelqu'un.
  */
 
-const PORT = 3110
+const PORT = Number(readOptional('PORT_WORKER', '3110'))
 const journal = creerJournal({ runtime: 'worker' })
 
 const pool = new pg.Pool({

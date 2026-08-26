@@ -15,7 +15,7 @@ run:
   test: pnpm test
   build: pnpm build
   start: pnpm --filter @job-seeker/web start
-  ready: curl -sf http://localhost:3100/api/health
+  ready: curl -sf "http://localhost:${PORT_WEB:-3100}/api/health"
   # Le smoke construit, démarre, et vérifie qu'une VRAIE page se rend et qu'une
   # VRAIE requête aboutit. Une suite de tests verte n'est pas une vérification :
   # c'est exactement à quoi ressemblait l'échec que cette porte existe pour

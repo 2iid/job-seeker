@@ -73,6 +73,11 @@ if git clone --quiet --shared --no-checkout "$ROOT" "$WORK/repo" 2>/dev/null \
   else
     echo "  ⚠ aucun .env à injecter — l'application démarrera sans configuration"
   fi
+  # Le clone tourne sur SES ports : sinon il dispute 3100 a l hote, echoue a se
+  # lier, et l on croit a une regression du produit la ou il n y a qu une
+  # collision. Les defauts restent 3100/3110 pour un lancement a la main.
+  export PORT_WEB=3200 PORT_WORKER=3210
+  pass "ports dedies au clone : web 3200, worker 3210"
   INSTALL="$(vantry_cfg run.install 2>/dev/null || true)"
   ( cd "$WORK/repo" && [ -n "$INSTALL" ] && eval "$INSTALL" ) >"$WORK/install.log" 2>&1
   if [ $? -ne 0 ]; then
