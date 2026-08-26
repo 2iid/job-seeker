@@ -29,7 +29,7 @@ JOB-027,Déduplication inter-sources et inter-paliers,EPIC 2 — Moteur de veill
 JOB-028,Cadence par domaine retrait progressif et état par source,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,backlog,S2,apps/worker/src/sources/rate/**,REQ-003,no
 JOB-029,Planificateur des paliers A et B,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-028,backlog,S3,apps/worker/src/scheduler/**,REQ-003,no
 JOB-030,Modèle de données profil documents et candidatures avec RLS,EPIC 3 — Profil et CV,data,database-architect,P0,M,JOB-005,backlog,S2,supabase/migrations/**;tests/rls/**,REQ-001;REQ-002,yes
-JOB-031,Import de CV et extraction structurée,EPIC 3 — Profil et CV,ai,ai-integration-engineer,P0,L,JOB-030,backlog,S3,packages/parsing/**;apps/worker/src/parsing/**,REQ-001,yes
+JOB-031,Import de CV et extraction structurée,EPIC 3 — Profil et CV,ai,ai-integration-engineer,P0,L,JOB-030,done,S3,packages/parsing/**;apps/worker/src/parsing/**,REQ-001,yes
 JOB-032,Écran de confirmation de l extraction du CV,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-031;JOB-013,backlog,S3,apps/web/app/profil/import/**,REQ-001,no
 JOB-033,Profil canonique édition et versionnement,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-032,backlog,S3,apps/web/app/profil/**,REQ-002,no
 JOB-034,Critères de recherche préférences et exclusions,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-033,backlog,S3,apps/web/app/criteres/**,REQ-002,no

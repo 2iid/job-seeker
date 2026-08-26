@@ -15,6 +15,7 @@ installation locale. **Elles ne protègent rien et n'ont rien à faire dans un `
 
 ```bash
 supabase start          # démarrer la pile
+bash scripts/db-bootstrap.sh   # une fois : aligner le local sur l'hébergé
 supabase db reset       # rejouer TOUTES les migrations sur une base vierge
 pnpm db:export          # régénérer supabase/schema.sql
 pnpm vitest run tests/rls

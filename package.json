@@ -19,18 +19,19 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@job-seeker/auth": "workspace:*",
+    "@job-seeker/env": "workspace:*",
+    "@job-seeker/llm": "workspace:*",
+    "@job-seeker/llm-guard": "workspace:*",
+    "@job-seeker/observability": "workspace:*",
+    "@job-seeker/parsing": "workspace:*",
+    "@job-seeker/testing": "workspace:*",
     "@types/pg": "^8.23.1",
     "dotenv": "^17.4.2",
     "eslint": "^9.18.0",
     "pg": "^8.23.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
-    "vitest": "^3.0.4",
-    "@job-seeker/env": "workspace:*",
-    "@job-seeker/observability": "workspace:*",
-    "@job-seeker/testing": "workspace:*",
-    "@job-seeker/auth": "workspace:*",
-    "@job-seeker/llm": "workspace:*",
-    "@job-seeker/llm-guard": "workspace:*"
+    "vitest": "^3.0.4"
   }
 }

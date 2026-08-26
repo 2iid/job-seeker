@@ -1,4 +1,4 @@
-import { CONSIGNE_FRONTIERE, encadrer, estSuspect } from '@job-seeker/llm-guard'
+import { CONSIGNE_FRONTIERE, citationPresente, encadrer, estSuspect } from '@job-seeker/llm-guard'
 import type { Journal } from '@job-seeker/observability'
 import type { Demande } from '@job-seeker/llm'
 import { evaluerRedhibitoires, peutPostulerSeule, type Criteres, type OffreAEvaluer, type Redhibitoire } from './redhibitoires.ts'
@@ -75,17 +75,6 @@ Règles de ton évaluation :
 - Tu n'évalues PAS l'autorisation de travail, la zone géographique ni le mode de présence : ils sont décidés ailleurs.
 - Écris en français, sobrement, sans flatterie.`
 
-/** Normalise pour comparer une citation au texte : casse, accents, espaces. */
-function comparable(v: string): string {
-  return v
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[’']/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
 /**
  * Garde une preuve seulement si sa citation figure RÉELLEMENT dans l'offre.
  *
@@ -97,8 +86,7 @@ export function verifierCitations(
   preuves: readonly Preuve[],
   texteOffre: string,
 ): { gardees: readonly Preuve[]; rejetees: number } {
-  const source = comparable(texteOffre)
-  const gardees = preuves.filter((p) => p.citation.trim() !== '' && source.includes(comparable(p.citation)))
+  const gardees = preuves.filter((p) => citationPresente(p.citation, texteOffre))
   return { gardees, rejetees: preuves.length - gardees.length }
 }
 

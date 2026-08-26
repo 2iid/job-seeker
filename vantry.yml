@@ -62,6 +62,13 @@ sensitive_paths:
   #              d'offre, qui est une entrée hostile (REQ-011, OBL-6).
   - "packages/parsing/**"
   - "apps/worker/src/matching/**"
+  # JOB-031 : l'extraction du CV construit un contexte de modèle à partir d'un
+  # document tiers, et décide où le fichier est rangé — donc ce que la
+  # politique du bucket garde.
+  - "apps/worker/src/parsing/**"
+  # Une politique posée ici est ce qui sépare un CV de tout le monde. Le
+  # constat F14 est né de l'absence d'une seule d'entre elles.
+  - "supabase/migrations/**"
   - "packages/auth/**"
   - "packages/audit/**"
   # Un journal est une surface de fuite : c'est là que la PII sort par accident.
