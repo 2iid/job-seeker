@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T16:55:17Z",
-  "head": "03afe241af527938110815bff77bd9730fca68e9",
+  "at": "2026-08-26T17:29:09Z",
+  "head": "38c8bdce66b877f8fdeafb5f9c8f50417c3c6983",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -41,7 +41,8 @@
     "packages/profil/** — decide `peutAutomatiser`, donc un controle et non un affichage",
     "apps/web/app/profil/** — ecrit de la donnee personnelle",
     "apps/web/app/criteres/** — ecrit les exclusions, donc ce qui n est jamais montre",
-    "apps/web/app/opportunites/** — expose le lien entre une personne et les offres qu on lui a proposees"
+    "apps/web/app/opportunites/** — expose le lien entre une personne et les offres qu on lui a proposees",
+    "apps/worker/src/sources/assiste/** — decide qu une candidature ne part pas seule"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -88,7 +89,11 @@
     "Aucun INSERT client sur `opportunites` : s en inventer une reviendrait a se proposer une offre que rien n a jugee, avec un score choisi, que l agent traiterait comme un verdict du moteur. Seul l UPDATE du statut est ouvert, borne au profil.",
     "Une opportunite exclue est introuvable y compris par son URL directe. « Introuvable » est aussi la reponse a « pas la votre » : distinguer les deux confirmerait a un curieux qu un identifiant existe chez quelqu un d autre.",
     "La description d une offre est rendue en TEXTE (`whiteSpace: pre-wrap`), jamais en HTML. Elle vient d une page tierce et a ete depouillee de son balisage a la lecture (JOB-023) ; la rendre comme du HTML ici annulerait ce travail.",
-    "Les filtres viennent de l URL, donc d une entree : toute valeur hors vocabulaire est ignoree, le score hors 0-100 est ignore, et la recherche est bornee a 120 caracteres."
+    "Les filtres viennent de l URL, donc d une entree : toute valeur hors vocabulaire est ignoree, le score hors 0-100 est ignore, et la recherche est bornee a 120 caracteres.",
+    "JOB-082 : le redhibitoire « plateforme-assistee » est pose par du CODE, se declenche sur le PALIER declare ET sur l hote de l URL de candidature, et ne se leve par AUCUN critere — teste avec les criteres les plus permissifs possibles. La reconnaissance porte sur l HOTE et non sur la chaine : `linkedin.com.attaquant.test` ne passe pas pour LinkedIn, et `?ref=linkedin.com` ne classe pas une offre ordinaire en palier C.",
+    "Aucune automatisation headless n est ajoutee sur une plateforme de palier C, et aucun contournement de session ou d anti-robot. Le registre porte le MOTIF juridique de chaque classement ; reclasser une entree demande que le motif ait cesse d etre vrai, pas qu on ait trouve un moyen de contourner.",
+    "F18 CLOS. Chaque tarif porte sa date de releve, sa source, et se marque perime au-dela de 120 jours. Un modele inconnu n a PAS de tarif par defaut : ses appels sont comptes a part plutot que factures au prix d un autre.",
+    "JOB-072 : le plafond par candidature REFUSE au lieu d avertir. Le mode d echec vise n est pas une depense visible mais une boucle nocturne sur un compte qui ne regarde pas — la depense se decouvre a la facture, quand elle est faite."
   ],
   "findings": [
     {
