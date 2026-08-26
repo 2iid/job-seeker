@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T15:29:28Z",
-  "head": "790182b0ec52a79ad936f8377212606e3ff018b6",
+  "at": "2026-08-26T16:52:08Z",
+  "head": "0f49eea5d56b866d6c4f68c723cee9435be1dce1",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -40,7 +40,8 @@
     "apps/web/app/profil/import/** — recoit un fichier, appelle un modele, ecrit le profil",
     "packages/profil/** — decide `peutAutomatiser`, donc un controle et non un affichage",
     "apps/web/app/profil/** — ecrit de la donnee personnelle",
-    "apps/web/app/criteres/** — ecrit les exclusions, donc ce qui n est jamais montre"
+    "apps/web/app/criteres/** — ecrit les exclusions, donc ce qui n est jamais montre",
+    "apps/web/app/opportunites/** — expose le lien entre une personne et les offres qu on lui a proposees"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -81,7 +82,13 @@
     "Faille fermee au passage : le mot redhibitoire n etait cherche que dans titre + description, pendant que le modele lisait le texte complet. Un mot present dans le corps mais absent du chapeau passait au travers du filtre que la personne avait pose.",
     "F22 CLOS. DELETE accorde sur experiences, formations, competences, employeurs_exclus, avec 10 tests allow/deny. Restent sans DELETE, chacun pour une raison qui tient : criteres_recherche et profil_versions (un historique effacable ne prouve rien), candidatures (elle a eu lieu ; la retirer de la base ne la retire pas de la boite du recruteur), documents (le fichier survivrait a sa ligne — c est F20).",
     "`numeroter_version_criteres` n est pas security definer et prend un verrou sur la ligne de profil, qui serialise les ecritures du MEME profil sans faire attendre les autres.",
-    "Les valeurs de `presence` sont filtrees contre une liste close cote serveur : un formulaire trafique ne peut pas semer une valeur que le moteur ne sait pas lire — ce qui la ferait ignorer, donc desactiver silencieusement un filtre."
+    "Les valeurs de `presence` sont filtrees contre une liste close cote serveur : un formulaire trafique ne peut pas semer une valeur que le moteur ne sait pas lire — ce qui la ferait ignorer, donc desactiver silencieusement un filtre.",
+    "JOB-038 : `offres` est lisible par toute personne authentifiee, et c est un CHOIX motive — ce sont des annonces publiques, et les cloisonner par profil dupliquerait la meme ligne sans rien proteger que le monde ne sache deja. Aucune ECRITURE cliente : une personne qui pourrait inserer une offre se fabriquerait une annonce que rien n a relevee, avec la fraicheur de son choix. Teste.",
+    "`opportunites` porte la donnee sensible : quelles offres quelqu un s est vu proposer revele son niveau, ses pretentions, sa mobilite, et parfois qu il cherche sans que son employeur le sache. Test decisif : Bob et Alice ont chacun une ligne sur la MEME offre, et une politique cloisonnant par offre au lieu du profil passerait sans que rien n ait l air anormal.",
+    "Aucun INSERT client sur `opportunites` : s en inventer une reviendrait a se proposer une offre que rien n a jugee, avec un score choisi, que l agent traiterait comme un verdict du moteur. Seul l UPDATE du statut est ouvert, borne au profil.",
+    "Une opportunite exclue est introuvable y compris par son URL directe. « Introuvable » est aussi la reponse a « pas la votre » : distinguer les deux confirmerait a un curieux qu un identifiant existe chez quelqu un d autre.",
+    "La description d une offre est rendue en TEXTE (`whiteSpace: pre-wrap`), jamais en HTML. Elle vient d une page tierce et a ete depouillee de son balisage a la lecture (JOB-023) ; la rendre comme du HTML ici annulerait ce travail.",
+    "Les filtres viennent de l URL, donc d une entree : toute valeur hors vocabulaire est ignoree, le score hors 0-100 est ignore, et la recherche est bornee a 120 caracteres."
   ],
   "findings": [
     {
@@ -226,6 +233,15 @@
       "line": 0,
       "summary": "Aucun role client n a DELETE sur `experiences`, `formations` ni `competences`. Une personne ne peut donc pas retirer une experience saisie par erreur — elle ne peut que la remplacer. Sur de la donnee personnelle, c est un defaut de maitrise, pas une protection.",
       "fix": "L interdiction de JOB-030 protege REQ-014 (arreter l automatisation avant d effacer), ce qui vise la suppression du COMPTE, pas d une ligne de parcours. Meme raisonnement que la divergence deja assumee sur le bucket. A porter par JOB-034 ou JOB-057 : accorder DELETE sur les tables filles du profil, avec ses tests allow/deny.",
+      "status": "ouvert"
+    },
+    {
+      "severity": "low",
+      "id": "F23",
+      "file": "apps/web/app/opportunites/page.tsx",
+      "line": 0,
+      "summary": "La recherche construit un motif `ilike` a partir d une saisie utilisateur. Les caracteres `%` et `_` y sont des jokers : quelqu un qui tape « % » balaie tout le flux. Ce n est pas une injection — PostgREST parametre — mais un moyen d imposer un balayage de table depuis l URL.",
+      "fix": "Echapper `%`, `_` et `\\\\` dans le motif avant de le composer, ou passer par une recherche plein texte indexee. A traiter avec JOB-073 (limitation de debit) ou lors de l ajout de l index de recherche.",
       "status": "ouvert"
     }
   ]
