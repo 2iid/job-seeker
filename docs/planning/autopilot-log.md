@@ -401,6 +401,22 @@ aucune valeur si l'anglais dit « you failed ».
 
 **Issue créée** — `JOB-084` : le harnais de bout en bout et la vérification G6 **au pixel**.
 
+## Exécution 20 — 2026-08-26 · lire la page de quelqu'un d'autre
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 86 | JOB-023 | Une page sans donnée structurée : `aucun-resultat` ou `format-change` ? | **`format-change`** | `aucun-resultat` | BRIEF | REQ-003. `aucun-resultat` autorise à dire « rien pour vous aujourd'hui » ; le dire d'une page qu'on n'a pas su lire ferait manquer un employeur qui recrutait. |
+| 87 | JOB-023 | Faut-il chercher au-delà du premier `</script>` ? | **Non** | Oui, pour récupérer un bloc tronqué | ASSUMED | Le navigateur s'arrête là. Chercher plus loin donnerait à une page hostile un moyen de nous faire interpréter ce que personne d'autre n'interprète. |
+| 88 | JOB-023 | Relire le salaire ici, ou le rendre en texte ? | **En texte, pour `lireRemuneration`** | Une seconde lecture | *garde-fou* | Deux lectures de rémunération divergeront. Celle de `normalisation.ts` a déjà ses pièges résolus — dont le « / mois » qu'un `\b` ne voyait pas, et qui lisait un salaire dakarois **douze fois trop bas**. |
+| 89 | JOB-023 | Fixtures relevées ou écrites ? | **Écrites, et le PROVENANCE.md le dit** | Les présenter comme relevées | *honnêteté* | Trois tableaux publics essayés, aucun ne sert de `JobPosting` dans son HTML. Ici la spécification **est** le contrat, et le risque est la variation de forme — que j'énumère à dessein. `JOB-085` créé pour le relevé réel. |
+
+**La fixture avait le défaut qu'elle testait.** J'y avais écrit `</script>` non échappé dans une
+description ; le bloc se tronquait — exactement comme chez un navigateur. La spécification HTML impose
+`<\/script>`, et l'échappement n'est pas cosmétique : c'est ce qui fait survivre la charge à son
+propre conteneur.
+
+**Issues créées** — `JOB-085` (rejouer contre vingt pages réelles, dans cinq pays et cinq secteurs).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
