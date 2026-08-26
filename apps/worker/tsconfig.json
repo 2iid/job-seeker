@@ -1,5 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "dist", "rootDir": "src", "module": "NodeNext", "moduleResolution": "NodeNext" },
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    // Node exécute ce code en retirant les types, sans compiler : il faut donc
+    // écrire les imports avec l'extension .ts réelle. Ces deux options laissent
+    // tsc accepter cette écriture ET la réécrire en .js à l'émission, pour que
+    // le même fichier tourne en développement et une fois construit.
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true
+  },
   "include": ["src"]
 }

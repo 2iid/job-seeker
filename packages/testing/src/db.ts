@@ -9,7 +9,7 @@ import pg from 'pg'
  * Postgres qui l'applique, c'est donc Postgres qui doit répondre.
  */
 
-const RACINE = join(import.meta.dirname, '..', '..')
+const RACINE = join(import.meta.dirname, '..', '..', '..')
 
 /**
  * L'URL vient de l'environnement, puis de `.env`, puis du défaut local

@@ -12,13 +12,17 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 PORT=3100
+PORT_WORKER=3110
 LOG=".vantry/state/smoke.log"
 mkdir -p "$(dirname "$LOG")"
 PID=""
+PID_WORKER=""
 
 cleanup() {
-  [ -n "$PID" ] && kill "$PID" 2>/dev/null
-  [ -n "$PID" ] && wait "$PID" 2>/dev/null
+  for p in "$PID" "$PID_WORKER"; do
+    [ -n "$p" ] && kill "$p" 2>/dev/null
+    [ -n "$p" ] && wait "$p" 2>/dev/null
+  done
   return 0
 }
 trap cleanup EXIT INT TERM
@@ -65,4 +69,28 @@ echo "→ [smoke] l'en-tête de sécurité est réellement servi"
 curl -sfI --max-time 5 "http://localhost:$PORT/" | grep -qi "x-content-type-options: nosniff" \
   || fail "X-Content-Type-Options absent — next.config.ts le déclare mais il n'arrive pas"
 
-echo "  ✓ smoke: la page se rend, l'API répond, les tokens des deux thèmes sont servis, les en-têtes aussi"
+# ---------------------------------------------------------------------------
+#  Le worker. Il porte la boucle autonome : sa sonde doit distinguer « vivant »
+#  de « sain », sinon une file bloquée passe pour un service en bonne santé.
+# ---------------------------------------------------------------------------
+echo "→ [smoke] le worker démarre et répond"
+pnpm --filter @job-seeker/worker dev >>"$LOG" 2>&1 &
+PID_WORKER=$!
+for _ in $(seq 1 30); do
+  curl -sf "http://localhost:$PORT_WORKER/health" >/dev/null 2>&1 && break
+  kill -0 "$PID_WORKER" 2>/dev/null || { tail -20 "$LOG"; fail "le worker est mort avant d'être prêt"; }
+  sleep 0.5
+done
+SANTE="$(curl -sf --max-time 5 "http://localhost:$PORT_WORKER/health" || true)"
+echo "$SANTE" | grep -q '"status":"ok"' \
+  || fail "le worker ne se déclare pas sain : « $SANTE » (la base locale tourne-t-elle ?)"
+echo "$SANTE" | grep -q '"queue"' \
+  || fail "la sonde ne rapporte pas l'état de la file — vivant serait confondu avec sain"
+
+echo "→ [smoke] le worker n'expose RIEN d'autre que sa sonde"
+CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT_WORKER/jobs" || true)"
+[ "$CODE" = "404" ] \
+  || fail "le worker a répondu $CODE sur /jobs — il ne doit avoir aucune autre surface"
+
+echo "  ✓ smoke: la page se rend, l'API répond, les tokens des deux thèmes sont servis," 
+echo "           les en-têtes aussi, et le worker rend compte de sa file sans rien exposer d'autre"

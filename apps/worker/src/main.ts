@@ -1,35 +1,76 @@
 import { createServer } from 'node:http'
+import { readOptional } from '@job-seeker/env'
+import { creerJournal, evaluerSante } from '@job-seeker/observability'
+import pg from 'pg'
+import { stats } from './queue/index.ts'
 
 /**
- * The worker skeleton (ADR-0001).
+ * Le worker (ADR-0001).
  *
- * The boundary this file exists to make real: the worker holds NO user session
- * and exposes NO public route other than its own health probe. Everything it
- * will do — polling, generation, submission — arrives through JOB-009's queue,
- * never through an inbound request.
+ * La frontière que ce fichier rend matérielle : il ne porte AUCUNE session
+ * utilisateur et n'expose AUCUNE route publique hors de sa sonde de santé.
+ * Tout ce qu'il fera — veille, génération, soumission — lui arrive par la file
+ * durable, jamais par une requête entrante. Une route qui accepterait du
+ * travail depuis l'extérieur serait une porte d'entrée sur des actions
+ * sortantes faites au nom de quelqu'un.
  */
 
 const PORT = 3110
+const journal = creerJournal({ runtime: 'worker' })
 
-const server = createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' })
-    res.end(JSON.stringify({ status: 'ok' }))
-    return
-  }
-  // Deliberate: no other surface exists. Not 404-as-oversight — 404 as a rule.
-  res.writeHead(404, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify({ error: 'not_found' }))
+const pool = new pg.Pool({
+  connectionString: readOptional('DATABASE_URL', 'postgresql://postgres:postgres@127.0.0.1:54522/postgres'),
+  max: 4,
 })
 
-const shutdown = (signal: string) => {
-  process.stdout.write(`worker: ${signal} received, closing\n`)
-  server.close(() => process.exit(0))
+const server = createServer((req, res) => {
+  if (req.method !== 'GET' || req.url !== '/health') {
+    // 404 par RÈGLE, pas par oubli : aucune autre surface n'existe.
+    res.writeHead(404, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: 'not_found' }))
+    return
+  }
+
+  void (async () => {
+    try {
+      const file = await stats(pool)
+      const sante = evaluerSante(file)
+      // Un worker vivant dont la file n'avance plus n'est PAS sain, et il doit
+      // le dire lui-même — sinon la panne est invisible jusqu'à ce qu'un
+      // utilisateur constate qu'on n'a rien fait pour lui de la nuit.
+      res.writeHead(sante.status === 'ok' ? 200 : 503, {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store',
+      })
+      res.end(JSON.stringify({ status: sante.status, reasons: sante.raisons, queue: file }))
+    } catch (cause) {
+      journal.erreur('sonde de santé indisponible', cause)
+      res.writeHead(503, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ status: 'degraded', reasons: ['base injoignable'] }))
+    }
+  })()
+})
+
+const arreter = (signal: string): void => {
+  journal.log('info', 'arrêt demandé', { source: signal })
+  server.close(() => {
+    void pool.end().then(() => process.exit(0))
+  })
 }
 
-process.on('SIGTERM', () => shutdown('SIGTERM'))
-process.on('SIGINT', () => shutdown('SIGINT'))
+process.on('SIGTERM', () => arreter('SIGTERM'))
+process.on('SIGINT', () => arreter('SIGINT'))
+
+// Une erreur non rattrapée est capturée AVANT que le processus meure : sans
+// cela, la seule trace d'un worker mort la nuit est son absence.
+process.on('uncaughtException', (cause) => {
+  journal.erreur('exception non rattrapée', cause)
+  process.exit(1)
+})
+process.on('unhandledRejection', (cause) => {
+  journal.erreur('promesse rejetée sans traitement', cause)
+})
 
 server.listen(PORT, () => {
-  process.stdout.write(`worker: health probe on http://localhost:${PORT}/health\n`)
+  journal.log('info', 'worker démarré', { statusCode: PORT })
 })

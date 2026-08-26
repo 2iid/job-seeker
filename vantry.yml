@@ -64,6 +64,8 @@ sensitive_paths:
   - "apps/worker/src/matching/**"
   - "packages/auth/**"
   - "packages/audit/**"
+  # Un journal est une surface de fuite : c'est là que la PII sort par accident.
+  - "packages/observability/**"
   - "packages/llm-guard/**"
   - "packages/billing/**"
   - "packages/ratelimit/**"

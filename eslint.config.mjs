@@ -24,6 +24,14 @@ export default tseslint.config(
         caughtErrorsIgnorePattern: '^_',
         ignoreRestSiblings: true,
       }],
+      // Node exécute notre TypeScript en RETIRANT les types, sans compiler.
+      // Les syntaxes qui exigent une transformation cassent au démarrage et
+      // non à la compilation — donc après le typecheck, donc en production.
+      'no-restricted-syntax': ['error',
+        { selector: 'TSParameterProperty', message: 'Propriété de constructeur non supportée par le mode strip-only de Node : déclarez le champ puis affectez-le.' },
+        { selector: 'TSEnumDeclaration', message: 'enum non supporté par le mode strip-only de Node : employez une union de littéraux ou un objet `as const`.' },
+        { selector: 'TSModuleDeclaration', message: 'namespace non supporté par le mode strip-only de Node.' },
+      ],
       // Un secret ne se lit jamais depuis process.env ailleurs que dans packages/env.
       'no-restricted-properties': ['error', {
         object: 'process',

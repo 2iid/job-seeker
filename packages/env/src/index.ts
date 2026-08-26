@@ -44,12 +44,18 @@ export const SPECS: readonly Spec[] = [
 ]
 
 export class EnvError extends Error {
-  constructor(readonly problems: readonly string[]) {
+  // Champ déclaré puis affecté, jamais une « parameter property » : Node
+  // exécute ce TypeScript en retirant les types SANS compiler, et cette
+  // syntaxe-là exige une transformation. La règle ESLint le rappelle.
+  readonly problems: readonly string[]
+
+  constructor(problems: readonly string[]) {
     super(
       `Environment is not usable — ${problems.length} problem(s):\n` +
         problems.map((p) => `  - ${p}`).join('\n') +
         '\nSee .env.example. Nothing starts until every line above is fixed.',
     )
+    this.problems = problems
     this.name = 'EnvError'
   }
 }

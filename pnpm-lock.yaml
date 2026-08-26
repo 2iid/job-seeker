@@ -18,6 +18,12 @@ importers:
       '@job-seeker/env':
         specifier: workspace:*
         version: link:packages/env
+      '@job-seeker/observability':
+        specifier: workspace:*
+        version: link:packages/observability
+      '@job-seeker/testing':
+        specifier: workspace:*
+        version: link:packages/testing
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1
@@ -76,7 +82,16 @@ importers:
       '@job-seeker/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@job-seeker/observability':
+        specifier: workspace:*
+        version: link:../../packages/observability
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
     devDependencies:
+      '@job-seeker/testing':
+        specifier: workspace:*
+        version: link:../../packages/testing
       '@types/node':
         specifier: ^22.10.7
         version: 22.20.1
@@ -86,6 +101,28 @@ importers:
 
   packages/env:
     devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/observability:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/testing:
+    dependencies:
+      '@job-seeker/env':
+        specifier: workspace:*
+        version: link:../env
+      pg:
+        specifier: ^8.16.3
+        version: 8.23.0
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.15.6
+        version: 8.23.1
       typescript:
         specifier: ^5.7.3
         version: 5.9.3

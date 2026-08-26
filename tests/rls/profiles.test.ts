@@ -1,6 +1,6 @@
 import type pg from 'pg'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { admin, asAnon, asUser, creerCompte } from './helpers'
+import { admin, asAnon, asUser, creerCompte } from '@job-seeker/testing'
 
 /**
  * JOB-005 — le socle d'autorisation.

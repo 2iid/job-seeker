@@ -26,6 +26,8 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
     "vitest": "^3.0.4",
-    "@job-seeker/env": "workspace:*"
+    "@job-seeker/env": "workspace:*",
+    "@job-seeker/observability": "workspace:*",
+    "@job-seeker/testing": "workspace:*"
   }
 }
