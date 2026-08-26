@@ -515,6 +515,46 @@ Attente portée à 90 s, message corrigé. **15 passes enchaînées, 15 vertes**
 avant d'avoir lu son verdict. Le reçu disait `fail`, l'annotation a été acceptée, et j'ai failli
 déclarer JOB-076 livré sur cette base. **Le code de retour se lit avant, pas après.**
 
+## Exécution 24 — 2026-08-26 · des documents qui ne peuvent pas inventer
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 104 | JOB-040 | Comment empêcher le générateur d'inventer ? | **Une sortie STRUCTURÉE, vérifiée** | Une consigne au modèle | BRIEF | REQ-007 dit « vérifiée par un test sur la sortie, **pas** par une consigne ». Une consigne est suivie la plupart du temps, et le reste du temps personne ne le sait. « Ne pas ajouter d'expérience » ne se vérifie pas sur un paragraphe — il faudrait relire. Sur une liste d'identifiants, ça se vérifie. |
+| 105 | JOB-040 | Un CV « presque bon » ? | **Renoncer, et le dire** | Le rendre quand même | BRIEF | Le rendre ferait porter la vérification à la personne — ce que ce module existe pour lui épargner. Et elle ne relira pas la trente-deuxième candidature. |
+| 106 | JOB-044 | Écrire dans une langue absente du profil ? | **Non — signaler** | Écrire quand même | BRIEF | Un modèle écrit un néerlandais irréprochable en trois secondes. Le candidat qui l'envoie sera **rappelé en néerlandais**. Ce n'est pas un service rendu. |
+| 107 | JOB-044 | Se rabattre sur l'anglais quand la langue n'est pas maîtrisée ? | **Jamais en silence** | Le repli | ASSUMED | Écrire en anglais pour une annonce néerlandaise dit quelque chose de la personne au recruteur. Ce n'est pas à nous de le dire à sa place. |
+
+### Le contrôle des organisations, refait **trois** fois
+
+Chaque version a été démolie par un essai contre le vrai modèle, pas par une relecture :
+
+1. « un mot capitalisé absent du profil » → accusait **Growth**, **Lead**, **English**.
+2. + le texte de l'offre au vocabulaire légitime → accusait encore **Manager**, **January**, **Masters**.
+   L'anglais capitalise les titres, les mois et les diplômes ; aucune liste de mots ne rattrape ça.
+3. viser la **construction de rattachement** (« chez X », « at X ») et non la majuscule → rendait
+   « Northwind. I », la capture franchissant la fin de phrase.
+4. bornée à l'intérieur d'une phrase → **trois essais réels propres**.
+
+> Un contrôle qui crie au loup finit ignoré ; un contrôle silencieux la moitié du temps reste lu
+> l'autre moitié. Le compromis est assumé, et il est dans le bon sens.
+
+### Une faille du gate lui-même
+
+`run.test` valait `pnpm test`, c'est-à-dire `vitest run` **seul**. Le contrat passait donc au vert avec
+un lint rouge — **constaté, pas supposé** : deux erreurs `no-irregular-whitespace` ont survécu à une
+vérification `VERIFIED`.
+
+Un contrôle qu'il faut penser à lancer à la main n'est pas un contrôle : c'est une habitude, et une
+habitude se perd le jour où l'on est pressé. `run.test` enchaîne désormais **lint → typecheck →
+tests**, et le nouveau gate a été éprouvé en cassant volontairement le formatage : rouge, puis vert.
+
+### Épreuves réelles
+
+- **CV** : quatre appels sur une offre écrite pour inviter à embellir (résultats chiffrés exigés, MBA
+  souhaité, trois outils absents du profil). **Zéro violation les quatre fois.**
+- **Lettre** : l'offre néerlandaise refusée **avant tout appel** ; l'offre anglaise acceptée trois fois
+  sur trois.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
