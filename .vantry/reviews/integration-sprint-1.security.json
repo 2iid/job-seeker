@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T14:49:14Z",
-  "head": "f289cfe10ad2ad8b3321d6b1aad52ef0ce0ae175",
+  "at": "2026-08-26T15:29:28Z",
+  "head": "790182b0ec52a79ad936f8377212606e3ff018b6",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -39,7 +39,8 @@
     "supabase/migrations/** — les politiques qui separent un CV de tout le monde",
     "apps/web/app/profil/import/** — recoit un fichier, appelle un modele, ecrit le profil",
     "packages/profil/** — decide `peutAutomatiser`, donc un controle et non un affichage",
-    "apps/web/app/profil/** — ecrit de la donnee personnelle"
+    "apps/web/app/profil/** — ecrit de la donnee personnelle",
+    "apps/web/app/criteres/** — ecrit les exclusions, donc ce qui n est jamais montre"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -75,7 +76,12 @@
     "`figer_profil()` n est PAS security definer : elle s execute avec les droits de l appelant, donc la RLS de `profiles` et de `profil_versions` s applique. Test : figer le profil d autrui echoue.",
     "`touche_profil()` est security definer, et c est justifie : elle ne fait qu un UPDATE de `profiles.updated_at` sur le profil deja designe par la ligne fille modifiee, avec search_path epingle. Elle n accepte aucun parametre appelant et ne peut donc pas etre detournee vers un autre profil.",
     "Les actions d ecriture du profil resolvent le profil par l identite VERIFIEE (getUser), jamais par un identifiant du formulaire. La mise a jour d une experience porte en plus un filtre explicite sur `profile_id` : deux verrous plutot qu un sur une ecriture de donnee personnelle.",
-    "`lireCodesPays` refuse de deviner un nom de pays. Sur l autorisation de travail — le seul critere redhibitoire absolu de REQ-005 — une correspondance approximative ferait postuler la ou la personne n a pas le droit de travailler."
+    "`lireCodesPays` refuse de deviner un nom de pays. Sur l autorisation de travail — le seul critere redhibitoire absolu de REQ-005 — une correspondance approximative ferait postuler la ou la personne n a pas le droit de travailler.",
+    "JOB-034 : l EXCLUSION est desormais separee du REDHIBITOIRE et court-circuite l appel de modele. Consequence de securite en plus de la consequence de cout : le texte d une offre exclue n atteint plus un sous-traitant du tout. Le test l observe par le COMPTEUR d appels, pas par le resultat.",
+    "Faille fermee au passage : le mot redhibitoire n etait cherche que dans titre + description, pendant que le modele lisait le texte complet. Un mot present dans le corps mais absent du chapeau passait au travers du filtre que la personne avait pose.",
+    "F22 CLOS. DELETE accorde sur experiences, formations, competences, employeurs_exclus, avec 10 tests allow/deny. Restent sans DELETE, chacun pour une raison qui tient : criteres_recherche et profil_versions (un historique effacable ne prouve rien), candidatures (elle a eu lieu ; la retirer de la base ne la retire pas de la boite du recruteur), documents (le fichier survivrait a sa ligne — c est F20).",
+    "`numeroter_version_criteres` n est pas security definer et prend un verrou sur la ligne de profil, qui serialise les ecritures du MEME profil sans faire attendre les autres.",
+    "Les valeurs de `presence` sont filtrees contre une liste close cote serveur : un formulaire trafique ne peut pas semer une valeur que le moteur ne sait pas lire — ce qui la ferait ignorer, donc desactiver silencieusement un filtre."
   ],
   "findings": [
     {
