@@ -271,6 +271,23 @@ signal `ignorer-instructions` levé, le modèle **n'a pas obéi**, a fait la tâ
 
 **F17 fermé.**
 
+## Exécution 14 — 2026-08-26 · le score explicable
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 59 | JOB-035 | Qui décide des rédhibitoires ? | **Le code** | Le modèle, dans le même appel | BRIEF | REQ-005 : *« un critère rédhibitoire non satisfait empêche la soumission automatique quel que soit le score »*. Un rédhibitoire décidé par un LLM est probable, révisable, et changera d'avis un jour sur la même offre. Une candidature partie malgré lui n'est pas une erreur d'appréciation : c'est une action irréversible contre une consigne explicite. |
+| 60 | JOB-035 | Croire une citation, ou la vérifier ? | **Vérifier, et compter les rejets** | Faire confiance à la sortie | ASSUMED | Un modèle qui invente une citation produit une explication **plus** convaincante qu'une vraie, et l'utilisateur ne peut pas faire la différence. Les citations introuvables sont écartées et comptées, pas cachées. |
+| 61 | JOB-035 | Le distanciel dans un autre pays est-il hors zone ? | **Non** | Appliquer la zone partout | BRIEF | Bloquer là-dessus écarterait exactement les offres que ce produit existe pour trouver — le marché est international et tous secteurs. La zone n'est vérifiée que si l'offre exige une présence. |
+
+**L'épreuve réelle :** score **78** sur une offre Qonto, **six** correspondances, **deux** manques,
+et **zéro citation rejetée** — le modèle cite verbatim et la vérification le confirme au lieu de le
+croire. Les manques identifiés sont justes : *« management direct d'au moins 5 personnes souhaité »*
+face à un profil qui a accompagné trois juniors.
+
+**Constat** — F19 (le profil part en clair chez un sous-traitant à chaque évaluation : à **minimiser**
+par `JOB-037` via un résumé dédié au scoring, et à **déclarer** au registre des traitements par
+`JOB-057`).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
