@@ -1,0 +1,53 @@
+{
+  "schema": "vantry.review/1",
+  "kind": "security",
+  "verdict": "pass",
+  "reviewer": "security-engineer",
+  "at": "2026-08-26T00:38:49Z",
+  "head": "6fc128db13bd3abbfb2c5585e6b48a7ad0a7a808",
+  "checklist": [
+    "data-authz",
+    "privileged-credential",
+    "boundary-validation",
+    "secrets-pii",
+    "webhooks",
+    "storage",
+    "headers-csp",
+    "ai-context",
+    "owasp-top-10"
+  ],
+  "scope": [
+    "supabase/migrations/20260825140000_file_travaux.sql — schéma worker, file, privilèges",
+    "packages/observability/** — journalisation, santé, coût",
+    "packages/env/** — EnvError réécrite",
+    "vantry.yml — packages/observability ajouté aux chemins sensibles"
+  ],
+  "notes": [
+    "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
+    "boundary-validation : le worker n'accepte AUCUNE entrée réseau. Toute route autre que /health répond 404 par règle, et le smoke l'exerce. Le travail arrive par la file, jamais par une requête — une route qui accepterait du travail de l'extérieur serait une porte d'entrée sur des actions sortantes faites au nom de quelqu'un.",
+    "secrets-pii : c'est le cœur du diff. La journalisation emploie une liste d'AUTORISATION : une clé non déclarée sûre est réduite à son type et sa taille. Cinq tests vérifient qu'aucun contenu de CV, de lettre, d'email, ni aucun secret ne ressort, y compris passé par erreur.",
+    "privileged-credential : le worker se connecte sous une identité de service et ne porte aucune session utilisateur (ADR-0001). Vérifié par lecture du code : aucun jeton d'utilisateur n'entre dans apps/worker.",
+    "ai-context : sans objet à ce commit, aucun appel de modèle n'existe encore. L'instrumentation de coût est en place pour quand il y en aura.",
+    "webhooks, storage, headers-csp : sans objet ou inchangés."
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "id": "F7",
+      "file": "apps/worker/src/queue/index.ts",
+      "line": 0,
+      "summary": "Le payload d'un travail est un jsonb libre. Rien n'empêche aujourd'hui un appelant d'y placer un CV entier ou un corps d'email, qui se retrouverait alors en base dans le schéma worker — hors des tables couvertes par la RLS et hors du périmètre de la suppression de compte.",
+      "fix": "La clé `payload` est déjà interdite à la journalisation. Reste à borner ce qui y entre : JOB-049 (soumission) et JOB-055 (reçus) doivent ne mettre en file que des IDENTIFIANTS, jamais du contenu, et JOB-059 (suppression dure) doit inclure worker.jobs dans son périmètre. À rappeler dans leurs critères d'acceptation.",
+      "status": "reporté à JOB-049, JOB-055 et JOB-059"
+    },
+    {
+      "severity": "info",
+      "id": "F8",
+      "file": "eslint.config.mjs",
+      "line": 0,
+      "summary": "Une propriété de constructeur TypeScript cassait le démarrage du worker : Node exécute ce code en retirant les types sans compiler, donc l'erreur survient au DÉMARRAGE et non au typecheck — c'est-à-dire en production, pas en revue.",
+      "fix": "Corrigé, et trois syntaxes (parameter property, enum, namespace) sont désormais refusées par ESLint avec le motif expliqué.",
+      "status": "corrigé"
+    }
+  ]
+}
