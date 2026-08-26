@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { LOCALES, traduire } from '@job-seeker/i18n'
 import { CONTRAST_CONTRACT, TOKENS, contrast, luminance, parseHex, value } from './tokens'
 import { STATUSES, TIERS } from './status'
 import { renderCss } from '../scripts/build-css.ts'
@@ -105,8 +106,19 @@ describe('contraste — mesuré, jamais estimé', () => {
 describe('langage de statut — jamais la couleur seule', () => {
   const statuts = Object.values(STATUSES)
 
-  it('chaque statut porte une forme, un libellé et un sens', () => {
-    for (const s of statuts) {
+  // Les libellés vivent désormais dans `@job-seeker/i18n` : ces vérifications
+  // portent donc sur les DEUX langues. Ce n'est pas un rattrapage, c'est un
+  // renforcement — « ce n'est pas votre échec » n'a aucune valeur si la version
+  // anglaise dit « you failed ».
+  const dans = (locale: 'fr' | 'en') =>
+    statuts.map((s) => ({
+      shape: s.shape,
+      label: traduire(s.labelKey, locale),
+      meaning: traduire(s.meaningKey, locale),
+    }))
+
+  it.each(LOCALES)('%s : chaque statut porte une forme, un libellé et un sens', (locale) => {
+    for (const s of dans(locale)) {
       expect(s.shape).toBeTruthy()
       expect(s.label.length).toBeGreaterThan(2)
       expect(s.meaning.length).toBeGreaterThan(15)
@@ -118,9 +130,10 @@ describe('langage de statut — jamais la couleur seule', () => {
     expect(new Set(formes).size, 'deux statuts partagent une forme').toBe(formes.length)
   })
 
-  it('aucun libellé ne rejette la faute sur le candidat', () => {
-    const blessant = /(échec de votre|vous avez échoué|rejeté|raté|perdu)/i
-    for (const s of statuts) {
+  it.each(LOCALES)('%s : aucun libellé ne rejette la faute sur le candidat', (locale) => {
+    const blessant =
+      /(échec de votre|vous avez échoué|rejeté|raté|perdu|you failed|your failure|rejected|you lost)/i
+    for (const s of dans(locale)) {
       expect(s.label, s.label).not.toMatch(blessant)
       expect(s.meaning, s.meaning).not.toMatch(blessant)
     }
@@ -132,10 +145,21 @@ describe('langage de statut — jamais la couleur seule', () => {
     for (const t of Object.values(TIERS)) expect(t.tone).not.toBe('accent-attente')
   })
 
-  it('le palier C ne promet jamais de candidature', () => {
-    expect(TIERS.c.promise).toMatch(/je ne postule pas/i)
+  it('le palier C ne promet jamais de candidature, dans aucune langue', () => {
+    expect(traduire(TIERS.c.promiseKey, 'fr')).toMatch(/je ne postule pas/i)
+    expect(traduire(TIERS.c.promiseKey, 'en')).toMatch(/don.t apply/i)
     expect(TIERS.a.bars).toBeGreaterThan(TIERS.b.bars)
     expect(TIERS.b.bars).toBeGreaterThan(TIERS.c.bars)
+  })
+
+  it('aucun palier ne promet un RANG chiffré', () => {
+    // « 3ᵉ candidat » est une information que nous n'avons pas. Le palier A
+    // promet « parmi les premiers », jamais un numéro.
+    for (const locale of LOCALES) {
+      for (const t of Object.values(TIERS)) {
+        expect(traduire(t.promiseKey, locale)).not.toMatch(/\b\d+(e|er|ère|st|nd|rd|th)\b/i)
+      }
+    }
   })
 })
 

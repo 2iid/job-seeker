@@ -12,11 +12,11 @@ JOB-010,Observabilité erreurs logs structurés et sonde de santé,EPIC 0 — Fo
 JOB-011,Traduire la direction de marque retenue en tokens sémantiques,EPIC 1 — Système d interface,design,ui-ux-designer,P0,M,JOB-001,done,S1,packages/ui/tokens/**;docs/design/design-system.md,,no
 JOB-012,Thème clair et sombre à parité avec contrastes mesurés,EPIC 1 — Système d interface,design,ui-ux-designer,P0,S,JOB-011,done,S2,packages/ui/theme/**,,no
 JOB-013,Primitives d interface et quatre états génériques,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-011,done,S2,packages/ui/components/**,,no
-JOB-014,Composant signature indicateur de score dépliable,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,backlog,S2,packages/ui/components/score/**,REQ-005,no
-JOB-015,Composant signature carte d approbation,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,backlog,S2,packages/ui/components/approval/**,REQ-010,no
-JOB-016,Composant signature ligne de vie de l agent,EPIC 1 — Système d interface,frontend,frontend-engineer,P1,M,JOB-013,backlog,S2,packages/ui/components/timeline/**,REQ-013,no
-JOB-017,Composant signature indicateur de fraîcheur par palier,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,S,JOB-013,backlog,S2,packages/ui/components/freshness/**,REQ-004,no
-JOB-018,Internationalisation français et anglais avec vérification à 390 px,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,backlog,S2,packages/i18n/**,,no
+JOB-014,Composant signature indicateur de score dépliable,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,done,S2,packages/ui/src/composants/**,REQ-005,no
+JOB-015,Composant signature carte d approbation,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,done,S2,packages/ui/src/composants/**,REQ-010,no
+JOB-016,Composant signature ligne de vie de l agent,EPIC 1 — Système d interface,frontend,frontend-engineer,P1,M,JOB-013,done,S2,packages/ui/src/composants/**,REQ-013,no
+JOB-017,Composant signature indicateur de fraîcheur par palier,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,S,JOB-013,done,S2,packages/ui/src/composants/**,REQ-004,no
+JOB-018,Internationalisation français et anglais avec vérification à 390 px,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,done,S2,packages/i18n/**;packages/ui/src/status.ts,,no
 JOB-019,Contrat de connecteur et registre de sources,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-009,done,S2,apps/worker/src/sources/contract.ts;apps/worker/src/sources/registry.ts,REQ-003,no
 JOB-020,Normalisation des offres avec devise périodicité et fuseau,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,done,S2,apps/worker/src/sources/normalize/**,REQ-003;REQ-004,no
 JOB-021,Connecteurs ATS du palier A pour cinq fournisseurs,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,done,S2,apps/worker/src/sources/ats/**,REQ-003,no
@@ -82,3 +82,4 @@ JOB-080,Mode discrétion et masquage des employeurs,EPIC 8 — Suivi,frontend,fr
 JOB-081,Parcours d entrée jusqu à la première offre trouvée en direct,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,L,JOB-032;JOB-035,backlog,S3,apps/web/app/entree/**,REQ-001;REQ-002,no
 JOB-082,Palier C plateformes assistées détection sans candidature,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-019,backlog,S3,apps/worker/src/sources/assisted/**,REQ-003,no
 JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-021,backlog,S3,apps/worker/src/sources/ats/**,REQ-003,no
+JOB-084,Harnais de bout en bout et verification G6 au pixel a 390 px,EPIC 1 — Système d interface,frontend,qa-test-engineer,P1,M,JOB-018,backlog,S5,tests/e2e/**,,no

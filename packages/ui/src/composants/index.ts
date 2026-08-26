@@ -1,2 +1,7 @@
 export * from './primitives'
 export * from './etats'
+export * from './forme'
+export * from './fraicheur'
+export * from './score'
+export * from './approbation'
+export * from './ligne-de-vie'
