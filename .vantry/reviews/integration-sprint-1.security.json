@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T14:10:16Z",
-  "head": "5932617c6f2bc0020cd907a500a31b2572a0f3b6",
+  "at": "2026-08-26T14:49:14Z",
+  "head": "f289cfe10ad2ad8b3321d6b1aad52ef0ce0ae175",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -37,7 +37,9 @@
     "packages/parsing/** — lit un document tiers et decide ou il est range",
     "apps/worker/src/parsing/** — contexte de modele construit a partir d un CV",
     "supabase/migrations/** — les politiques qui separent un CV de tout le monde",
-    "apps/web/app/profil/import/** — recoit un fichier, appelle un modele, ecrit le profil"
+    "apps/web/app/profil/import/** — recoit un fichier, appelle un modele, ecrit le profil",
+    "packages/profil/** — decide `peutAutomatiser`, donc un controle et non un affichage",
+    "apps/web/app/profil/** — ecrit de la donnee personnelle"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -68,7 +70,12 @@
     "Scanner de secrets : le refus sur scripts/db-bootstrap.sh a ete corrige a la SOURCE (identifiants en champs separes, plus de chaine de connexion) et non en elargissant l allowlist de .gitleaks.toml.",
     "JOB-032 : l identite est verifiee par utilisateurCourant() (getUser, jamais getSession) a l entree des DEUX actions serveur, et la page la revérifie au rendu. Aucun identifiant venu du formulaire n entre dans une decision : le profil est retrouve par l identite, le chemin de stockage est RECALCULE par cheminStockage(auth.uid(), ...), et le type MIME vient du verdict sur les octets. Le seul champ structurel qui revient du navigateur est le type ('pdf'|'docx'), borne a ces deux valeurs, et il ne sert qu a composer le nom d un fichier dont le premier segment est recalcule — un type mensonger ne peut designer qu un chemin inexistant, jamais le fichier d autrui.",
     "Taille : refus a 10 Mo sur File.size AVANT lecture du corps (evite de charger un gros corps en memoire), puis verdict faisant autorite sur les octets reellement lus.",
-    "Le fichier est depose AVANT que le profil soit ecrit, et c est voulu : un fichier sans profil est inerte, un profil sans son fichier source serait invérifiable. La politique du bucket (F14) le cloisonne deja."
+    "Le fichier est depose AVANT que le profil soit ecrit, et c est voulu : un fichier sans profil est inerte, un profil sans son fichier source serait invérifiable. La politique du bucket (F14) le cloisonne deja.",
+    "JOB-033 : `profil_versions` est en insertion seule au niveau du PRIVILEGE, pas seulement de la politique — `update`/`delete` ne sont accordes a aucun role client. Un test verifie que la reecriture par le proprietaire lui-meme echoue en « permission denied », refus plus fort qu une ligne invisible.",
+    "`figer_profil()` n est PAS security definer : elle s execute avec les droits de l appelant, donc la RLS de `profiles` et de `profil_versions` s applique. Test : figer le profil d autrui echoue.",
+    "`touche_profil()` est security definer, et c est justifie : elle ne fait qu un UPDATE de `profiles.updated_at` sur le profil deja designe par la ligne fille modifiee, avec search_path epingle. Elle n accepte aucun parametre appelant et ne peut donc pas etre detournee vers un autre profil.",
+    "Les actions d ecriture du profil resolvent le profil par l identite VERIFIEE (getUser), jamais par un identifiant du formulaire. La mise a jour d une experience porte en plus un filtre explicite sur `profile_id` : deux verrous plutot qu un sur une ecriture de donnee personnelle.",
+    "`lireCodesPays` refuse de deviner un nom de pays. Sur l autorisation de travail — le seul critere redhibitoire absolu de REQ-005 — une correspondance approximative ferait postuler la ou la personne n a pas le droit de travailler."
   ],
   "findings": [
     {
@@ -205,6 +212,15 @@
       "summary": "L action `analyser` declenche un appel de modele facture, sans limite de debit. Quelqu un d authentifie peut la rappeler en boucle : c est une depense, pas une fuite, mais une depense qu un compte gratuit peut infliger.",
       "fix": "Limiter le debit par utilisateur sur les actions qui appellent un modele. A porter par JOB-073 (limitation de debit), avec F9/F10 sur /auth/lien — meme mecanisme, deja prevu.",
       "status": "reporté à JOB-073"
+    },
+    {
+      "severity": "low",
+      "id": "F22",
+      "file": "supabase/migrations/20260825180000_modele_profil.sql",
+      "line": 0,
+      "summary": "Aucun role client n a DELETE sur `experiences`, `formations` ni `competences`. Une personne ne peut donc pas retirer une experience saisie par erreur — elle ne peut que la remplacer. Sur de la donnee personnelle, c est un defaut de maitrise, pas une protection.",
+      "fix": "L interdiction de JOB-030 protege REQ-014 (arreter l automatisation avant d effacer), ce qui vise la suppression du COMPTE, pas d une ligne de parcours. Meme raisonnement que la divergence deja assumee sur le bucket. A porter par JOB-034 ou JOB-057 : accorder DELETE sur les tables filles du profil, avec ses tests allow/deny.",
+      "status": "ouvert"
     }
   ]
 }
