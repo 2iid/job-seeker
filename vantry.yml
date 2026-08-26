@@ -84,6 +84,8 @@ sensitive_paths:
   # JOB-034 : écrit les exclusions et les mots rédhibitoires — ce qui décide
   # qu'une offre n'est jamais montrée.
   - "apps/web/app/criteres/**"
+  # JOB-081 : c'est ici que la garde « rien ne sort pendant l'entrée » se lève.
+  - "apps/web/app/entree/**"
   - "apps/web/app/auth/**"
   - "apps/worker/src/submission/**"
   - "apps/worker/src/contacts/**"

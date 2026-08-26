@@ -4,3 +4,5 @@ export type {
 } from './completude.ts'
 export { lireCodesPays } from './pays.ts'
 export { listeDeSaisie, montantEnUnitesMineures } from './saisie.ts'
+export { CRANS, CRAN_PAR_DEFAUT, LIBELLES, SENS, peutAgirSeule, peutProposer } from './autonomie.ts'
+export type { Cran, EtatAutonomie, MotifRefus, Verdict } from './autonomie.ts'

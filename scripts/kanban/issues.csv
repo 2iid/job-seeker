@@ -79,7 +79,7 @@ JOB-077,Correction du score par le candidat,EPIC 11 — v1.1,ai,ai-integration-e
 JOB-078,Séquences de relance autonomes vers les recruteurs,EPIC 11 — v1.1,backend,backend-engineer,P2,XL,JOB-067,backlog,Backlog,apps/worker/src/contacts/sequences/**,,yes
 JOB-079,A/B des variantes de CV et analyse de l entonnoir,EPIC 11 — v1.1,ai,ai-integration-engineer,P2,L,JOB-060,backlog,Backlog,apps/worker/src/analytics/**,,no
 JOB-080,Mode discrétion et masquage des employeurs,EPIC 8 — Suivi,frontend,frontend-engineer,P1,M,JOB-063;JOB-064,backlog,S6,packages/ui/discretion/**;apps/web/app/parametres/discretion/**,REQ-015,no
-JOB-081,Parcours d entrée jusqu à la première offre trouvée en direct,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,L,JOB-032;JOB-035,backlog,S3,apps/web/app/entree/**,REQ-001;REQ-002,no
+JOB-081,Parcours d entrée jusqu à la première offre trouvée en direct,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,L,JOB-032;JOB-035,done,S3,apps/web/app/entree/**;packages/profil/**;supabase/migrations/**,REQ-001;REQ-002,yes
 JOB-082,Palier C plateformes assistées détection sans candidature,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-019,done,S3,apps/worker/src/sources/assiste/**;apps/worker/src/matching/**,REQ-003,yes
 JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-021,done,S3,apps/worker/src/sources/ats/**,REQ-003,no
 JOB-084,Harnais de bout en bout et verification G6 au pixel a 390 px,EPIC 1 — Système d interface,frontend,qa-test-engineer,P1,M,JOB-018,backlog,S5,tests/e2e/**,,no

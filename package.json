@@ -25,6 +25,7 @@
     "@job-seeker/llm-guard": "workspace:*",
     "@job-seeker/observability": "workspace:*",
     "@job-seeker/parsing": "workspace:*",
+    "@job-seeker/profil": "workspace:*",
     "@job-seeker/testing": "workspace:*",
     "@types/pg": "^8.23.1",
     "dotenv": "^17.4.2",

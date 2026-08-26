@@ -33,6 +33,9 @@ importers:
       '@job-seeker/parsing':
         specifier: workspace:*
         version: link:packages/parsing
+      '@job-seeker/profil':
+        specifier: workspace:*
+        version: link:packages/profil
       '@job-seeker/testing':
         specifier: workspace:*
         version: link:packages/testing

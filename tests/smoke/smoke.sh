@@ -123,7 +123,7 @@ echo "→ [smoke] toute page protégée renvoie vers la connexion"
 # La liste est explicite, et chaque nouvelle page protégée s'y ajoute. Une
 # vérification qui ne teste que /profil laisserait passer un écran ajouté plus
 # tard — et c'est le dernier écran ajouté qui oublie la garde, pas le premier.
-for CHEMIN in /profil /profil/import /criteres /opportunites; do
+for CHEMIN in /profil /profil/import /criteres /opportunites /entree; do
   CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT$CHEMIN")"
   [ "$CODE" = "307" ] || [ "$CODE" = "302" ] \
     || fail "$CHEMIN a répondu $CODE sans session — une page protégée doit rediriger"
