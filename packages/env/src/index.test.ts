@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EnvError, readEnv, redact } from './index.js'
+import { EnvError, readEnv, readOptional, redact } from './index.js'
 
 /**
  * Les valeurs ci-dessous portent le marqueur `EXAMPLE` et n'ont ni préfixe de
@@ -71,5 +71,17 @@ describe('redact', () => {
 
   it('ne laisse jamais fuir un secret court', () => {
     expect(redact('ANTHROPIC_API_KEY', 'bref')).toBe('***')
+  })
+})
+
+describe('readOptional', () => {
+  it('refuse de fournir une valeur par défaut à un secret', () => {
+    // Une valeur par défaut secrète est un secret commité. La porte le refuse
+    // à l'écriture du code, pas à la revue.
+    expect(() => readOptional('ANTHROPIC_API_KEY', 'peu-importe')).toThrowError(/déclarée secrète/)
+  })
+
+  it('accepte un repli pour une variable publique', () => {
+    expect(readOptional('CETTE_VARIABLE_N_EXISTE_PAS', 'repli')).toBe('repli')
   })
 })

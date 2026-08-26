@@ -1,0 +1,53 @@
+{
+  "schema": "vantry.review/1",
+  "kind": "security",
+  "verdict": "pass",
+  "reviewer": "security-engineer",
+  "at": "2026-08-26T00:14:25Z",
+  "head": "6b96defd9ae7b688eeb868bb773f3bb3c37a254a",
+  "checklist": [
+    "data-authz",
+    "privileged-credential",
+    "boundary-validation",
+    "secrets-pii",
+    "webhooks",
+    "storage",
+    "headers-csp",
+    "ai-context",
+    "owasp-top-10"
+  ],
+  "scope": [
+    "supabase/migrations/20260825120000_socle.sql — RLS, politiques, privilèges",
+    "tests/rls/** — le harnais qui prouve l'autorisation",
+    "packages/env/** — ajout de readOptional",
+    "vantry.yml — .gitleaks.toml ajouté aux chemins sensibles",
+    ".gitleaks.toml — exception pour la chaîne locale documentée"
+  ],
+  "notes": [
+    "data-authz : c'est le cœur de ce diff. RLS activée ET forcée, politique par opération, aucune politique for all, DELETE non accordé au client. Douze tests exécutés contre la vraie base, chaque politique avec son test de refus.",
+    "privileged-credential : la connexion superutilisateur n'existe que dans le harnais de tests, et elle est employée pour MONTER les cas, jamais pour les vérifier — les assertions passent par les rôles authenticated et anon.",
+    "secrets-pii : aucun secret réel n'entre dans le dépôt. .env est ignoré et vérifié comme tel. Les clés de la pile locale sont les clés de démonstration publiques de Supabase.",
+    "boundary-validation : sans objet, aucune route ajoutée. ai-context, webhooks, storage : sans objet.",
+    "Rebasé sur main après la fusion en squash de la PR #3 : le verdict portait sur f6808f95, qui n'existe plus. Réémis sur 6b96defd, son équivalent après rebase — même arbre, même diff sensible."
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "id": "F5",
+      "file": ".gitleaks.toml",
+      "line": 0,
+      "summary": "Une exception a été ajoutée au scanner de secrets pour la chaîne de connexion Supabase locale. Toute exception à un scanner de secrets est un affaiblissement, et doit être jugée sur son étroitesse.",
+      "fix": "Exception attachée à la règle concernée avec regexTarget=match, exigeant LES DEUX identifiants par défaut ET l'adresse de bouclage. Éprouvée sur trois cas : mot de passe réel sur hôte distant → détecté ; défaut sur 127.0.0.1 → toléré ; défaut sur hôte DISTANT → détecté. En complément, .gitleaks.toml entre dans sensitive_paths pour qu'aucun futur affaiblissement ne passe sans revue.",
+      "status": "accepté, périmètre vérifié"
+    },
+    {
+      "severity": "low",
+      "id": "F6",
+      "file": "supabase/migrations/20260825120000_socle.sql",
+      "line": 0,
+      "summary": "public.profiles n'a aucune politique DELETE et le privilège n'est pas accordé. C'est délibéré (REQ-014 : la suppression doit d'abord arrêter l'automatisation), mais cela signifie qu'aucun chemin de suppression n'existe encore.",
+      "fix": "JOB-059 (suppression dure avec annulation préalable de l'automatisation) doit introduire ce chemin côté serveur, sous une identité de service, jamais en accordant DELETE au rôle client.",
+      "status": "reporté à JOB-059"
+    }
+  ]
+}

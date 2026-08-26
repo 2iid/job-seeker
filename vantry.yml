@@ -83,3 +83,5 @@ sensitive_paths:
   - ".githooks/**"
   - "vantry.yml"
   - ".env.example"
+  # Affaiblir un scanner de secrets est un changement de sécurité.
+  - ".gitleaks.toml"

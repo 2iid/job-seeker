@@ -12,13 +12,20 @@
     "test": "vitest run",
     "dev:web": "pnpm --filter @job-seeker/web dev",
     "dev:worker": "pnpm --filter @job-seeker/worker dev",
-    "smoke": "bash tests/smoke/smoke.sh"
+    "smoke": "bash tests/smoke/smoke.sh",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:export": "bash scripts/db-export.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@types/pg": "^8.23.1",
+    "dotenv": "^17.4.2",
     "eslint": "^9.18.0",
+    "pg": "^8.23.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.4",
+    "@job-seeker/env": "workspace:*"
   }
 }

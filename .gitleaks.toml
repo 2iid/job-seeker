@@ -26,6 +26,21 @@ description = "Postgres connection string with an inline password"
 regex = '''postgres(ql)?://[^:\s]+:[^@\s]{6,}@[^\s/]+'''
 tags = ["database"]
 
+  # Exception : la chaîne par DÉFAUT d'une pile Supabase LOCALE. Publiée dans
+  # leur documentation, identique sur toute installation, joignable seulement
+  # depuis la machine — elle ne protège rien. Elle apparaît dans
+  # supabase/README.md et dans le repli documenté du harnais de tests RLS.
+  #
+  # Délibérément étroite : il faut LES DEUX identifiants par défaut ET
+  # l'adresse de bouclage. Un vrai mot de passe, ou les mêmes identifiants sur
+  # un hôte distant, déclenchent toujours — c'est vérifié dans la PR.
+  #
+  # .gitleaks.toml est dans sensitive_paths de vantry.yml : affaiblir un
+  # scanner de secrets passe par une revue de sécurité, jamais en douce.
+  [rules.allowlist]
+  regexTarget = "match"
+  regexes = ['''postgres(ql)?://postgres:postgres@127\.0\.0\.1(:\d+)?''']
+
 [allowlist]
 description = "Examples, fixtures and this file itself are not leaks"
 paths = [
@@ -38,3 +53,4 @@ paths = [
 regexes = [
   '''EXAMPLE|PLACEHOLDER|CHANGEME|<your-.*>|xxxxxxxx''',
 ]
+
