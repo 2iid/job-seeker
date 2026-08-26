@@ -4,7 +4,7 @@
  * Le test de parité échoue si le fichier engendré ne correspond plus.
  */
 import { writeFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join } from 'node:path'
 import { DURATION, RADIUS, SPACE, TOKENS, TOUCH } from '../src/tokens.ts'
 
@@ -54,6 +54,16 @@ ${block('light', '  ')}
 `
 }
 
-const here = dirname(fileURLToPath(import.meta.url))
-writeFileSync(join(here, '..', 'tokens', 'tokens.css'), renderCss())
-process.stdout.write('tokens.css engendré\n')
+// N'écrit QUE si ce fichier est lancé directement. Sans ce garde-fou, le simple
+// fait d'importer `renderCss` depuis un test réécrivait tokens.css — un test
+// qui modifie un fichier suivi périme le reçu de vérification à chaque
+// exécution, et la porte se met à bloquer sans raison visible.
+const lanceDirectement =
+  process.argv[1] !== undefined &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+
+if (lanceDirectement) {
+  const here = dirname(fileURLToPath(import.meta.url))
+  writeFileSync(join(here, '..', 'tokens', 'tokens.css'), renderCss())
+  process.stdout.write('tokens.css engendré\n')
+}

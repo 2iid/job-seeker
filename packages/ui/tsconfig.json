@@ -3,12 +3,16 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": ".",
-    // Le script d'engendrement et son test importent la source avec l'extension
-    // .ts : c'est ce que Node exige avec --experimental-strip-types, qui ne
-    // réécrit pas .js → .ts. Le paquet n'émet que des déclarations, donc cette
-    // permission ne change rien à ce qui est publié.
     "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2023",
+      "DOM"
+    ]
   },
-  "include": ["src", "scripts"]
+  "include": [
+    "src",
+    "scripts"
+  ]
 }
