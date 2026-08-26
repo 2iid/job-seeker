@@ -21,16 +21,27 @@ Our own code is proprietary: see `LICENSE`.
 - **Note:** MIT requires the copyright and permission notice to travel with the code. The installer
   does not copy the kit's `LICENSE`, so it is reproduced here deliberately.
 
-## The `last30days` engine — planned, not yet present
+## The `last30days` engine — the tiered ATS retrieval strategy
 
-- **Source:** [`mvanhorn/last30days-skill`](https://github.com/mvanhorn/last30days-skill)
-- **Licence:** MIT — © 2026 Matt Van Horn
-- **Status:** **not vendored today.** ADR-0002 plans a TypeScript port of the tiered ATS retrieval in
-  `skills/last30days/scripts/lib/jobs.py`. A derivative work carries the obligation: when that port
-  lands, its MIT notice is reproduced in `LICENSES/` and this section is updated in the SAME pull
-  request. An issue that ports the logic without the notice is rejected in review.
+- **Source:** [`mvanhorn/last30days-skill`](https://github.com/mvanhorn/last30days-skill), file
+  `skills/last30days/scripts/lib/jobs.py`
+- **Licence:** MIT — full text at `LICENSES/last30days-MIT.txt`
+- **Copyright:** © 2026 Matt Van Horn
+- **What was ported, and how:** the *strategy*, reimplemented in TypeScript — not the code. Two
+  things carry over and are the reason this notice exists:
+  1. **Careers-page-first discovery.** The provider and slug are read off the embed or link published
+     on the company's own careers page; slug probing is never the entry point. The rationale is his
+     and it is sound: a guessed slug produces either a homonym's board shown under the wrong
+     company's name, or a 404 read as "this company is not hiring". Both are worse than finding
+     nothing. See `apps/worker/src/sources/ats/decouverte.ts`.
+  2. **The list of ATS link patterns and the slug stopwords** (`embed`, `job_board`, `v1`, `api`…),
+     which are the practical result of his work against real careers pages.
+- **What is NOT taken:** no Python was copied, and the HTTP layer, the state model, the rate limiting
+  and the parsers are this project's own — they are written against real recorded responses in
+  `apps/worker/src/sources/ats/fixtures/`.
 
 ---
+
 
 ## `vendor/skills/frontend-design`
 

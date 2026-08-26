@@ -1,0 +1,105 @@
+[
+  {
+    "additionalPlain": "[description tronquee pour la fixture]",
+    "additional": "[description tronquee pour la fixture]",
+    "categories": {
+      "commitment": "Regular Full Time (Salary)",
+      "department": "Customer Success",
+      "location": "Arlington, TX",
+      "team": "Professional Services",
+      "allLocations": [
+        "Arlington, TX"
+      ]
+    },
+    "createdAt": 1553186035299,
+    "descriptionPlain": "[description tronquee pour la fixture]",
+    "description": "[description tronquee pour la fixture]",
+    "id": "33538a2f-d27d-4a96-8f05-fa4b0e4d940e",
+    "lists": [
+      {
+        "text": "Qualifications",
+        "content": "<li>be smart</li><li>be very smart</li>"
+      },
+      {
+        "text": "Duties",
+        "content": "<li>work hard</li><li>work VERY hard</li><li><b>bold text</b></li><li><i>italic text</i></li><li><s>strikethrough text</s></li><li><u>underline text</u></li><li><a rel=\"noopener noreferrer\" class=\"postings-link\" href=\"https://google.com\">link text</a></li>"
+      }
+    ],
+    "text": "AbelsonTaylor Writer",
+    "country": "US",
+    "workplaceType": "hybrid",
+    "opening": "<div>Welcome to the <b>Demo Job Listing</b> for Lever! This is a fictional job created solely for demonstration purposes and is <b>not an actual open position</b>. We’ve crafted this listing to showcase the functionality of our ATS platform, including job descriptions, application processes, and more.</div><div><br></div><div>While you can explore the application process and features here, please note that <b>applications submitted to this job will not be reviewed or responded to</b> as it’s for demonstration only. </div>",
+    "openingPlain": "Welcome to the Demo Job Listing for Lever! This is a fictional job created solely for demonstration purposes and is not an actual open position. We’ve crafted this listing to showcase the functionality of our ATS platform, including job descriptions, application processes, and more.\n\nWhile you can explore the application process and features here, please note that applications submitted to this job will not be reviewed or responded to as it’s for demonstration only. \n",
+    "descriptionBody": "<div>this job is AMAAAAAAAAAAAAZING!</div>",
+    "descriptionBodyPlain": "this job is AMAAAAAAAAAAAAZING!\n",
+    "hostedUrl": "https://jobs.lever.co/leverdemo/33538a2f-d27d-4a96-8f05-fa4b0e4d940e",
+    "applyUrl": "https://jobs.lever.co/leverdemo/33538a2f-d27d-4a96-8f05-fa4b0e4d940e/apply"
+  },
+  {
+    "additionalPlain": "[description tronquee pour la fixture]",
+    "additional": "[description tronquee pour la fixture]",
+    "categories": {
+      "commitment": "Regular Full Time (Salary)",
+      "department": "Sales",
+      "location": "Atlanta, Georgia",
+      "team": "Account Executive",
+      "allLocations": [
+        "Atlanta, Georgia"
+      ]
+    },
+    "createdAt": 1502907102690,
+    "descriptionPlain": "[description tronquee pour la fixture]",
+    "description": "[description tronquee pour la fixture]",
+    "id": "dbedd284-e008-4961-b75c-e70d284eab5a",
+    "lists": [
+      {
+        "text": "About the Gig:",
+        "content": "[description tronquee pour la fixture]"
+      },
+      {
+        "text": "About You:",
+        "content": "[description tronquee pour la fixture]"
+      }
+    ],
+    "text": "Account Director (Inside/Outside Hybrid Sales)",
+    "country": "US",
+    "workplaceType": "hybrid",
+    "opening": "<div>Welcome to the <b>Demo Job Listing</b> for Lever! This is a fictional job created solely for demonstration purposes and is <b>not an actual open position</b>. We’ve crafted this listing to showcase the functionality of our ATS platform, including job descriptions, application processes, and more.</div><div><br></div><div>While you can explore the application process and features here, please note that <b>applications submitted to this job will not be reviewed or responded to</b> as it’s for demonstration only. </div>",
+    "openingPlain": "Welcome to the Demo Job Listing for Lever! This is a fictional job created solely for demonstration purposes and is not an actual open position. We’ve crafted this listing to showcase the functionality of our ATS platform, including job descriptions, application processes, and more.\n\nWhile you can explore the application process and features here, please note that applications submitted to this job will not be reviewed or responded to as it’s for demonstration only. \n",
+    "descriptionBody": "<div><span style=\"font-size: 18px;\">A fantastic opportunity to make an impact with a forward thinking company</span></div><div><br></div>",
+    "descriptionBodyPlain": "A fantastic opportunity to make an impact with a forward thinking company\n\n",
+    "hostedUrl": "https://jobs.lever.co/leverdemo/dbedd284-e008-4961-b75c-e70d284eab5a",
+    "applyUrl": "https://jobs.lever.co/leverdemo/dbedd284-e008-4961-b75c-e70d284eab5a/apply"
+  },
+  {
+    "additionalPlain": "[description tronquee pour la fixture]",
+    "additional": "[description tronquee pour la fixture]",
+    "categories": {
+      "department": "Sales",
+      "location": "Bombay, MH",
+      "team": "Account Executive",
+      "allLocations": [
+        "Bombay, MH"
+      ]
+    },
+    "createdAt": 1558041148927,
+    "descriptionPlain": "[description tronquee pour la fixture]",
+    "description": "[description tronquee pour la fixture]",
+    "id": "1897fca1-502e-4511-b279-de479e99fbea",
+    "lists": [
+      {
+        "text": "Responsibilities",
+        "content": "<li>Work with customers </li><li>x</li><li>y</li><li>z</li><li><br></li>"
+      }
+    ],
+    "text": "Account Executive",
+    "country": "IN",
+    "workplaceType": "unspecified",
+    "opening": "<div>Welcome to the <b>Demo Job Listing</b> for Lever! This is a fictional job created solely for demonstration purposes and is <b>not an actual open position</b>. We’ve crafted this listing to showcase the functionality of our ATS platform, including job descriptions, application processes, and more.</div><div><br></div><div>While you can explore the application process and features here, please note that <b>applications submitted to this job will not be reviewed or responded to</b> as it’s for demonstration only. </div>",
+    "openingPlain": "Welcome to the Demo Job Listing for Lever! This is a fictional job created solely for demonstration purposes and is not an actual open position. We’ve crafted this listing to showcase the functionality of our ATS platform, including job descriptions, application processes, and more.\n\nWhile you can explore the application process and features here, please note that applications submitted to this job will not be reviewed or responded to as it’s for demonstration only. \n",
+    "descriptionBody": "<div>Add all your text here.</div>",
+    "descriptionBodyPlain": "Add all your text here.\n",
+    "hostedUrl": "https://jobs.lever.co/leverdemo/1897fca1-502e-4511-b279-de479e99fbea",
+    "applyUrl": "https://jobs.lever.co/leverdemo/1897fca1-502e-4511-b279-de479e99fbea/apply"
+  }
+]

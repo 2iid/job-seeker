@@ -1,14 +1,14 @@
 # Backlog Kanban — miroir lisible de `scripts/kanban/issues.csv`
 
-> La source de vérité est le CSV. Ce fichier est un miroir régénéré ; ne l'éditez pas à la main.
+> Source de vérité : le CSV. Miroir régénéré ; ne pas éditer à la main.
 
-**82 issues** · 16 exigences de `docs/specs/functional-spec.md` toutes couvertes · design intégré (voir `docs/design/user-stories-mapping.md`).
+**83 issues** · toutes les exigences de la spec couvertes · design intégré (`docs/design/user-stories-mapping.md`).
 
 ## Sprint 1 — Fondations et la pointe qui peut tout changer
 
 | id | titre | epic | agent | prio | taille | deps | REQ | sécu |
 |---|---|---|---|---|---|---|---|---|
-| `JOB-001` | Initialiser le monorepo Next.js 15 avec TypeScript lint et tests | EPIC 0 — Fondation | devops-engineer | P0 | M | — | — | no |
+| `JOB-001` | Initialiser le monorepo Next.js 15 avec TypeScript lint et tests | EPIC 0 — Fondation | devops-engineer | P0 | M | — | — | yes |
 | `JOB-002` | Pointe technique soumission ATS sur 20 formulaires réels | EPIC 0 — Fondation | backend-engineer | P0 | L | — | REQ-011 | no |
 | `JOB-003` | Chargement et validation stricte des variables d environnement | EPIC 0 — Fondation | backend-engineer | P0 | S | JOB-001 | — | yes |
 | `JOB-004` | Projet Supabase et première migration | EPIC 0 — Fondation | database-architect | P0 | M | JOB-001 | — | yes |
@@ -53,23 +53,24 @@
 | `JOB-033` | Profil canonique édition et versionnement | EPIC 3 — Profil et CV | frontend-engineer | P0 | M | JOB-032 | REQ-002 | no |
 | `JOB-034` | Critères de recherche préférences et exclusions | EPIC 3 — Profil et CV | frontend-engineer | P0 | M | JOB-033 | REQ-002 | no |
 | `JOB-035` | Moteur de score de correspondance explicable | EPIC 4 — Correspondance | ai-integration-engineer | P0 | L | JOB-027;JOB-034 | REQ-005 | yes |
-| `JOB-036` | Critères rédhibitoires bloquant la soumission automatique | EPIC 4 — Correspondance | backend-engineer | P0 | S | JOB-035 | REQ-005 | no |
+| `JOB-036` | Critères rédhibitoires bloquant la soumission automatique | EPIC 4 — Correspondance | backend-engineer | P0 | S | JOB-035 | REQ-005 | yes |
 | `JOB-038` | Flux d opportunités avec fraîcheur provenance et filtres persistants | EPIC 4 — Correspondance | frontend-engineer | P0 | L | JOB-035;JOB-017 | REQ-004 | no |
 | `JOB-039` | Détail d une offre avec score déplié en preuves | EPIC 4 — Correspondance | frontend-engineer | P0 | M | JOB-038;JOB-014 | REQ-004;REQ-005 | no |
-| `JOB-072` | Instrumentation du coût LLM par candidature | EPIC 10 — Facturation et lancement | devops-engineer | P0 | S | JOB-010 | — | no |
+| `JOB-072` | Instrumentation du coût LLM par candidature | EPIC 10 — Facturation et lancement | devops-engineer | P0 | S | JOB-010 | — | yes |
 | `JOB-076` | Mesure de couverture sur cinq profils contrastés | EPIC 2 — Moteur de veille | product-strategist | P0 | M | JOB-029;JOB-024 | REQ-003 | no |
 | `JOB-081` | Parcours d entrée jusqu à la première offre trouvée en direct | EPIC 3 — Profil et CV | frontend-engineer | P0 | L | JOB-032;JOB-035 | REQ-001;REQ-002 | no |
 | `JOB-082` | Palier C plateformes assistées détection sans candidature | EPIC 2 — Moteur de veille | backend-engineer | P1 | M | JOB-019 | REQ-003 | no |
+| `JOB-083` | Connecteur Workable verifie contre une reponse reelle | EPIC 2 — Moteur de veille | backend-engineer | P1 | S | JOB-021 | REQ-003 | no |
 
 ## Sprint 4 — Documents gouvernance de l'agent et traçabilité
 
 | id | titre | epic | agent | prio | taille | deps | REQ | sécu |
 |---|---|---|---|---|---|---|---|---|
-| `JOB-037` | Reproductibilité du score et conservation des preuves | EPIC 4 — Correspondance | backend-engineer | P1 | M | JOB-035 | REQ-005 | no |
+| `JOB-037` | Reproductibilité du score et conservation des preuves | EPIC 4 — Correspondance | backend-engineer | P1 | M | JOB-035 | REQ-005 | yes |
 | `JOB-040` | Génération de CV adapté contrainte au profil canonique | EPIC 5 — Documents | ai-integration-engineer | P0 | L | JOB-033;JOB-035 | REQ-007 | yes |
 | `JOB-041` | Vue de différence et refus modification par modification | EPIC 5 — Documents | frontend-engineer | P0 | M | JOB-040 | REQ-007 | no |
-| `JOB-042` | Mise au format de CV attendu par le marché visé | EPIC 5 — Documents | ai-integration-engineer | P1 | M | JOB-040 | REQ-007 | no |
-| `JOB-043` | Export PDF fidèle et lisible par un ATS | EPIC 5 — Documents | backend-engineer | P0 | M | JOB-040 | REQ-007 | no |
+| `JOB-042` | Mise au format de CV attendu par le marché visé | EPIC 5 — Documents | ai-integration-engineer | P1 | M | JOB-040 | REQ-007 | yes |
+| `JOB-043` | Export PDF fidèle et lisible par un ATS | EPIC 5 — Documents | backend-engineer | P0 | M | JOB-040 | REQ-007 | yes |
 | `JOB-044` | Génération de lettre dans la langue de l offre | EPIC 5 — Documents | ai-integration-engineer | P0 | M | JOB-040 | REQ-008 | yes |
 | `JOB-045` | Bibliothèque de réponses aux questions de screening | EPIC 5 — Documents | frontend-engineer | P0 | M | JOB-030 | REQ-008 | no |
 | `JOB-046` | Cadran d autonomie par canal et mandat horodaté | EPIC 6 — Automatisation | backend-engineer | P0 | M | JOB-030 | REQ-009 | yes |
@@ -109,21 +110,19 @@
 | `JOB-069` | Brief entreprise et signaux de recrutement | EPIC 9 — Contact recruteur | ai-integration-engineer | P1 | M | JOB-039 | REQ-016 | no |
 | `JOB-070` | Abonnement Stripe et paliers de quota | EPIC 10 — Facturation et lancement | payments-engineer | P0 | L | JOB-047 | — | yes |
 | `JOB-071` | Webhook Stripe signé et idempotent | EPIC 10 — Facturation et lancement | payments-engineer | P0 | M | JOB-070 | — | yes |
-| `JOB-074` | Audit d accessibilité WCAG 2.1 AA sur les écrans de la boucle | EPIC 10 — Facturation et lancement | ui-ux-designer | P0 | M | JOB-063 | — | no |
-| `JOB-075` | Modèle de menaces STRIDE avant ouverture publique | EPIC 10 — Facturation et lancement | security-engineer | P0 | M | JOB-059 | — | yes |
+| `JOB-074` | Audit d accessibilité WCAG 2.1 AA sur les écrans de la boucle | EPIC 10 — Facturation et lancement | ui-ux-designer | P0 | M | JOB-063 | — | yes |
+| `JOB-075` | Modèle de menaces STRIDE avant ouverture publique | EPIC 10 — Facturation et lancement | security-engineer | P0 | M | JOB-059 | — | no |
 | `JOB-080` | Mode discrétion et masquage des employeurs | EPIC 8 — Suivi | frontend-engineer | P1 | M | JOB-063;JOB-064 | REQ-015 | no |
 
 ## Backlog — v1.1 et au-delà
 
 | id | titre | epic | agent | prio | taille | deps | REQ | sécu |
 |---|---|---|---|---|---|---|---|---|
-| `JOB-077` | Correction du score par le candidat | EPIC 11 — v1.1 | ai-integration-engineer | P2 | M | JOB-048 | REQ-006 | no |
+| `JOB-077` | Correction du score par le candidat | EPIC 11 — v1.1 | ai-integration-engineer | P2 | M | JOB-048 | REQ-006 | yes |
 | `JOB-078` | Séquences de relance autonomes vers les recruteurs | EPIC 11 — v1.1 | backend-engineer | P2 | XL | JOB-067 | — | yes |
 | `JOB-079` | A/B des variantes de CV et analyse de l entonnoir | EPIC 11 — v1.1 | ai-integration-engineer | P2 | L | JOB-060 | — | no |
 
 ## Contrat de design
 
 Tout ticket portant de l'interface respecte les critères globaux **G1–G6** de
-`docs/design/design-system.md` §6 — contraste mesuré dans les deux thèmes, anneau de focus,
-cible de 44 px, `prefers-reduced-motion`, statut jamais porté par la couleur seule, troncature FR
-testée à 390 px. Ils ne se répètent pas ticket par ticket.
+`docs/design/design-system.md` §6. Ils ne se répètent pas ticket par ticket.
