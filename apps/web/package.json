@@ -12,7 +12,8 @@
     "@job-seeker/env": "workspace:*",
     "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@job-seeker/ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

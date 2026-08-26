@@ -1,0 +1,40 @@
+{
+  "schema": "vantry.review/1",
+  "kind": "security",
+  "verdict": "pass",
+  "reviewer": "security-engineer",
+  "at": "2026-08-25T23:40:17Z",
+  "head": "06d079ff7e732f853ea84bec5aa4044705abab9c",
+  "checklist": [
+    "data-authz",
+    "privileged-credential",
+    "boundary-validation",
+    "secrets-pii",
+    "webhooks",
+    "storage",
+    "headers-csp",
+    "ai-context",
+    "owasp-top-10"
+  ],
+  "scope": [
+    "vantry.yml — seul chemin sensible du diff : ajout de packages/parsing/** et apps/worker/src/matching/** à sensitive_paths"
+  ],
+  "notes": [
+    "Le changement ÉLARGIT la porte et ne la rétrécit nulle part : la liste avant/après est un sur-ensemble strict, vérifié ligne à ligne. Un diff qui retirerait un chemin sensible serait un blocage, pas un constat.",
+    "Le reste du diff (packages/ui, tests/design, apps/web/app/layout.tsx, globals.css) ne touche aucun chemin sensible : ni authentification, ni envoi sortant, ni données personnelles, ni contexte de modèle.",
+    "headers-csp : les en-têtes de apps/web/next.config.ts sont inchangés et le smoke vérifie que nosniff est réellement servi.",
+    "secrets-pii : aucun secret, aucune donnée personnelle. Le seul contenu ajouté est un jeu de couleurs et de libellés publics.",
+    "ai-context, data-authz, webhooks, storage : sans objet à ce commit."
+  ],
+  "findings": [
+    {
+      "severity": "info",
+      "id": "F4",
+      "file": "packages/ui/src/tokens.ts",
+      "line": 74,
+      "summary": "Constat d'accessibilité, pas de sécurité, consigné ici parce qu'il a été trouvé pendant la revue : --border-control valait #60636F, soit 2,78:1 contre --surface-module en sombre — sous le minimum WCAG 2.1 de 3:1 pour la partie non textuelle d'un contrôle. Le document annonçait 3,10, qui est la mesure contre --surface-page.",
+      "fix": "Corrigé à #6B6E7A (3,28 sombre / 3,39 clair) dans ce commit, et le test de contraste lit désormais les ratios du document pour empêcher la réapparition.",
+      "status": "corrigé"
+    }
+  ]
+}

@@ -2,7 +2,14 @@ import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['**/.next/**', '**/dist/**', '**/node_modules/**', 'vendor/**', 'docs/**'] },
+  {
+    ignores: [
+      '**/.next/**', '**/dist/**', '**/node_modules/**', 'vendor/**', 'docs/**',
+      // Engendrés : Next réécrit next-env.d.ts à chaque build, et tokens.css
+      // est produit par packages/ui/scripts/build-css.ts.
+      '**/next-env.d.ts', 'packages/ui/tokens/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

@@ -55,6 +55,13 @@ trivial_paths:
 # routage de la revue humaine. Elle a une seule définition.
 sensitive_paths:
   - "packages/env/**"
+  # Ajoutés par la revue de sécurité de la PR #2 (constat F1) :
+  #   parsing  — extrait le CV, donc la PII la plus lourde du produit
+  #              (parcours, salaires) ; REQ-001 et OBL-1 en dépendent.
+  #   matching — construit le contexte d'un LLM à partir du profil ET du texte
+  #              d'offre, qui est une entrée hostile (REQ-011, OBL-6).
+  - "packages/parsing/**"
+  - "apps/worker/src/matching/**"
   - "packages/auth/**"
   - "packages/audit/**"
   - "packages/llm-guard/**"
