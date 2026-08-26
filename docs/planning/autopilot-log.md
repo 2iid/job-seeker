@@ -288,6 +288,30 @@ face à un profil qui a accompagné trois juniors.
 par `JOB-037` via un résumé dédié au scoring, et à **déclarer** au registre des traitements par
 `JOB-057`).
 
+## Exécution 15 — 2026-08-26 · l'import de CV, et le fichier qu'on ne gardait pas
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 62 | JOB-031 | Le premier segment du chemin : le profil ou `auth.uid()` ? | **`auth.uid()`** | L'identifiant de profil, cohérent avec la ligne `documents` | ASSUMED | La politique devient une comparaison de chaînes qui se relit en une ligne, **sans jointure** vers `profiles` — donc sans dépendre de la RLS d'une autre table ni de l'existence d'une ligne de profil. Une garde de fichier qui a besoin d'une jointure pour savoir dire non est une garde qu'on peut casser depuis ailleurs. |
+| 63 | JOB-031 | Le propriétaire peut-il supprimer son fichier, alors qu'aucune table ne donne DELETE ? | **Oui** | La cohérence stricte avec JOB-030 | BRIEF | L'interdiction de JOB-030 protège REQ-014 (arrêter l'automatisation avant d'effacer) ; **un CV n'automatise rien**. Refuser, ce serait empêcher quelqu'un de retirer un document personnel envoyé par erreur — un défaut de confidentialité, pas une protection. |
+| 64 | JOB-031 | Un champ dont la citation est introuvable : supprimé ou signalé ? | **Signalé** | Supprimé, comme dans le score | BRIEF | REQ-001 fait relire **chaque champ** par la personne. Dans le score, une preuve invérifiable justifie une action automatique sans témoin : on la supprime. Ici quelqu'un regarde. Supprimer « Amina Diallo » parce que le modèle a normalisé une casse remplacerait un risque d'erreur par une corvée certaine. |
+| 65 | JOB-031 | Le scanner de secrets refuse `db-bootstrap.sh`. | **Retirer le mot de passe de l'URL** | Élargir l'exception de `.gitleaks.toml` | *garde-fou* | `.gitleaks.toml` est dans `sensitive_paths` : affaiblir un scanner de secrets passe par une revue, jamais pour se débloquer. Les identifiants passent en champs séparés — ça ne coûte rien. |
+
+**Ce que la contre-épreuve a montré.** Les onze tests allow/deny ont été rejoués avec des politiques
+**volontairement ouvertes** : **5 sont tombés**. Un test de refus qui passe pour la mauvaise raison ne
+prouve rien, et c'est la seule façon de le savoir.
+
+**Deux échecs silencieux attrapés**, qui auraient tous deux produit du vide en ayant l'air de réussir :
+le **PDF scanné** (extraction « réussie », chaîne vide, profil vide créé en croyant avoir lu un CV) et
+**pdf.js qui détache le tampon** qu'on lui passe — sans copie, le même fichier lu puis stocké serait
+stocké **vide**, et « le fichier d'origine reste re-téléchargeable » ne tiendrait plus.
+
+**L'épreuve réelle :** sur un PDF produit par CUPS, **15 champs extraits, toutes les citations
+vérifiées, zéro champ à vérifier**, pour 0,036 EUR.
+
+**Constats** — **F14 CLOS**. F20 ouvert (un dépôt orphelin reste possible dans son propre dossier :
+quota et purge à porter par `JOB-057` avec la rétention).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
