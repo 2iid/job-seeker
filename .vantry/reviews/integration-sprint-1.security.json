@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T13:27:14Z",
-  "head": "cfa34e47743c5028158f4963f338c20db5dd5845",
+  "at": "2026-08-26T13:57:04Z",
+  "head": "4b294acfd9dd8f382f448ba0ad59c4b0c493fdfc",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -33,7 +33,10 @@
     "packages/llm/** — appels de modele, cles d API, journalisation des couts",
     "packages/env/** — OPENROUTER_API_KEY declaree comme secret optionnel",
     "packages/llm-guard/** — frontiere contre l injection et controle des destinations",
-    "apps/worker/src/matching/** — contexte de modele construit a partir de texte tiers"
+    "apps/worker/src/matching/** — contexte de modele construit a partir de texte tiers",
+    "packages/parsing/** — lit un document tiers et decide ou il est range",
+    "apps/worker/src/parsing/** — contexte de modele construit a partir d un CV",
+    "supabase/migrations/** — les politiques qui separent un CV de tout le monde"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -55,7 +58,13 @@
     "privileged-credential : ANTHROPIC_API_KEY et OPENROUTER_API_KEY sont declarees `secret: true`, donc readOptional REFUSE de leur donner une valeur par defaut. readOptionalSecret renvoie undefined quand la cle manque — jamais un repli, parce qu un secret par defaut est un secret commite. Les deux cles restent requises du seul runtime worker : aucune ne porte le prefixe NEXT_PUBLIC_ et aucune ne peut donc atteindre le navigateur.",
     "ai-context : la bascule ne joue que sur les PANNES. Un refus du modele remonte tel quel et n est jamais rejoue chez un autre fournisseur — contourner un refus en changeant de fournisseur serait du magasinage de complaisance. Trois tests verrouillent cette regle.",
     "ai-context : la frontiere est posee et EPROUVEE contre un vrai modele, pas seulement contre des doubles. La propriete la plus importante n est pas la consigne — c est que le contenu tiers ne peut pas sortir de son bloc, et que la destination d une action ne vient jamais du modele.",
-    "ai-context sur JOB-035 : le texte d offre n atteint le modele QUE par encadrer() de llm-guard, et la consigne de frontiere est en tete du systeme. Aucune action ne derive de la sortie : le score est borne a 0-100, les preuves sont filtrees sur verification de citation, et les REDHIBITOIRES — les seuls criteres qui autorisent ou interdisent une candidature automatique — sont calcules par du code et jamais demandes au modele. Un test verifie qu un score de 99 ne leve pas un redhibitoire."
+    "ai-context sur JOB-035 : le texte d offre n atteint le modele QUE par encadrer() de llm-guard, et la consigne de frontiere est en tete du systeme. Aucune action ne derive de la sortie : le score est borne a 0-100, les preuves sont filtrees sur verification de citation, et les REDHIBITOIRES — les seuls criteres qui autorisent ou interdisent une candidature automatique — sont calcules par du code et jamais demandes au modele. Un test verifie qu un score de 99 ne leve pas un redhibitoire.",
+    "F14 CLOS. `storage.objects` ne portait aucune politique : le bucket est desormais prive, plafonne, restreint en types, et garde par quatre politiques (une par operation) comparant le premier segment du chemin a auth.uid(). Onze tests allow/deny contre la vraie base, dont le cas decisif — Bob ne lit pas le fichier d Alice EN CONNAISSANT SON CHEMIN EXACT — et le renommage vers le dossier d autrui, que USING sans WITH CHECK laisserait passer. Contre-epreuve executee : avec des politiques volontairement ouvertes, 5 de ces tests tombent.",
+    "Traversee de repertoire : le nom d origine ne devient jamais un chemin. cheminStockage() n accepte que des uuid et leve sinon ; teste avec « ../../autre » et « cv.pdf ».",
+    "Type MIME decide sur le CONTENU (octets d en-tete + presence de word/document.xml), jamais sur l extension ni sur l en-tete client ; teste avec du HTML qui se presenterait comme un PDF.",
+    "Decompression : le .docx est un zip fourni par l utilisateur, donc un format adversaire. La sortie est bornee a 40 Mo via maxOutputLength — une archive ne peut pas se declarer petite et rendre des gigaoctets.",
+    "ai-context : le texte du CV n atteint le modele que par encadrer(), la consigne de frontiere est en tete du systeme, et le journal d un CV suspect compte les signaux sans recopier la charge. Aucune action ne derive de la sortie : l extraction ne sait pas ecrire, elle PROPOSE.",
+    "Scanner de secrets : le refus sur scripts/db-bootstrap.sh a ete corrige a la SOURCE (identifiants en champs separes, plus de chaine de connexion) et non en elargissant l allowlist de .gitleaks.toml."
   ],
   "findings": [
     {
@@ -174,6 +183,15 @@
       "summary": "Le profil du candidat est inséré en clair dans le message envoyé au modèle. C est necessaire pour scorer, mais cela signifie que du CV, des employeurs et des dates partent chez un sous-traitant a chaque evaluation.",
       "fix": "Minimiser ce qui part : JOB-037 (reproductibilite du score) doit definir un RESUME de profil dedie au scoring plutot que d envoyer le profil complet, et OBL-1 impose de nommer le fournisseur de modele comme sous-traitant dans le registre des traitements. A rappeler dans les criteres de JOB-037 et JOB-057.",
       "status": "reporté à JOB-037 et JOB-057"
+    },
+    {
+      "severity": "medium",
+      "id": "F20",
+      "file": "supabase/bootstrap-local.sql",
+      "line": 0,
+      "summary": "Le bucket accepte encore un depot dont le premier segment de chemin est le bon mais dont le NOM DE DOCUMENT n est reference par aucune ligne `documents`. Un utilisateur peut donc remplir son propre dossier de fichiers orphelins que rien ne rattache ni ne purge.",
+      "fix": "Un quota par utilisateur et une purge des objets sans ligne correspondante. A porter par JOB-057 (retention) avec le parcours de suppression de compte de REQ-014, qui doit de toute facon parcourir le bucket.",
+      "status": "reporté à JOB-057"
     }
   ]
 }
