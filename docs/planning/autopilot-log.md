@@ -312,6 +312,24 @@ vérifiées, zéro champ à vérifier**, pour 0,036 EUR.
 **Constats** — **F14 CLOS**. F20 ouvert (un dépôt orphelin reste possible dans son propre dossier :
 quota et purge à porter par `JOB-057` avec la rétention).
 
+## Exécution 16 — 2026-08-26 · relire ce qu'une machine a compris
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 66 | JOB-032 | L'issue n'avait aucun critère d'acceptation. | **Les écrire d'abord, et les consigner** | Implémenter et s'en remettre au titre | *garde-fou* | Le playbook l'impose : une exigence imaginée en silence pendant qu'on code n'est pas une exigence. |
+| 67 | JOB-032 | `security: no` dans le backlog. | **Reclassée `yes`** | Laisser la classification d'origine | *garde-fou* | L'écran reçoit un fichier envoyé par l'utilisateur, le fait lire par un modèle, puis écrit le profil. Trois raisons plutôt qu'une. |
+| 68 | JOB-032 | Un CV écrit « 2021 » ; la colonne veut une `date`. | **Garder la date ET sa précision** (`precision_date`) | Ancrer au 1ᵉʳ janvier en silence | BRIEF | REQ-001 fait relire ce qu'une machine a compris ; l'écran ne peut pas **ajouter** une précision absente du document. Le 1ᵉʳ janvier reste un ancrage de tri, mais marqué comme approximation — c'est ce qui rend la conversion **réversible**. |
+| 69 | JOB-032 | « 2021 — aujourd'hui » rangé dans le champ *début*. | **Rendre `null`, donc signaler** | Extraire « 2021 » | BRIEF | Extraire l'année serait *probablement juste*, et c'est le problème : « probablement juste » enregistré en silence est exactement ce que cet écran existe pour empêcher. |
+| 70 | JOB-032 | Où vit l'extraction, maintenant que le web en a besoin ? | **`packages/parsing`**, avec une porte `./client` | La laisser dans le worker et la dupliquer | ASSUMED | L'entrée principale tire `node:zlib` et pdf.js : la frontière entre ce qui **lit** un fichier et ce qui l'**affiche** est désormais dans la structure du paquet, pas dans la discipline de celui qui importe. |
+
+**Ce que `confirmer` ne fait pas.** Il ne fait pas confiance à ce que `analyser` a rendu. La proposition
+transite par le navigateur, donc elle revient modifiable — c'est le but — mais alors elle revient aussi
+**falsifiable**. L'identité, le profil visé, le chemin de stockage et le type MIME sont **recalculés**.
+Le navigateur ne renvoie que du contenu.
+
+**Constat** — F21 (l'action d'analyse déclenche un appel facturé sans limite de débit : à porter par
+`JOB-073`, avec F9/F10 — même mécanisme, déjà prévu).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
