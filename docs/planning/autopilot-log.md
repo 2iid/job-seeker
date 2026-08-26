@@ -187,6 +187,28 @@ maintenant l'accord complet.
 **Constat** — F15 (le slug vient d'une page tierce et est interpolé dans une URL ; contraint par le
 motif lui-même, sans schéma ni barre oblique possible — **accepté, périmètre vérifié**).
 
+## Exécution 9 — 2026-08-26 · palier B et registre partagé
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 41 | JOB-024 | Remotive annonce un retard de 24 h dans sa propre réponse | **Le déclarer : 86 400 s** | Le traiter comme les autres agrégateurs | BRIEF | ADR-0002 : *« la latence déclarée par le connecteur est affichée avec l'offre ; on ne présente jamais une offre d'agrégateur comme fraîche à la minute »*. Le déclarer à une heure ferait afficher « vue il y a 12 min » sur une offre d'un jour. |
+| 42 | JOB-024 | Deux sources exigent une attribution visible | **Ajouter `attribution` au contrat** | La documenter et s'en souvenir | ASSUMED | Une obligation légale portée par la mémoire est une obligation qu'on oublie au troisième écran. Portée par le contrat, l'interface la lit sans avoir à la connaître — et Remotive coupe l'accès sans elle. |
+| 43 | JOB-025 | Où vit « qui suit quelle entreprise » ? | **Compteur agrégé dans le registre, détail dans `public` sous RLS** | Tout dans le registre partagé | ASSUMED | Savoir quelles entreprises quelqu'un surveille en dit long sur sa recherche : c'est une donnée personnelle, pas une donnée d'entreprise. Le registre partagé ne porte qu'un entier. |
+| 44 | JOB-025 | Qui tient le compteur de priorité ? | **Un trigger** | Le code applicatif | ASSUMED | Un compteur maintenu à la main dérive au premier chemin qu'on oublie de mettre à jour, et rien ne le signale. |
+| 45 | JOB-026 | Promouvoir sur un board déjà résolu ? | **Non, jamais réécrire** | Toujours prendre le dernier lu | ASSUMED | Une page carrière refaite peut pointer ailleurs le temps d'un déploiement, et on perdrait une source qui marchait. Le plus réversible est de garder ce qui fonctionne. |
+
+**Un piège que seule une vraie réponse révèle :** Arbeitnow date en **secondes** là où Lever date en
+**millisecondes**. Deux sources, deux unités, et aucune documentation ne le dit.
+
+**Le test qui compte le plus n'est pas fonctionnel :** `worker.employeurs` est le premier objet du
+produit lu par **tous les comptes**. Un identifiant de profil qui s'y glisserait serait un canal de
+fuite entre comptes, et il aurait l'air parfaitement normal. Un test interroge `information_schema`
+et refuse toute colonne dont le nom évoque un utilisateur.
+
+**Constat** — F16 (`maj_suivi_par` est `security definer` et écrit dans un objet partagé depuis un
+déclencheur sur une table utilisateur ; écriture bornée au compteur et au nom canonique, `search_path`
+figé — **accepté, périmètre vérifié**).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
