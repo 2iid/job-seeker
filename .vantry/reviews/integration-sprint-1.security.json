@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T16:52:08Z",
-  "head": "0f49eea5d56b866d6c4f68c723cee9435be1dce1",
+  "at": "2026-08-26T16:55:17Z",
+  "head": "03afe241af527938110815bff77bd9730fca68e9",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -241,8 +241,8 @@
       "file": "apps/web/app/opportunites/page.tsx",
       "line": 0,
       "summary": "La recherche construit un motif `ilike` a partir d une saisie utilisateur. Les caracteres `%` et `_` y sont des jokers : quelqu un qui tape « % » balaie tout le flux. Ce n est pas une injection — PostgREST parametre — mais un moyen d imposer un balayage de table depuis l URL.",
-      "fix": "Echapper `%`, `_` et `\\\\` dans le motif avant de le composer, ou passer par une recherche plein texte indexee. A traiter avec JOB-073 (limitation de debit) ou lors de l ajout de l index de recherche.",
-      "status": "ouvert"
+      "fix": "motifLike() échappe \\\\, % et _ avant composition du motif ; quatre tests, dont l ordre d échappement de l antislash.",
+      "status": "corrigé dans la même livraison"
     }
   ]
 }
