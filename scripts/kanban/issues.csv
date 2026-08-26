@@ -85,7 +85,7 @@ JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur 
 JOB-084,Harnais de bout en bout et verification G6 au pixel a 390 px,EPIC 1 — Système d interface,frontend,qa-test-engineer,P1,M,JOB-018,backlog,S5,tests/e2e/**,,no
 JOB-085,Rejouer le lecteur JobPosting contre vingt pages carrieres reelles,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-023,backlog,S5,apps/worker/src/sources/jsonld/**,REQ-003,no
 JOB-086,Source de taux de change avec date de releve et politique de peremption,EPIC 4 — Correspondance,backend,backend-engineer,P1,M,JOB-038,backlog,S5,apps/worker/src/taux/**,REQ-004,no
-JOB-087,Annoncer la couverture reelle et pas la couverture visee,EPIC 1 — Système d interface,frontend,ui-ux-designer,P0,S,JOB-076,backlog,S4,apps/web/app/**,REQ-003,no
+JOB-087,Annoncer la couverture reelle et pas la couverture visee,EPIC 1 — Système d interface,frontend,ui-ux-designer,P0,S,JOB-076,backlog,S4,apps/web/app/opportunites/**;apps/web/app/entree/**,REQ-003,yes
 JOB-088,Decouverte d employeurs par secteur et par pays,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-076;JOB-023,backlog,S4,apps/worker/src/sources/decouverte/**,REQ-003,no
 JOB-089,Sources nationales et sectorielles hors distanciel tech,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-076,backlog,S4,apps/worker/src/sources/**,REQ-003,no
 JOB-090,Dire OU l agent a regarde quand il ne trouve rien,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,M,JOB-076;JOB-038,backlog,S4,apps/web/app/opportunites/**,REQ-003,no

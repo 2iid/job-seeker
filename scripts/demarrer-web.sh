@@ -13,6 +13,19 @@
 #  socket en cours de libération, sur `::` plutôt que sur une adresse, ne se
 #  présente pas de la même façon selon qui regarde.
 #
+#  ── Pourquoi l'attente est longue ──
+#
+#  La cause a été mesurée, pas devinée : un ONGLET DE NAVIGATEUR ouvert sur
+#  `localhost:3100` garde des connexions vers le serveur. Quand celui-ci
+#  s'arrête, il doit les drainer avant de rendre sa socket d'écoute, et le
+#  navigateur les rouvre entre-temps. Vingt secondes ne suffisaient pas ; la
+#  vérification tombait alors en rouge sur une machine de développement dont
+#  la seule faute était d'avoir l'application ouverte dans un onglet.
+#
+#  Une vérification qui échoue parce qu'on regarde le produit qu'elle vérifie
+#  n'est pas une vérification, c'est une nuisance — et une nuisance finit
+#  toujours par être contournée.
+#
 #  On ne DEMANDE donc plus si le port est libre : on ESSAIE DE S'Y LIER, dans
 #  les mêmes conditions que Next.
 #
@@ -49,7 +62,7 @@ const essai = () =>
 const dors = (ms) => new Promise((r) => setTimeout(r, ms))
 
 let dernier = null
-for (let i = 0; i < 40; i += 1) {
+for (let i = 0; i < 180; i += 1) {
   dernier = await essai()
   if (dernier === null) process.exit(0)
   // Seul EADDRINUSE vaut la peine d’attendre : c’est le seul cas qui se règle
@@ -60,8 +73,11 @@ for (let i = 0; i < 40; i += 1) {
 }
 
 if (dernier === "EADDRINUSE") {
-  console.error(`✗ le port ${port} est tenu depuis plus de 20 s — ce n’est pas une socket qui se libère.`)
+  console.error(`✗ le port ${port} est resté pris pendant 90 s.`)
+  console.error("  La cause habituelle est un serveur précédent qui draine encore des connexions —")
+  console.error("  souvent parce qu’un onglet de navigateur est ouvert sur l’application.")
   console.error(`  qui le tient :  lsof -nP -iTCP:${port}`)
+  console.error(`  le libérer  :  kill $(lsof -nP -tiTCP:${port} -sTCP:LISTEN)`)
 } else {
   console.error(`✗ impossible de se lier au port ${port} : ${dernier}`)
   console.error("  Ce n’est PAS un port occupé. Traitez ce code d’erreur pour ce qu’il est.")
@@ -69,4 +85,51 @@ if (dernier === "EADDRINUSE") {
 process.exit(1)
 ' "$PORT" || exit 1
 
-exec pnpm --filter @job-seeker/web start
+# ── Ne PAS `exec` : il faut pouvoir nettoyer derrière soi ──
+#
+# `verify.sh` arrête l'application en tuant le GROUPE de processus du pid
+# qu'il a lancé. Cela suffisait jusqu'ici, mais `next start` place son serveur
+# (`next-server`) dans un groupe A LUI : le kill de groupe ne l'atteint pas, il
+# survit à la fin de la vérification, et c'est LUI qu'on retrouvait à tenir le
+# port vingt secondes plus tard. Le message accusait alors « une socket qui se
+# libère » — un serveur bien vivant.
+#
+# On garde donc la main : le fils tourne en arrière-plan, un piège attend
+# l'arrêt, et l'on tue TOUTE la descendance en remontant l'arbre. `exec` aurait
+# remplacé ce shell, et il n'y aurait plus personne pour le faire.
+descendance() {
+  local pere="$1" enfant
+  for enfant in $(pgrep -P "$pere" 2>/dev/null); do
+    descendance "$enfant"
+    echo "$enfant"
+  done
+}
+
+# Le nettoyage doit tenir dans la patience de l'appelant.
+#
+# `verify.sh` envoie TERM au groupe, attend DEUX secondes, puis envoie KILL.
+# Une première version de ce nettoyage attendait trois secondes que Next
+# s'arrête proprement — donc `verify` la tuait en plein travail, et le
+# petit-fils survivait quand même. Un nettoyage plus lent que la patience de
+# celui qui l'a déclenché n'est pas un nettoyage.
+nettoyer() {
+  local pids i=0
+  pids="$(descendance "$FILS") $FILS"
+  kill -TERM $pids 2>/dev/null
+  while [ "$i" -lt 8 ] && kill -0 "$FILS" 2>/dev/null; do sleep 0.1; i=$((i + 1)); done
+  kill -KILL $pids 2>/dev/null
+
+  # Dernier recours : ce script est propriétaire de ce port pour la durée de la
+  # vérification. Ce qui l'écoute encore ici est forcément quelque chose qu'on
+  # a lancé et manqué — et le laisser condamne l'exécution suivante.
+  local restant
+  restant="$(lsof -nP -tiTCP:"$PORT" -sTCP:LISTEN 2>/dev/null)"
+  [ -n "$restant" ] && kill -KILL $restant 2>/dev/null
+  return 0
+}
+
+trap nettoyer TERM INT EXIT
+
+pnpm --filter @job-seeker/web start &
+FILS=$!
+wait "$FILS"
