@@ -232,6 +232,26 @@ différence entre les deux est exactement le genre de régression qu'une revue n
 simple fait qu'un test importe `renderCss` réécrivait donc un fichier suivi, ce qui périmait le reçu
 de vérification à chaque exécution et faisait bloquer la porte sans raison visible.
 
+## Exécution 12 — 2026-08-26 · les fournisseurs de modèle
+
+2iD a renseigné `ANTHROPIC_API_KEY` et demande de prévoir OpenRouter en secours.
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 52 | — | Sur quoi bascule-t-on ? | **Uniquement sur les pannes** | Sur tout échec | ASSUMED | Un refus du modèle est une **réponse**, pas une panne : changer de fournisseur pour en obtenir une autre serait du magasinage de complaisance. Une demande invalide rejouée ailleurs brûle le second pour la même erreur. Une auth refusée doit s'apprendre, pas se contourner. |
+| 53 | — | Comment déclarer une clé facultative ? | **`required: []` + `readOptionalSecret`** | La lire hors de `packages/env` | ASSUMED | La porte unique reste unique, et `secret: true` continue d'interdire toute valeur par défaut — un secret par défaut est un secret commité. |
+| 54 | — | Modèle par défaut | **`claude-opus-5`, effort `high`, pensée adaptative** | Un modèle moins cher | RECOMMENDED | La documentation de l'API est explicite : ne jamais descendre en gamme pour le coût, c'est la décision de l'utilisateur. Le coût est mesuré et imputé à chaque appel plutôt que supposé. |
+| 55 | — | Vérifier le fournisseur | **Un appel RÉEL pendant le développement** | Uniquement des doubles | ASSUMED | Un fournisseur testé contre un double prouve seulement que le double marche. L'appel a rendu « Dakar », 38/6 tokens, 0,000313 € imputés à la bonne candidature. |
+
+**Un piège qui aurait cassé en production.** Le web tolère les imports sans extension, **Node non** — et
+c'est le worker qui exécute ce code. La régression n'apparaissait ni au typecheck, ni en test
+unitaire : seulement au démarrage. Un test lance désormais Node en sous-processus pour prouver que le
+paquet se charge sans bundler.
+
+**Constats** — F17 (la couche accepte du texte libre : la frontière contre l'injection doit être posée
+par `JOB-052` **avant** que `JOB-035` y fasse passer du texte d'offre) et F18 (tarifs en dur, donc
+auditables, mais à revoir quand ils bougent).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
