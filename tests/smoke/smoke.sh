@@ -18,16 +18,43 @@ mkdir -p "$(dirname "$LOG")"
 PID=""
 PID_WORKER=""
 
+# Tuer le processus lance par pnpm ne tue PAS le serveur qu il a engendre :
+# pnpm est un pere, next start est le fils, et le fils garde le port. Chaque
+# execution laissait donc un serveur derriere elle, et la suivante mourait sur
+# un EADDRINUSE incomprehensible. On tue l arbre, puis on attend que le port
+# soit reellement rendu.
 cleanup() {
   for p in "$PID" "$PID_WORKER"; do
-    [ -n "$p" ] && kill "$p" 2>/dev/null
-    [ -n "$p" ] && wait "$p" 2>/dev/null
+    [ -n "$p" ] || continue
+    pkill -P "$p" 2>/dev/null
+    kill "$p" 2>/dev/null
+    wait "$p" 2>/dev/null
   done
+  for port in "$PORT" "$PORT_WORKER"; do
+    for _ in $(seq 1 20); do
+      lsof -nP -tiTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1 || break
+      sleep 0.25
+    done
+  done
+  return 0
+}
+
+port_libre() {
+  lsof -nP -tiTCP:"$1" -sTCP:LISTEN >/dev/null 2>&1 && {
+    echo "  ✗ smoke: le port $1 est déjà pris. Un serveur d'une exécution précédente ?"
+    echo "     libérez-le :  kill \$(lsof -nP -tiTCP:$1 -sTCP:LISTEN)"
+    exit 1
+  }
   return 0
 }
 trap cleanup EXIT INT TERM
 
 fail() { echo "  ✗ smoke: $1"; exit 1; }
+
+# Echouer ICI, en nommant la cause, plutot que par un « mort avant d etre pret »
+# vingt lignes plus bas.
+port_libre "$PORT"
+port_libre "$PORT_WORKER"
 
 echo "→ [smoke] build"
 pnpm --filter @job-seeker/web build >"$LOG" 2>&1 || { tail -20 "$LOG"; fail "le build a échoué"; }
