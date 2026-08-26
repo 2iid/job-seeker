@@ -8,6 +8,8 @@ export default tseslint.config(
       // Engendrés : Next réécrit next-env.d.ts à chaque build, et tokens.css
       // est produit par packages/ui/scripts/build-css.ts.
       '**/next-env.d.ts', 'packages/ui/tokens/**',
+      // Runtime engendré par la CLI Supabase à chaque `start` — pas notre code.
+      'supabase/.temp/**', 'supabase/.branches/**',
     ],
   },
   js.configs.recommended,

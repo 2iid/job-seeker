@@ -91,3 +91,23 @@ export function redact(name: string, value: string): string {
 export function loadEnv(runtime: Runtime): Readonly<Record<string, string>> {
   return readEnv(runtime, process.env)
 }
+
+/**
+ * Lit une variable NON obligatoire, avec un repli explicite.
+ *
+ * Existe pour que la règle « process.env n'est lu qu'ici » n'ait aucune
+ * exception : un harnais de test qui veut choisir sa base de données passe par
+ * cette porte plutôt que d'en percer une seconde. Le repli est fourni par
+ * l'appelant et doit être une valeur publique — jamais un secret : une valeur
+ * par défaut secrète est un secret commité.
+ */
+export function readOptional(name: string, fallback: string): string {
+  if (SPECS.some((s) => s.name === name && s.secret)) {
+    throw new Error(
+      `${name} est déclarée secrète : elle ne peut pas avoir de valeur par défaut. ` +
+        'Employez readEnv/loadEnv, qui échoue quand elle manque.',
+    )
+  }
+  const raw = process.env[name]
+  return raw === undefined || raw.trim() === '' ? fallback : raw.trim()
+}
