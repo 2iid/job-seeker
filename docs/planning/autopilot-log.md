@@ -473,6 +473,48 @@ cartographie.
 
 **Constats** — **F18 CLOS**.
 
+## Exécution 23 — 2026-08-26 · le parcours d'entrée, et ce que le moteur couvre vraiment
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 100 | JOB-081 | Comment empêcher un envoi pendant le parcours ? | **Une garde en BASE** (`parcours_termine_le`) | Un état d'écran | BRIEF | Le parcours **montre** le cadran et invite à le manipuler — c'est là qu'on comprend ce qu'on accorde. On le déplace pour **apprendre**, pas pour autoriser, et pendant ce temps l'agent cherche déjà pour de vrai. Un composant qui déciderait « c'est fini » vit dans le navigateur, où le worker n'a pas accès. |
+| 101 | JOB-081 | La garde bloque-t-elle aussi la préparation ? | **Oui** | L'envoi seulement | ASSUMED | Préparer un CV adapté et une lettre, c'est déjà dépenser et écrire. |
+| 102 | JOB-081 | Que fait l'écran de veille s'il ne trouve rien ? | **Il dit ce qui est en cours et ce qui suivra** | Un exemple de démonstration | BRIEF | « Jamais une fausse trouvaille de démonstration ». Une offre fabriquée au premier écran vend exactement la confiance que le produit promet de mériter. |
+| 103 | JOB-076 | Cinq profils : lesquels ? | **Quatre hors tech, trois hors Europe de l'Ouest** | Cinq entreprises de logiciel | BRIEF | Le brief vise tous les pays et tous les secteurs. Mesurer sur cinq entreprises de logiciel reviendrait à mesurer ce qu'on sait déjà faire. |
+
+### Ce que JOB-076 a trouvé, et qui change le produit
+
+**Trois profils sur cinq obtiennent ZÉRO offre pertinente** — infirmier à Nantes, comptable à Lyon,
+enseignant à Bogotá. Les trois sources ont répondu `ok` : aucune panne n'explique ces zéros, c'est la
+couverture réelle. Sur 393 offres : 151 aux États-Unis, **zéro en Afrique**, zéro en Amérique du Sud
+hors Mexique, 61 % distancielles.
+
+Et les 91 offres « marketing » du profil dakarois ne sont pas à Dakar.
+
+Quatre issues créées, dont la plus inconfortable — `JOB-087` : **ne pas annoncer une couverture
+mondiale tous secteurs tant que cette mesure tient**.
+
+### Une intermittence enfin comprise, après deux hypothèses fausses
+
+Le gate échouait une fois sur trois sur « le port 3100 est déjà pris », et personne ne tenait le port
+quand on regardait. Mes deux premières explications — une socket en `TIME_WAIT`, puis un serveur fuyant
+hors du groupe de processus — étaient plausibles et **à côté**.
+
+La vraie cause, mesurée : un **onglet de navigateur** ouvert sur `localhost:3100` garde des connexions.
+Le serveur mourant doit les drainer avant de rendre sa socket d'écoute, et le navigateur les rouvre
+entre-temps. Le port reste pris **sans apparaître en `LISTEN`** — ce qui explique que `lsof` ne montrait
+rien : mon contrôle filtrait justement sur `LISTEN`.
+
+> Une vérification qui échoue parce qu'on **regarde** le produit qu'elle vérifie n'est pas une
+> vérification, c'est une nuisance. Et une nuisance finit par être contournée : c'est ainsi qu'on
+> apprend à relancer sans lire, puis à ne plus croire le rouge.
+
+Attente portée à 90 s, message corrigé. **15 passes enchaînées, 15 vertes**, puis 8 de plus.
+
+**Et une faute de ma part, notée pour ne pas la refaire :** j'ai annoté un reçu `fail` avec `--observe`
+avant d'avoir lu son verdict. Le reçu disait `fail`, l'annotation a été acceptée, et j'ai failli
+déclarer JOB-076 livré sur cette base. **Le code de retour se lit avant, pas après.**
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
