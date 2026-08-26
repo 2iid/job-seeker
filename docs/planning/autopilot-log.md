@@ -147,6 +147,24 @@ l'échec était masqué par celui du contrat.
 **Constats** — F12 (les champs texte d'une offre viennent de tiers et ne sont pas bornés → `JOB-027`,
 `JOB-038`) et F13 (le smoke validait par moments un serveur qui n'était pas le sien, **corrigé**).
 
+## Exécution 7 — 2026-08-25 · modèle de données et déduplication
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 33 | JOB-030 | Comment prouver l'appartenance d'une table fille ? | **Sous-requête sur `profiles`** | Dupliquer `user_id` sur chaque table | ASSUMED | La sous-requête est elle-même soumise à la RLS de `profiles` : une ligne dont le profil n'appartient pas à l'appelant est invisible, donc la condition est fausse. L'appartenance se **prouve**. Dupliquer `user_id` créerait deux vérités à garder d'accord. |
+| 34 | JOB-030 | Modifier ou versionner les critères de recherche ? | **Insertion seule, versionnée** | `UPDATE` sur une ligne unique | BRIEF | REQ-002 exige d'expliquer *a posteriori* pourquoi une offre a matché à un instant donné. Un `UPDATE` effacerait cette explication. Il n'y a donc **aucune** politique `UPDATE` sur cette table, et un test le vérifie. |
+| 35 | JOB-027 | Que faire d'une offre malformée ? | **Rejeter avec son motif** | Ignorer ; ou accepter en réparant | ASSUMED | Un rejet silencieux est une offre ratée sans le savoir. « Réparer » une URL ou un employeur reviendrait à inventer une donnée qui sera affichée avec le même aplomb que les autres. |
+| 36 | JOB-027 | Le lieu fait-il partie de l'identité d'une offre ? | **Oui** | Employeur + intitulé seulement | ASSUMED | Le même intitulé chez le même employeur dans deux villes, ce sont deux postes. Les fusionner ferait **disparaître une opportunité réelle** de l'écran d'un candidat. |
+
+**F12 fermé.** Le contenu d'une offre est une entrée hostile : écrite par un inconnu, montrée à un
+utilisateur, et un jour donnée à un modèle qui rédige des emails. `javascript:`, `data:`, une URL
+relative et une URL démesurée sont rejetées avec leur motif ; un titre d'un mégaoctet est borné.
+
+**F14 ouvert.** `documents` enregistre un chemin de stockage, mais les politiques du bucket ne sont
+pas posées : **une ligne cloisonnée qui pointe vers un fichier lisible par tous ne protège rien —
+c'est le fichier qui porte le CV.** Inscrit dans les critères d'acceptation de `JOB-031`, avec ses
+tests allow et deny exigés dans la même PR.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
