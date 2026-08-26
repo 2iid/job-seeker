@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T13:57:04Z",
-  "head": "4b294acfd9dd8f382f448ba0ad59c4b0c493fdfc",
+  "at": "2026-08-26T14:10:16Z",
+  "head": "5932617c6f2bc0020cd907a500a31b2572a0f3b6",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -36,7 +36,8 @@
     "apps/worker/src/matching/** — contexte de modele construit a partir de texte tiers",
     "packages/parsing/** — lit un document tiers et decide ou il est range",
     "apps/worker/src/parsing/** — contexte de modele construit a partir d un CV",
-    "supabase/migrations/** — les politiques qui separent un CV de tout le monde"
+    "supabase/migrations/** — les politiques qui separent un CV de tout le monde",
+    "apps/web/app/profil/import/** — recoit un fichier, appelle un modele, ecrit le profil"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -64,7 +65,10 @@
     "Type MIME decide sur le CONTENU (octets d en-tete + presence de word/document.xml), jamais sur l extension ni sur l en-tete client ; teste avec du HTML qui se presenterait comme un PDF.",
     "Decompression : le .docx est un zip fourni par l utilisateur, donc un format adversaire. La sortie est bornee a 40 Mo via maxOutputLength — une archive ne peut pas se declarer petite et rendre des gigaoctets.",
     "ai-context : le texte du CV n atteint le modele que par encadrer(), la consigne de frontiere est en tete du systeme, et le journal d un CV suspect compte les signaux sans recopier la charge. Aucune action ne derive de la sortie : l extraction ne sait pas ecrire, elle PROPOSE.",
-    "Scanner de secrets : le refus sur scripts/db-bootstrap.sh a ete corrige a la SOURCE (identifiants en champs separes, plus de chaine de connexion) et non en elargissant l allowlist de .gitleaks.toml."
+    "Scanner de secrets : le refus sur scripts/db-bootstrap.sh a ete corrige a la SOURCE (identifiants en champs separes, plus de chaine de connexion) et non en elargissant l allowlist de .gitleaks.toml.",
+    "JOB-032 : l identite est verifiee par utilisateurCourant() (getUser, jamais getSession) a l entree des DEUX actions serveur, et la page la revérifie au rendu. Aucun identifiant venu du formulaire n entre dans une decision : le profil est retrouve par l identite, le chemin de stockage est RECALCULE par cheminStockage(auth.uid(), ...), et le type MIME vient du verdict sur les octets. Le seul champ structurel qui revient du navigateur est le type ('pdf'|'docx'), borne a ces deux valeurs, et il ne sert qu a composer le nom d un fichier dont le premier segment est recalcule — un type mensonger ne peut designer qu un chemin inexistant, jamais le fichier d autrui.",
+    "Taille : refus a 10 Mo sur File.size AVANT lecture du corps (evite de charger un gros corps en memoire), puis verdict faisant autorite sur les octets reellement lus.",
+    "Le fichier est depose AVANT que le profil soit ecrit, et c est voulu : un fichier sans profil est inerte, un profil sans son fichier source serait invérifiable. La politique du bucket (F14) le cloisonne deja."
   ],
   "findings": [
     {
@@ -192,6 +196,15 @@
       "summary": "Le bucket accepte encore un depot dont le premier segment de chemin est le bon mais dont le NOM DE DOCUMENT n est reference par aucune ligne `documents`. Un utilisateur peut donc remplir son propre dossier de fichiers orphelins que rien ne rattache ni ne purge.",
       "fix": "Un quota par utilisateur et une purge des objets sans ligne correspondante. A porter par JOB-057 (retention) avec le parcours de suppression de compte de REQ-014, qui doit de toute facon parcourir le bucket.",
       "status": "reporté à JOB-057"
+    },
+    {
+      "severity": "medium",
+      "id": "F21",
+      "file": "apps/web/app/profil/import/actions.ts",
+      "line": 0,
+      "summary": "L action `analyser` declenche un appel de modele facture, sans limite de debit. Quelqu un d authentifie peut la rappeler en boucle : c est une depense, pas une fuite, mais une depense qu un compte gratuit peut infliger.",
+      "fix": "Limiter le debit par utilisateur sur les actions qui appellent un modele. A porter par JOB-073 (limitation de debit), avec F9/F10 sur /auth/lien — meme mecanisme, deja prevu.",
+      "status": "reporté à JOB-073"
     }
   ]
 }
