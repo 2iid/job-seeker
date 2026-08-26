@@ -443,6 +443,36 @@ quelque chose vient de mal se passer. Elle accepte désormais un `href`.
 
 **Issue créée** — `JOB-086` (source de taux de change, avec date de relevé et péremption).
 
+## Exécution 22 — 2026-08-26 · Workable, le palier C, et le prix d'une candidature
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 95 | JOB-083 | L'adresse documentée de Workable répond 404. | **Chercher le vrai point d'entrée** | Écrire d'après la documentation | *garde-fou* | Le ticket disait la seule issue inacceptable : déclarer une couverture qu'on n'a pas. `api/v1/widget/accounts/<slug>?details=true` sert les offres — et `details=true` est ce qui ajoute description et lieux. |
+| 96 | JOB-083 | `telecommuting: false` → « présentiel » ? | **Non** | Le rendre | BRIEF | `false` peut vouloir dire « présentiel » comme « personne n'a coché la case ». En faire un rédhibitoire écarterait des offres sur un défaut de saisie de l'employeur. |
+| 97 | JOB-082 | Le palier C est-il une exclusion ? | **Non — un rédhibitoire** | Une exclusion | BRIEF | Une offre exclue n'est jamais présentée ; une offre de palier C **est** présentée, on prépare le dossier, et l'envoi reste le geste de la personne. L'écarter reviendrait à ne pas assister du tout. |
+| 98 | JOB-082 | Reconnaître une plateforme par la chaîne ou par l'hôte ? | **L'hôte** | La chaîne dans l'URL | *garde-fou* | `?ref=linkedin.com` classerait une offre ordinaire en palier C, et surtout `linkedin.com.attaquant.test` passerait pour LinkedIn dans l'autre sens. |
+| 99 | JOB-072 | Le plafond de coût avertit ou refuse ? | **Il REFUSE** | Un avertissement | BRIEF | Le mode d'échec n'est pas une dépense visible : c'est une boucle nocturne sur un compte qui ne regarde pas. La dépense se découvre à la facture, quand elle est faite. |
+
+**Le test a corrigé le plafond, pas l'inverse.** Ma valeur était 0,20 € « avec de la marge ». Mesure :
+une candidature complète coûte **0,22 €** (0,036 lecture de CV + 0,048 score + 0,087 CV adapté + 0,048
+lettre). Le plafond aurait bloqué le **travail normal** — le pire type de plafond, celui qui transforme
+un fonctionnement correct en incident. Il est passé à 0,75 €, calculé depuis la mesure.
+
+> **Fait de tarification, pour `JOB-070`** — à 0,22 € l'unité, cent candidatures par mois coûtent
+> **22 € de modèle par utilisateur**. Ce n'est pas un détail technique.
+
+**Un défaut dormant depuis JOB-021.** Le test qui gardait « Workable est non configuré » a échoué en
+annonçant `aucun-resultat`. En cherchant pourquoi : le connecteur rendait `aucun-resultat` dès que
+l'analyseur rendait zéro offre — et c'était vrai des **cinq** fournisseurs. « Zéro offre » avait deux
+causes que rien ne séparait : la liste est vide, ou je n'ai pas su la lire. Les deux affichaient
+« rien pour vous aujourd'hui » à quelqu'un dont l'employeur visé recrutait. `entreesBrutes()` les
+sépare, et attrape en prime le cas le plus sournois : un conteneur **plein** dont aucune entrée ne se
+cartographie.
+
+**Éprouvé en direct** — skroutz : 9 offres, blueground : 26, slug inexistant : `non-configure`.
+
+**Constats** — **F18 CLOS**.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
