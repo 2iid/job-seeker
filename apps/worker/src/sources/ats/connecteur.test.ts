@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { valider } from '../contract.ts'
-import { TAILLE_MAX_OCTETS, connecteurAts, etatDepuisStatut } from './connecteur.ts'
+import { couvertureAffirmable, estAveugle, valider } from '../contract.ts'
+import { TAILLE_MAX_OCTETS, connecteurAts, etatDepuisStatut, type Fetch } from './connecteur.ts'
 
 const greenhouse = readFileSync(join(import.meta.dirname, 'fixtures', 'greenhouse.json'), 'utf8')
 
@@ -87,14 +87,49 @@ describe('une réponse démesurée est une panne, pas une aubaine', () => {
   })
 })
 
-describe('Workable est déclaré non configuré, pas vide', () => {
-  it('ne prétend jamais avoir regardé', async () => {
-    // Aucune réponse réelle n'a pu être enregistrée. Un analyseur écrit
-    // d'après une documentation renverrait « aucune offre » là où la forme
-    // diffère — c'est-à-dire un mensonge silencieux.
-    const c = connecteurAts({ fournisseur: 'workable', slug: 'x' }, 'X')
+describe('« zéro offre » a deux causes, et on ne les confond pas (JOB-083)', () => {
+  // Ce bloc remplace « Workable est déclaré non configuré » : le connecteur
+  // l'est désormais, contre une réponse réelle. En l'écrivant, on a trouvé que
+  // les CINQ fournisseurs confondaient « la liste est vide » et « je n'ai pas
+  // su lire la liste ». Les deux rendaient `aucun-resultat`, donc « rien pour
+  // vous aujourd'hui » à quelqu'un dont l'employeur visé recrutait.
+
+  const reponse = (charge: unknown): Fetch =>
+    (async () => new Response(JSON.stringify(charge), {
+      status: 200, headers: { 'content-type': 'application/json' },
+    })) as unknown as Fetch
+
+  it('une liste VIDE est une absence — et c est le seul cas qui l est', async () => {
+    const c = connecteurAts({ fournisseur: 'workable', slug: 'x' }, 'X', { fetch: reponse({ jobs: [] }) })
     const r = await c.recolter({ requete: 'x' })
-    expect(r.etat).toBe('non-configure')
-    expect(r.note).toMatch(/non vérifié/)
+    expect(r.etat).toBe('aucun-resultat')
+    expect(couvertureAffirmable(r.etat)).toBe(true)
   })
+
+  it('un conteneur ABSENT n est pas une absence', async () => {
+    const c = connecteurAts({ fournisseur: 'workable', slug: 'x' }, 'X', { fetch: reponse({ autre: 'chose' }) })
+    const r = await c.recolter({ requete: 'x' })
+    expect(r.etat).toBe('format-change')
+    expect(estAveugle(r.etat)).toBe(true)
+  })
+
+  it('une liste PLEINE dont rien n est lisible n est pas une absence non plus', async () => {
+    // Le cas le plus sournois : la source répond, sa liste a dix entrées, et
+    // la forme des éléments a changé. Sans comparer les deux nombres, elle
+    // paraîtrait simplement vide.
+    const c = connecteurAts({ fournisseur: 'workable', slug: 'x' }, 'X', {
+      fetch: reponse({ jobs: Array.from({ length: 10 }, () => ({ forme: 'inconnue' })) }),
+    })
+    const r = await c.recolter({ requete: 'x' })
+    expect(r.etat).toBe('format-change')
+    expect(r.note).toContain('10 entrée')
+  })
+
+  it.each(['greenhouse', 'ashby', 'lever', 'smartrecruiters', 'workable'] as const)(
+    '%s : la distinction vaut pour tous, pas seulement le dernier ajouté',
+    async (fournisseur) => {
+      const c = connecteurAts({ fournisseur, slug: 'x' }, 'X', { fetch: reponse({ rien: 1 }) })
+      expect((await c.recolter({ requete: 'x' })).etat).toBe('format-change')
+    },
+  )
 })

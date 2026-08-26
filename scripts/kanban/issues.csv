@@ -81,7 +81,7 @@ JOB-079,A/B des variantes de CV et analyse de l entonnoir,EPIC 11 — v1.1,ai,ai
 JOB-080,Mode discrétion et masquage des employeurs,EPIC 8 — Suivi,frontend,frontend-engineer,P1,M,JOB-063;JOB-064,backlog,S6,packages/ui/discretion/**;apps/web/app/parametres/discretion/**,REQ-015,no
 JOB-081,Parcours d entrée jusqu à la première offre trouvée en direct,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,L,JOB-032;JOB-035,backlog,S3,apps/web/app/entree/**,REQ-001;REQ-002,no
 JOB-082,Palier C plateformes assistées détection sans candidature,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-019,backlog,S3,apps/worker/src/sources/assisted/**,REQ-003,no
-JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-021,backlog,S3,apps/worker/src/sources/ats/**,REQ-003,no
+JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-021,done,S3,apps/worker/src/sources/ats/**,REQ-003,no
 JOB-084,Harnais de bout en bout et verification G6 au pixel a 390 px,EPIC 1 — Système d interface,frontend,qa-test-engineer,P1,M,JOB-018,backlog,S5,tests/e2e/**,,no
 JOB-085,Rejouer le lecteur JobPosting contre vingt pages carrieres reelles,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-023,backlog,S5,apps/worker/src/sources/jsonld/**,REQ-003,no
 JOB-086,Source de taux de change avec date de releve et politique de peremption,EPIC 4 — Correspondance,backend,backend-engineer,P1,M,JOB-038,backlog,S5,apps/worker/src/taux/**,REQ-004,no

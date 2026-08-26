@@ -1,6 +1,6 @@
 import type { Connecteur, EtatSource, OffreBrute, Recolte } from '../contract.ts'
 import { type Board, urlBoard } from './decouverte.ts'
-import { analyserAshby, analyserGreenhouse, analyserLever, analyserSmartRecruiters } from './parsers.ts'
+import { analyserAshby, analyserGreenhouse, analyserLever, analyserSmartRecruiters, analyserWorkable, entreesBrutes } from './parsers.ts'
 
 /**
  * JOB-021 — un board ATS devient un connecteur du palier A.
@@ -34,11 +34,10 @@ function analyser(board: Board, charge: unknown, employeur: string): OffreBrute[
     case 'ashby': return analyserAshby(charge, employeur)
     case 'lever': return analyserLever(charge, employeur)
     case 'smartrecruiters': return analyserSmartRecruiters(charge, board.slug, employeur)
-    // Workable n'a pas d'analyseur : aucune réponse réelle n'a pu être
-    // enregistrée, et un analyseur écrit d'après une documentation renverrait
-    // « aucune offre » là où la forme diffère. Déclarer la source
-    // non-configurée est la seule réponse honnête.
-    case 'workable': return []
+    // JOB-083 : analyseur écrit contre une réponse RÉELLE, enregistrée le
+    // 2026-08-26 sur le point d'entrée du widget — celui de la documentation
+    // que JOB-021 avait essayé répond 404 sur tous les slugs publics.
+    case 'workable': return analyserWorkable(charge, employeur)
   }
 }
 
@@ -60,10 +59,6 @@ export function connecteurAts(
     attribution: null,
 
     async recolter(ctx): Promise<Recolte> {
-      if (board.fournisseur === 'workable') {
-        return { etat: 'non-configure', offres: [], note: 'analyseur non vérifié contre une réponse réelle' }
-      }
-
       let reponse: Response
       try {
         reponse = await f(urlBoard(board), {
@@ -98,7 +93,30 @@ export function connecteurAts(
         return { etat: 'format-change', offres: [] }
       }
 
+      // « Zéro offre » a DEUX causes, et les confondre est la faute que
+      // REQ-003 nomme. On les sépare ici, en un seul endroit, pour les cinq
+      // fournisseurs.
+      const entrees = entreesBrutes(board.fournisseur, charge)
+      if (entrees === null) {
+        // Le conteneur attendu n'est pas là : la réponse a changé de forme, ou
+        // ce n'est pas la réponse qu'on croyait interroger. On n'a rien VU.
+        return { etat: 'format-change', offres: [], note: 'liste d offres absente de la réponse' }
+      }
+
       const offres = analyser(board, charge, employeur)
+
+      if (entrees.length > 0 && offres.length === 0) {
+        // Le cas le plus sournois : la liste est PLEINE et aucune entrée ne se
+        // cartographie. La forme des éléments a changé. Sans cette
+        // comparaison, la source paraîtrait simplement vide.
+        return {
+          etat: 'format-change',
+          offres: [],
+          note: `${entrees.length} entrée(s) reçue(s), aucune lisible`,
+        }
+      }
+
+      // Ici seulement, un tableau vide veut dire ce qu'il dit.
       return { etat: offres.length === 0 ? 'aucun-resultat' : 'ok', offres }
     },
   }

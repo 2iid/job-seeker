@@ -61,7 +61,12 @@ export function urlBoard(b: Board): string {
     case 'lever':
       return `https://api.lever.co/v0/postings/${b.slug}`
     case 'workable':
-      return `https://apply.workable.com/api/v3/accounts/${b.slug}/jobs`
+      // Le point d'entrée du WIDGET, et non `api/v3/accounts/<slug>/jobs` que
+      // la documentation décrit : celui-là répond 404 sur tous les slugs
+      // publics essayés le 2026-08-26, celui-ci sert les offres. `details=true`
+      // est ce qui ajoute la description et les lieux — sans lui, la réponse
+      // est un squelette qu'on prendrait pour une source pauvre.
+      return `https://apply.workable.com/api/v1/widget/accounts/${b.slug}?details=true`
     case 'smartrecruiters':
       return `https://api.smartrecruiters.com/v1/companies/${b.slug}/postings`
   }

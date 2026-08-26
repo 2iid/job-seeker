@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { analyserAshby, analyserGreenhouse, analyserLever, analyserSmartRecruiters } from './parsers.ts'
+import { analyserAshby, analyserGreenhouse, analyserLever, analyserSmartRecruiters, analyserWorkable } from './parsers.ts'
 import { detecterBoard, urlBoard } from './decouverte.ts'
 
 /**
@@ -107,5 +107,88 @@ describe('découverte : le slug publié fait autorité', () => {
       .toBe('https://api.ashbyhq.com/posting-api/job-board/alan')
     expect(urlBoard({ fournisseur: 'lever', slug: 'swile' }))
       .toBe('https://api.lever.co/v0/postings/swile')
+  })
+})
+
+describe('Workable — écrit contre une réponse RÉELLE (JOB-083)', () => {
+  // Enregistrée le 2026-08-26 sur le board public de Skroutz. JOB-021 l'avait
+  // laissé non configuré faute de réponse : un analyseur écrit d'après une
+  // documentation rend « aucune offre » là où la forme diffère, et REQ-003
+  // interdit de confondre un échec avec une absence.
+  const charge = fixture('workable')
+
+  it('lit les offres du board', () => {
+    const o = analyserWorkable(charge, 'Repli')
+    expect(o.length).toBeGreaterThan(0)
+    expect(o[0]!.titre).not.toBe('')
+    expect(o[0]!.urlCandidature).toMatch(/^https:\/\/apply\.workable\.com\//)
+  })
+
+  it('l’identifiant est le `shortcode`, pas le `code` interne', () => {
+    // `code` est une référence saisie à la main (« ASMSK 0626 »), parfois vide
+    // et jamais garantie unique. Deux offres au code vide fusionneraient.
+    const o = analyserWorkable(charge, 'Repli')
+    expect(o[0]!.identifiantSource).toMatch(/^[A-Z0-9]{8,}$/)
+    expect(o[0]!.identifiantSource).not.toContain(' ')
+  })
+
+  it('l’employeur vient du board, pas du repli', () => {
+    expect(analyserWorkable(charge, 'Repli')[0]!.employeur).not.toBe('Repli')
+  })
+
+  it('l’URL retenue mène au FORMULAIRE, pas seulement à l’annonce', () => {
+    // C'est là qu'on postule, et l'annonce y est atteignable depuis.
+    expect(analyserWorkable(charge, 'X')[0]!.urlCandidature).toMatch(/\/apply$/)
+  })
+
+  it('la date est celle de la MISE EN LIGNE, pas de la création du brouillon', () => {
+    // Une offre créée en janvier et publiée en août paraîtrait vieille de sept
+    // mois si on prenait `created_at`.
+    const j = (charge as { jobs: Record<string, unknown>[] }).jobs[0]!
+    expect(analyserWorkable(charge, 'X')[0]!.publieeLe).toBe(j['published_on'])
+  })
+
+  it('le lieu porte le code pays ISO quand `locations` le donne', () => {
+    const lieu = analyserWorkable(charge, 'X')[0]!.lieu
+    expect(lieu).toMatch(/GR$/)
+  })
+
+  it('un lieu marqué `hidden` n’est pas publié à la place de l’employeur', () => {
+    const cache = {
+      name: 'X',
+      jobs: [{
+        title: 'T', shortcode: 'AAAAAAAA', application_url: 'https://apply.workable.com/j/A/apply',
+        locations: [{ city: 'Secret', countryCode: 'FR', hidden: true }],
+        city: 'Paris', country: 'France',
+      }],
+    }
+    const lieu = analyserWorkable(cache, 'X')[0]!.lieu
+    expect(lieu).not.toContain('Secret')
+    expect(lieu).toContain('Paris')
+  })
+
+  it('`telecommuting: false` ne devient PAS « présentiel »', () => {
+    // `false` peut vouloir dire « présentiel » comme « personne n'a coché la
+    // case ». En faire un rédhibitoire écarterait des offres sur un défaut de
+    // saisie de l'employeur.
+    for (const o of analyserWorkable(charge, 'X')) {
+      expect(o.teletravailTexte).toBeUndefined()
+    }
+  })
+
+  it('`telecommuting: true` est rendu, lui', () => {
+    const distant = {
+      name: 'X',
+      jobs: [{ title: 'T', shortcode: 'BBBBBBBB', application_url: 'https://apply.workable.com/j/B/apply', telecommuting: true }],
+    }
+    expect(analyserWorkable(distant, 'X')[0]!.teletravailTexte).toBe('distanciel')
+  })
+
+  it('une forme inattendue rend une liste VIDE, jamais une exception', () => {
+    // Le connecteur transforme alors ce vide en `format-change` : c'est là que
+    // se joue « je n'ai pas su lire » plutôt que « il n'y a rien ».
+    expect(analyserWorkable({ jobs: 'pas un tableau' }, 'X')).toEqual([])
+    expect(analyserWorkable(null, 'X')).toEqual([])
+    expect(analyserWorkable({ jobs: [{ sans: 'titre' }] }, 'X')).toEqual([])
   })
 })
