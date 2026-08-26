@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T00:38:49Z",
-  "head": "6fc128db13bd3abbfb2c5585e6b48a7ad0a7a808",
+  "at": "2026-08-26T00:57:12Z",
+  "head": "bb38de6576184528c04f9f5af822b792822781b9",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -20,7 +20,12 @@
     "supabase/migrations/20260825140000_file_travaux.sql — schéma worker, file, privilèges",
     "packages/observability/** — journalisation, santé, coût",
     "packages/env/** — EnvError réécrite",
-    "vantry.yml — packages/observability ajouté aux chemins sensibles"
+    "vantry.yml — packages/observability ajouté aux chemins sensibles",
+    "supabase/migrations/20260825160000_provisionnement_profil.sql — trigger security definer",
+    "apps/web/app/auth/** — callback et demande de lien",
+    "apps/web/lib/supabase/** — client serveur et vérification d'identité",
+    "apps/web/middleware.ts — rafraîchissement de session",
+    "packages/env/** — renommage des clés publiques (F2)"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -28,7 +33,11 @@
     "secrets-pii : c'est le cœur du diff. La journalisation emploie une liste d'AUTORISATION : une clé non déclarée sûre est réduite à son type et sa taille. Cinq tests vérifient qu'aucun contenu de CV, de lettre, d'email, ni aucun secret ne ressort, y compris passé par erreur.",
     "privileged-credential : le worker se connecte sous une identité de service et ne porte aucune session utilisateur (ADR-0001). Vérifié par lecture du code : aucun jeton d'utilisateur n'entre dans apps/worker.",
     "ai-context : sans objet à ce commit, aucun appel de modèle n'existe encore. L'instrumentation de coût est en place pour quand il y en aura.",
-    "webhooks, storage, headers-csp : sans objet ou inchangés."
+    "webhooks, storage, headers-csp : sans objet ou inchangés.",
+    "data-authz : la décision d'autorisation passe par getUser(), qui VÉRIFIE le jeton auprès du serveur d'authentification, jamais par getSession(), qui lit le cookie et le croit. Le middleware ne fait que rediriger — la page revérifie, et la RLS reste la garantie de fond.",
+    "privileged-credential : provisionner_profil est SECURITY DEFINER avec search_path figé. Un security definer sans search_path figé est une escalade qui attend, l'appelant choisissant alors quel `profiles` la fonction écrit. Un test le vérifie sur pg_proc.",
+    "boundary-validation : la destination de redirection passe par une liste d'autorisation à correspondance exacte, assainie au callback ET à l'affichage du formulaire. Seize tests couvrent les contournements connus.",
+    "secrets-pii : F2 traité. NEXT_PUBLIC_* pour ce qui part au navigateur, et la clé de service reste sans préfixe, requise du seul worker, déclarée secrète — donc interdite de valeur par défaut par readOptional."
   ],
   "findings": [
     {
@@ -48,6 +57,24 @@
       "summary": "Une propriété de constructeur TypeScript cassait le démarrage du worker : Node exécute ce code en retirant les types sans compiler, donc l'erreur survient au DÉMARRAGE et non au typecheck — c'est-à-dire en production, pas en revue.",
       "fix": "Corrigé, et trois syntaxes (parameter property, enum, namespace) sont désormais refusées par ESLint avec le motif expliqué.",
       "status": "corrigé"
+    },
+    {
+      "severity": "medium",
+      "id": "F9",
+      "file": "apps/web/app/auth/lien/route.ts",
+      "line": 0,
+      "summary": "La route de demande de lien envoie un email pour toute adresse fournie, sans limitation de débit. Elle peut donc servir à expédier des emails au nom du produit, et à saturer la boîte de quelqu'un.",
+      "fix": "JOB-073 doit poser la limitation de débit sur cette route, clé sur l'adresse ET sur l'IP. Noté dans le fichier lui-même pour que le prochain qui le lise le sache.",
+      "status": "reporté à JOB-073"
+    },
+    {
+      "severity": "low",
+      "id": "F10",
+      "file": "apps/web/app/auth/lien/route.ts",
+      "line": 0,
+      "summary": "La route répond identiquement que l'adresse existe ou non — c'est délibéré et c'est la bonne décision, mais elle mérite d'être protégée d'une régression : quelqu'un « améliorera » un jour le message d'erreur pour être plus utile.",
+      "fix": "Le motif est écrit en tête du fichier : sur ce produit, distinguer les deux cas révélerait qui cherche un emploi, et peut trahir quelqu'un auprès de son employeur. À couvrir par un test quand JOB-073 touchera la route.",
+      "status": "documenté"
     }
   ]
 }
