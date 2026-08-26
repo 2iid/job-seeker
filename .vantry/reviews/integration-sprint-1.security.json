@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T01:27:11Z",
-  "head": "ad8d571a05d80244b16cf11c7be31c46df12a37e",
+  "at": "2026-08-26T01:42:40Z",
+  "head": "872eb659d4a4f828a7769efac8cd4d7d509474fe",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -26,7 +26,8 @@
     "apps/web/lib/supabase/** — client serveur et vérification d'identité",
     "apps/web/middleware.ts — rafraîchissement de session",
     "packages/env/** — renommage des clés publiques (F2)",
-    "apps/worker/src/sources/** — contrat, registre, normalisation, cadence (aucun chemin sensible, relu par prudence)"
+    "apps/worker/src/sources/** — contrat, registre, normalisation, cadence (aucun chemin sensible, relu par prudence)",
+    "supabase/migrations/20260825180000_modele_profil.sql — sept tables portant de la donnée personnelle"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -41,7 +42,8 @@
     "secrets-pii : F2 traité. NEXT_PUBLIC_* pour ce qui part au navigateur, et la clé de service reste sans préfixe, requise du seul worker, déclarée secrète — donc interdite de valeur par défaut par readOptional.",
     "Verdict réémis : packages/env a été modifié APRÈS la revue précédente, ce que la porte a détecté comme un verdict périmé. Le changement relu ici durcit le comportement — readOptional refuse tout repli quand NODE_ENV vaut production — et ne relâche rien.",
     "ai-context : le moteur de veille manipule du texte de source, qui est une ENTREE HOSTILE (OBL-6). Rien ici ne l'interprete comme une instruction : le registre ne conserve meme pas le message d'une exception levee par un connecteur, et un test verifie qu'il ne fuite pas dans le resultat. Quand JOB-035 fera passer ce texte a un modele, JOB-052 devra poser la frontiere.",
-    "Verdict reemis : vantry.yml a bouge (parametrage des ports) apres la revue precedente. Le changement relu ne touche ni les chemins sensibles declares, ni les portes : il rend seulement le port du service configurable, defauts inchanges."
+    "Verdict reemis : vantry.yml a bouge (parametrage des ports) apres la revue precedente. Le changement relu ne touche ni les chemins sensibles declares, ni les portes : il rend seulement le port du service configurable, defauts inchanges.",
+    "data-authz sur le modele complet : les tables filles n ont pas de user_id, l appartenance passe par une sous-requete sur profiles — elle-meme soumise a la RLS de profiles, donc une ligne dont le profil n appartient pas a l appelant est invisible et la condition est fausse. 35 tests couvrent les sept tables, chacune avec son test de refus : lecture d autrui, insertion au nom d autrui, acces anonyme, et suppression."
   ],
   "findings": [
     {
@@ -95,8 +97,8 @@
       "file": "apps/worker/src/sources/contract.ts",
       "line": 0,
       "summary": "OffreBrute porte des champs de texte libre venus de sources tierces (titre, employeur, description, url). Rien ne les borne aujourd'hui en taille ni en forme : une source hostile ou defaillante pourrait renvoyer des megaoctets, ou une urlCandidature en javascript:.",
-      "fix": "JOB-027 (deduplication) et JOB-038 (affichage) doivent borner la taille a l'entree et valider que urlCandidature est bien http(s) avant tout affichage ou toute navigation. La liste d'autorisation de packages/auth donne le motif a suivre.",
-      "status": "reporté à JOB-027 et JOB-038"
+      "fix": "JOB-027 (deduplication) et JOB-038 (affichage) doivent borner la taille a l'entree et valider que urlCandidature est bien http(s) avant tout affichage ou toute navigation. La liste d'autorisation de packages/auth donne le motif a suivre. FERMÉ par JOB-027 : urlSure refuse tout ce qui n'est pas http(s), les champs sont bornés à l'entrée, et 23 tests couvrent javascript:, data:, une URL relative, une URL démesurée et un titre d'un mégaoctet.",
+      "status": "corrigé"
     },
     {
       "severity": "info",
@@ -106,6 +108,15 @@
       "summary": "Le smoke demarrait un second serveur sur un port deja pris par le contrat. Le sien mourait en silence sur EADDRINUSE pendant que ses requetes touchaient le serveur du contrat — et sur clone propre, celui de l HOTE. La contre-verification independante validait donc, par moments, du code qui n etait pas le sien.",
       "fix": "Le smoke adopte un serveur qui repond au lieu d en demarrer un second, ne tue que ce qu il a demarre, et le clone de ci-local tourne sur ses propres ports (3200/3210).",
       "status": "corrigé"
+    },
+    {
+      "severity": "medium",
+      "id": "F14",
+      "file": "supabase/migrations/20260825180000_modele_profil.sql",
+      "line": 0,
+      "summary": "public.documents enregistre un chemin de stockage, mais les politiques du bucket Supabase Storage ne sont PAS posees par cette migration. Une ligne cloisonnee qui pointe vers un fichier accessible a tous ne protege rien : c est le fichier qui porte le CV.",
+      "fix": "JOB-031 (import de CV) doit poser les politiques de stockage dans la MEME PR que l upload, avec leurs tests allow et deny — un utilisateur ne doit pas pouvoir lire le fichier d un autre, meme en connaissant son chemin. A rappeler dans ses criteres d acceptation.",
+      "status": "reporté à JOB-031"
     }
   ]
 }
