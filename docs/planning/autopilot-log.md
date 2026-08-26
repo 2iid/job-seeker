@@ -165,6 +165,28 @@ pas posées : **une ligne cloisonnée qui pointe vers un fichier lisible par tou
 c'est le fichier qui porte le CV.** Inscrit dans les critères d'acceptation de `JOB-031`, avec ses
 tests allow et deny exigés dans la même PR.
 
+## Exécution 8 — 2026-08-26 · les connecteurs ATS
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 37 | JOB-021 | Écrire les analyseurs d'après quoi ? | **De vraies réponses enregistrées** | La documentation des fournisseurs | ASSUMED | Un analyseur écrit d'après une doc renvoie « aucune offre » quand la forme diffère — exactement le mensonge que REQ-003 interdit. Les fixtures viennent des API publiques de Greenhouse, Ashby, Lever et SmartRecruiters. |
+| 38 | JOB-021 | Workable, dont aucun board public n'a répondu | **Déclarer la source non configurée** | Écrire l'analyseur d'après la doc | **STOPPED** | Livrer un analyseur non vérifié aurait produit le mensonge silencieux que le contrat existe pour empêcher. `JOB-083` porte la suite avec la raison écrite. Quatre fournisseurs sur cinq, dit franchement. |
+| 39 | JOB-022 | Trouver le board d'une entreprise | **Lire le slug publié sur la page carrière** | Deviner le slug depuis le nom | BRIEF | ADR-0002 : la découverte est *careers-page-first*. Deviner produit soit le board d'un homonyme affiché au nom de la mauvaise entreprise, soit un 404 lu comme « cette entreprise ne recrute pas ». |
+| 40 | — | L'obligation MIT du portage | **Remplie dans la même livraison** | Plus tard | RECOMMENDED | `THIRD_PARTY_NOTICES` l'exigeait explicitement : *« une œuvre dérivée porte l'obligation avec elle »*. La notice dit maintenant ce qui est porté (la stratégie, les motifs de liens, les jetons non-slugs) et ce qui ne l'est pas. |
+
+**Deux pièges trouvés dans les vraies données** — que la documentation n'aurait pas montrés. Lever
+donne `createdAt` en **millisecondes** : traité en secondes, tout daterait de 1970 et le produit
+afficherait « il y a 56 ans ». Et SmartRecruiters expose dans `ref` une URL d'**API**, sur laquelle
+un candidat ne peut pas postuler.
+
+**Le linter du backlog a trouvé quatre dérives** entre la colonne `security` et `sensitive_paths` :
+deux issues promettaient une revue que la CI n'aurait jamais exigée, deux autres auraient été
+bloquées sans prévenir. Toute la colonne est réconciliée contre `vantry.yml`, et le linter déclare
+maintenant l'accord complet.
+
+**Constat** — F15 (le slug vient d'une page tierce et est interpolé dans une URL ; contraint par le
+motif lui-même, sans schéma ni barre oblique possible — **accepté, périmètre vérifié**).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
