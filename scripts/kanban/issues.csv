@@ -1,40 +1,40 @@
 id,title,epic,area,agent,priority,size,deps,status,sprint,paths,req,security
-JOB-001,Initialiser le monorepo Next.js 15 avec TypeScript lint et tests,EPIC 0 — Fondation,devops,devops-engineer,P0,M,,todo,S1,package.json;turbo.json;tsconfig.json;apps/**;packages/**,,yes
+JOB-001,Initialiser le monorepo Next.js 15 avec TypeScript lint et tests,EPIC 0 — Fondation,devops,devops-engineer,P0,M,,done,S1,package.json;turbo.json;tsconfig.json;apps/**;packages/**,,yes
 JOB-002,Pointe technique soumission ATS sur 20 formulaires réels,EPIC 0 — Fondation,research,backend-engineer,P0,L,,todo,S1,spikes/ats-submission/**,REQ-011,no
-JOB-003,Chargement et validation stricte des variables d environnement,EPIC 0 — Fondation,security,backend-engineer,P0,S,JOB-001,backlog,S1,packages/env/**,,yes
-JOB-004,Projet Supabase et première migration,EPIC 0 — Fondation,data,database-architect,P0,M,JOB-001,backlog,S1,supabase/migrations/**,,yes
-JOB-005,Socle RLS deny-by-default avec tests allow et deny,EPIC 0 — Fondation,security,security-engineer,P0,M,JOB-004,backlog,S1,supabase/migrations/**;tests/rls/**,REQ-014,yes
-JOB-006,Authentification et session serveur,EPIC 0 — Fondation,security,backend-engineer,P0,M,JOB-005,backlog,S1,apps/web/app/auth/**;packages/auth/**,,yes
-JOB-007,Contrat de vérification vantry.yml et smoke initial,EPIC 0 — Fondation,devops,devops-engineer,P0,S,JOB-001,todo,S1,vantry.yml;tests/smoke/**,,yes
+JOB-003,Chargement et validation stricte des variables d environnement,EPIC 0 — Fondation,security,backend-engineer,P0,S,JOB-001,done,S1,packages/env/**,,yes
+JOB-004,Projet Supabase et première migration,EPIC 0 — Fondation,data,database-architect,P0,M,JOB-001,done,S1,supabase/migrations/**,,yes
+JOB-005,Socle RLS deny-by-default avec tests allow et deny,EPIC 0 — Fondation,security,security-engineer,P0,M,JOB-004,done,S1,supabase/migrations/**;tests/rls/**,REQ-014,yes
+JOB-006,Authentification et session serveur,EPIC 0 — Fondation,security,backend-engineer,P0,M,JOB-005,done,S1,apps/web/app/auth/**;packages/auth/**,,yes
+JOB-007,Contrat de vérification vantry.yml et smoke initial,EPIC 0 — Fondation,devops,devops-engineer,P0,S,JOB-001,done,S1,vantry.yml;tests/smoke/**,,yes
 JOB-008,Pipeline CI avec lint tests scan de secrets et scan de vulnérabilités,EPIC 0 — Fondation,devops,devops-engineer,P0,S,JOB-007,backlog,S1,.github/workflows/**,,yes
-JOB-009,Squelette du worker conteneurisé avec file durable et reprise,EPIC 0 — Fondation,backend,backend-engineer,P0,M,JOB-003,backlog,S1,apps/worker/**,,no
-JOB-010,Observabilité erreurs logs structurés et sonde de santé,EPIC 0 — Fondation,devops,devops-engineer,P1,S,JOB-009,backlog,S1,packages/observability/**;apps/worker/src/health/**,,yes
-JOB-011,Traduire la direction de marque retenue en tokens sémantiques,EPIC 1 — Système d interface,design,ui-ux-designer,P0,M,JOB-001,backlog,S1,packages/ui/tokens/**;docs/design/design-system.md,,no
-JOB-012,Thème clair et sombre à parité avec contrastes mesurés,EPIC 1 — Système d interface,design,ui-ux-designer,P0,S,JOB-011,backlog,S2,packages/ui/theme/**,,no
-JOB-013,Primitives d interface et quatre états génériques,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-011,backlog,S2,packages/ui/components/**,,no
+JOB-009,Squelette du worker conteneurisé avec file durable et reprise,EPIC 0 — Fondation,backend,backend-engineer,P0,M,JOB-003,done,S1,apps/worker/**,,no
+JOB-010,Observabilité erreurs logs structurés et sonde de santé,EPIC 0 — Fondation,devops,devops-engineer,P1,S,JOB-009,done,S1,packages/observability/**;apps/worker/src/health/**,,yes
+JOB-011,Traduire la direction de marque retenue en tokens sémantiques,EPIC 1 — Système d interface,design,ui-ux-designer,P0,M,JOB-001,done,S1,packages/ui/tokens/**;docs/design/design-system.md,,no
+JOB-012,Thème clair et sombre à parité avec contrastes mesurés,EPIC 1 — Système d interface,design,ui-ux-designer,P0,S,JOB-011,done,S2,packages/ui/theme/**,,no
+JOB-013,Primitives d interface et quatre états génériques,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-011,done,S2,packages/ui/components/**,,no
 JOB-014,Composant signature indicateur de score dépliable,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,backlog,S2,packages/ui/components/score/**,REQ-005,no
 JOB-015,Composant signature carte d approbation,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,backlog,S2,packages/ui/components/approval/**,REQ-010,no
 JOB-016,Composant signature ligne de vie de l agent,EPIC 1 — Système d interface,frontend,frontend-engineer,P1,M,JOB-013,backlog,S2,packages/ui/components/timeline/**,REQ-013,no
 JOB-017,Composant signature indicateur de fraîcheur par palier,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,S,JOB-013,backlog,S2,packages/ui/components/freshness/**,REQ-004,no
 JOB-018,Internationalisation français et anglais avec vérification à 390 px,EPIC 1 — Système d interface,frontend,frontend-engineer,P0,M,JOB-013,backlog,S2,packages/i18n/**,,no
-JOB-019,Contrat de connecteur et registre de sources,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-009,backlog,S2,apps/worker/src/sources/contract.ts;apps/worker/src/sources/registry.ts,REQ-003,no
-JOB-020,Normalisation des offres avec devise périodicité et fuseau,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,backlog,S2,apps/worker/src/sources/normalize/**,REQ-003;REQ-004,no
-JOB-021,Connecteurs ATS du palier A pour cinq fournisseurs,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,backlog,S2,apps/worker/src/sources/ats/**,REQ-003,no
-JOB-022,Résolution du board ATS depuis la page carrière,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-021,backlog,S2,apps/worker/src/sources/discovery/**,REQ-003,no
+JOB-019,Contrat de connecteur et registre de sources,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-009,done,S2,apps/worker/src/sources/contract.ts;apps/worker/src/sources/registry.ts,REQ-003,no
+JOB-020,Normalisation des offres avec devise périodicité et fuseau,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,done,S2,apps/worker/src/sources/normalize/**,REQ-003;REQ-004,no
+JOB-021,Connecteurs ATS du palier A pour cinq fournisseurs,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,done,S2,apps/worker/src/sources/ats/**,REQ-003,no
+JOB-022,Résolution du board ATS depuis la page carrière,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-021,done,S2,apps/worker/src/sources/discovery/**,REQ-003,no
 JOB-023,Lecture des offres schema.org JobPosting,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-022,backlog,S2,apps/worker/src/sources/jsonld/**,REQ-003,no
-JOB-024,Connecteurs du palier B agrégateurs et portails multi-pays,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,backlog,S2,apps/worker/src/sources/aggregators/**,REQ-003,no
-JOB-025,Registre d entreprises partagé et diffusion multi-utilisateurs,EPIC 2 — Moteur de veille,data,database-architect,P0,M,JOB-020,backlog,S2,supabase/migrations/**;apps/worker/src/registry/**,REQ-003,yes
-JOB-026,Promotion automatique d une entreprise du palier B vers le palier A,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-025;JOB-022,backlog,S3,apps/worker/src/registry/promote.ts,REQ-003,no
-JOB-027,Déduplication inter-sources et inter-paliers,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-020,backlog,S2,apps/worker/src/sources/dedupe/**,REQ-003,no
-JOB-028,Cadence par domaine retrait progressif et état par source,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,backlog,S2,apps/worker/src/sources/rate/**,REQ-003,no
-JOB-029,Planificateur des paliers A et B,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-028,backlog,S3,apps/worker/src/scheduler/**,REQ-003,no
-JOB-030,Modèle de données profil documents et candidatures avec RLS,EPIC 3 — Profil et CV,data,database-architect,P0,M,JOB-005,backlog,S2,supabase/migrations/**;tests/rls/**,REQ-001;REQ-002,yes
+JOB-024,Connecteurs du palier B agrégateurs et portails multi-pays,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-020,done,S2,apps/worker/src/sources/aggregators/**,REQ-003,no
+JOB-025,Registre d entreprises partagé et diffusion multi-utilisateurs,EPIC 2 — Moteur de veille,data,database-architect,P0,M,JOB-020,done,S2,supabase/migrations/**;apps/worker/src/registry/**,REQ-003,yes
+JOB-026,Promotion automatique d une entreprise du palier B vers le palier A,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-025;JOB-022,done,S3,apps/worker/src/registry/promote.ts,REQ-003,no
+JOB-027,Déduplication inter-sources et inter-paliers,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-020,done,S2,apps/worker/src/sources/dedupe/**,REQ-003,no
+JOB-028,Cadence par domaine retrait progressif et état par source,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-019,done,S2,apps/worker/src/sources/rate/**,REQ-003,no
+JOB-029,Planificateur des paliers A et B,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-028,done,S3,apps/worker/src/scheduler/**,REQ-003,no
+JOB-030,Modèle de données profil documents et candidatures avec RLS,EPIC 3 — Profil et CV,data,database-architect,P0,M,JOB-005,done,S2,supabase/migrations/**;tests/rls/**,REQ-001;REQ-002,yes
 JOB-031,Import de CV et extraction structurée,EPIC 3 — Profil et CV,ai,ai-integration-engineer,P0,L,JOB-030,done,S3,packages/parsing/**,REQ-001,yes
 JOB-032,Écran de confirmation de l extraction du CV,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-031;JOB-013,done,S3,apps/web/app/profil/import/**,REQ-001,yes
-JOB-033,Profil canonique édition et versionnement,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-032,backlog,S3,apps/web/app/profil/**,REQ-002,no
+JOB-033,Profil canonique édition et versionnement,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-032,backlog,S3,apps/web/app/profil/**,REQ-002,yes
 JOB-034,Critères de recherche préférences et exclusions,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-033,backlog,S3,apps/web/app/criteres/**,REQ-002,no
-JOB-035,Moteur de score de correspondance explicable,EPIC 4 — Correspondance,ai,ai-integration-engineer,P0,L,JOB-027;JOB-034,backlog,S3,apps/worker/src/matching/**,REQ-005,yes
-JOB-036,Critères rédhibitoires bloquant la soumission automatique,EPIC 4 — Correspondance,backend,backend-engineer,P0,S,JOB-035,backlog,S3,apps/worker/src/matching/blockers.ts,REQ-005,yes
+JOB-035,Moteur de score de correspondance explicable,EPIC 4 — Correspondance,ai,ai-integration-engineer,P0,L,JOB-027;JOB-034,done,S3,apps/worker/src/matching/**,REQ-005,yes
+JOB-036,Critères rédhibitoires bloquant la soumission automatique,EPIC 4 — Correspondance,backend,backend-engineer,P0,S,JOB-035,done,S3,apps/worker/src/matching/blockers.ts,REQ-005,yes
 JOB-037,Reproductibilité du score et conservation des preuves,EPIC 4 — Correspondance,backend,backend-engineer,P1,M,JOB-035,backlog,S4,apps/worker/src/matching/replay.ts,REQ-005,yes
 JOB-038,Flux d opportunités avec fraîcheur provenance et filtres persistants,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,L,JOB-035;JOB-017,backlog,S3,apps/web/app/opportunites/**,REQ-004,no
 JOB-039,Détail d une offre avec score déplié en preuves,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,M,JOB-038;JOB-014,backlog,S3,apps/web/app/opportunites/detail/**,REQ-004;REQ-005,no
@@ -50,7 +50,7 @@ JOB-048,File d approbation utilisable au pouce et au clavier,EPIC 6 — Automati
 JOB-049,Soumission de candidature par navigateur piloté,EPIC 6 — Automatisation,backend,backend-engineer,P0,XL,JOB-002;JOB-044,backlog,S5,apps/worker/src/submission/**,REQ-011,yes
 JOB-050,Escalade obligatoire sur anti-robot et champ inconnu,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,backlog,S5,apps/worker/src/submission/escalate.ts,REQ-011,yes
 JOB-051,Idempotence de soumission et détection de doublon,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,backlog,S5,apps/worker/src/submission/idempotency.ts,REQ-011,yes
-JOB-052,Défense contre l injection par le contenu d une offre,EPIC 6 — Automatisation,security,security-engineer,P0,M,JOB-044,backlog,S4,packages/llm-guard/**;tests/injection/**,REQ-011;REQ-016,yes
+JOB-052,Défense contre l injection par le contenu d une offre,EPIC 6 — Automatisation,security,security-engineer,P0,M,JOB-044,done,S4,packages/llm-guard/**;tests/injection/**,REQ-011;REQ-016,yes
 JOB-053,Arrêt d urgence global effectif sous cinq secondes,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-047,backlog,S4,apps/worker/src/governance/killswitch.ts,REQ-012,yes
 JOB-054,Table de reçus immuable en insertion seule,EPIC 7 — Traçabilité,data,database-architect,P0,M,JOB-005,backlog,S4,supabase/migrations/**;tests/rls/**,REQ-013,yes
 JOB-055,Écriture d un reçu pour chaque action sortante,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-054;JOB-049,backlog,S5,apps/worker/src/receipts/**,REQ-013,yes
