@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T01:00:40Z",
-  "head": "e957c425c6a2cf70c308befa8eb6ed904d2e95bb",
+  "at": "2026-08-26T01:16:03Z",
+  "head": "434a66553bd658b547ad9b93c75a86af71392858",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -25,7 +25,8 @@
     "apps/web/app/auth/** — callback et demande de lien",
     "apps/web/lib/supabase/** — client serveur et vérification d'identité",
     "apps/web/middleware.ts — rafraîchissement de session",
-    "packages/env/** — renommage des clés publiques (F2)"
+    "packages/env/** — renommage des clés publiques (F2)",
+    "apps/worker/src/sources/** — contrat, registre, normalisation, cadence (aucun chemin sensible, relu par prudence)"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -38,7 +39,8 @@
     "privileged-credential : provisionner_profil est SECURITY DEFINER avec search_path figé. Un security definer sans search_path figé est une escalade qui attend, l'appelant choisissant alors quel `profiles` la fonction écrit. Un test le vérifie sur pg_proc.",
     "boundary-validation : la destination de redirection passe par une liste d'autorisation à correspondance exacte, assainie au callback ET à l'affichage du formulaire. Seize tests couvrent les contournements connus.",
     "secrets-pii : F2 traité. NEXT_PUBLIC_* pour ce qui part au navigateur, et la clé de service reste sans préfixe, requise du seul worker, déclarée secrète — donc interdite de valeur par défaut par readOptional.",
-    "Verdict réémis : packages/env a été modifié APRÈS la revue précédente, ce que la porte a détecté comme un verdict périmé. Le changement relu ici durcit le comportement — readOptional refuse tout repli quand NODE_ENV vaut production — et ne relâche rien."
+    "Verdict réémis : packages/env a été modifié APRÈS la revue précédente, ce que la porte a détecté comme un verdict périmé. Le changement relu ici durcit le comportement — readOptional refuse tout repli quand NODE_ENV vaut production — et ne relâche rien.",
+    "ai-context : le moteur de veille manipule du texte de source, qui est une ENTREE HOSTILE (OBL-6). Rien ici ne l'interprete comme une instruction : le registre ne conserve meme pas le message d'une exception levee par un connecteur, et un test verifie qu'il ne fuite pas dans le resultat. Quand JOB-035 fera passer ce texte a un modele, JOB-052 devra poser la frontiere."
   ],
   "findings": [
     {
@@ -85,6 +87,15 @@
       "summary": "Un repli de configuration silencieux en production produirait un service qui démarre en pointant vers nulle part, dont la panne se découvrirait par un utilisateur plutôt que par un déploiement refusé.",
       "fix": "readOptional lève quand NODE_ENV vaut production. Le smoke tourne en mode production (next start), donc cette règle est réellement exercée à chaque vérification, pas seulement testée unitairement.",
       "status": "corrigé"
+    },
+    {
+      "severity": "low",
+      "id": "F12",
+      "file": "apps/worker/src/sources/contract.ts",
+      "line": 0,
+      "summary": "OffreBrute porte des champs de texte libre venus de sources tierces (titre, employeur, description, url). Rien ne les borne aujourd'hui en taille ni en forme : une source hostile ou defaillante pourrait renvoyer des megaoctets, ou une urlCandidature en javascript:.",
+      "fix": "JOB-027 (deduplication) et JOB-038 (affichage) doivent borner la taille a l'entree et valider que urlCandidature est bien http(s) avant tout affichage ou toute navigation. La liste d'autorisation de packages/auth donne le motif a suivre.",
+      "status": "reporté à JOB-027 et JOB-038"
     }
   ]
 }
