@@ -555,6 +555,26 @@ tests**, et le nouveau gate a été éprouvé en cassant volontairement le forma
 - **Lettre** : l'offre néerlandaise refusée **avant tout appel** ; l'offre anglaise acceptée trois fois
   sur trois.
 
+## Exécution 25 — 2026-08-26 · la chaîne de sûreté
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 108 | JOB-046 | Quand vérifier le mandat ? | **À l'instant de l'exécution** | À la mise en file | BRIEF | REQ-009 l'exige mot pour mot. Entre la mise en file et l'envoi il s'écoule des heures : le mandat peut avoir expiré, la personne peut avoir tout arrêté. Une décision jamais reconsidérée enverrait dans un monde qui n'existe plus. |
+| 109 | JOB-047 | Un quota atteint : jeter ou mettre en file ? | **Mettre en file** | Jeter | BRIEF | Un quota est une limite de **rythme**. Jeter la candidature punirait quelqu'un d'avoir trouvé trop d'offres le même jour. |
+| 110 | JOB-047 | Les heures : UTC ou fuseau du candidat ? | **Fuseau du candidat**, en minutes depuis minuit | UTC | ASSUMED | Un instant UTC glisse d'une heure deux fois par an : l'agent enverrait à 8 h un matin de novembre à quelqu'un qui avait dit « pas avant 9 h ». |
+| 111 | JOB-053 | L'arrêt : un signal au worker, ou une écriture ? | **Une écriture** | Un signal | BRIEF | Un signal suppose un worker joignable et vivant. La colonne est relue à chaque point de contrôle — c'est la seule forme qui tienne « rien ne redémarre tout seul, y compris après un redéploiement ». |
+| 112 | JOB-053 | Confirmer l'arrêt ? | **Non** | Une confirmation | BRIEF | Elle protège d'un arrêt accidentel au prix de retarder un arrêt **voulu**. Les deux erreurs ne coûtent pas la même chose : un arrêt accidentel se répare en cliquant sur « reprendre ». La **reprise**, elle, est explicite — c'est le sens de l'asymétrie. |
+| 113 | JOB-054 | Un reçu absolument immuable ? | **Non — l'UPDATE l'est, la suppression passe par l'effacement de compte** | L'immuabilité totale | *constat* | Un test de nettoyage l'a révélé : la suppression d'un compte casse en cascade sur `recus`, donc REQ-014 devenait impossible. Les deux exigences ne se contredisent qu'en apparence — REQ-013 protège de la **correction silencieuse**, REQ-014 protège le **droit d'effacer**. |
+
+**Ce que le nouveau gate a attrapé.** Le lint, désormais dans `run.test`, a signalé un paramètre
+inutilisé dans `mandatCourant`. En le regardant, il **devait** servir : un mandat daté du futur n'est
+pas en vigueur — cas théorique jusqu'au jour où une horloge dérive, et il vaudrait alors autorisation.
+
+**Et un contrôle qui mesurait la mauvaise chose.** Le smoke a d'abord échoué à tort sur « l'arrêt n'est
+pas le premier élément focalisable » : le premier `<input>` d'une page Next est le champ **caché**
+d'action serveur, que la touche Tab n'atteint jamais. Le contrôle mesurait le balisage, pas ce qui est
+focalisable.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
