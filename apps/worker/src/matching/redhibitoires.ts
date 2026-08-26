@@ -29,11 +29,54 @@ export type OffreAEvaluer = {
   readonly pays: string | null
   readonly teletravailTexte: string | null
   readonly description: string | null
+  /**
+   * Le texte intégral de l'annonce, quand on l'a.
+   *
+   * `description` est ce que la source a bien voulu rendre dans sa liste :
+   * souvent un résumé, parfois tronqué. `texteComplet` est ce que le MODÈLE
+   * lira. Chercher un mot rédhibitoire dans le résumé pendant que le modèle
+   * lit le tout laisserait passer exactement les offres qu'on cherche à
+   * écarter — « astreintes de nuit » figure rarement dans le chapeau.
+   */
+  readonly texteComplet?: string | null
 }
 
 export type Redhibitoire = {
   readonly code: 'employeur-exclu' | 'hors-zone' | 'sans-autorisation' | 'presence-refusee' | 'mot-redhibitoire'
   readonly explication: string
+}
+
+/**
+ * ── EXCLUSION et RÉDHIBITOIRE ne sont pas la même chose ──
+ *
+ * REQ-002 emploie trois mots qui ne sont pas synonymes : une offre exclue
+ * n'est « jamais présentée, jamais scorée, jamais soumise ».
+ *
+ * Une EXCLUSION est une consigne explicite de la personne : cet employeur,
+ * jamais ; ce mot, jamais. Elle a demandé à ne PAS VOIR. Lui montrer l'offre
+ * assortie d'une explication reviendrait à la lui montrer quand même, et la
+ * scorer dépenserait un appel de modèle pour produire un texte que personne ne
+ * doit lire.
+ *
+ * Un RÉDHIBITOIRE est un fait sur le monde : vous n'avez pas l'autorisation de
+ * travailler là, l'offre exige une présence hors de vos zones. La personne n'a
+ * jamais demandé à ne pas voir ces offres-là — et REQ-005 exige d'expliquer
+ * POURQUOI une offre a été écartée. Se taire ne serait pas une protection,
+ * seulement un silence, et elle ne pourrait pas corriger un critère trop
+ * étroit qu'elle ne voit pas agir.
+ *
+ * Le code de l'exclusion est donc consulté AVANT tout appel de modèle.
+ */
+const CODES_EXCLUSION = new Set(['employeur-exclu', 'mot-redhibitoire'])
+
+/**
+ * L'offre a-t-elle été exclue par une consigne explicite ?
+ *
+ * Rend la première exclusion trouvée, ou `undefined`. À interroger avant de
+ * scorer : ce qui est exclu ne se score pas.
+ */
+export function exclusion(bloquants: readonly Redhibitoire[]): Redhibitoire | undefined {
+  return bloquants.find((b) => CODES_EXCLUSION.has(b.code))
 }
 
 const sansAccent = (v: string): string =>
@@ -57,7 +100,7 @@ export function evaluerRedhibitoires(o: OffreAEvaluer, c: Criteres): readonly Re
   if (c.employeursExclus.some((e) => sansAccent(e) === sansAccent(o.employeurCanonique))) {
     bloquants.push({
       code: 'employeur-exclu',
-      explication: `Vous avez exclu cet employeur. Je ne la présente pas et je ne postulerai pas.`,
+      explication: 'Vous avez exclu cet employeur. Je ne vous présente pas cette offre.',
     })
   }
 
@@ -92,12 +135,14 @@ export function evaluerRedhibitoires(o: OffreAEvaluer, c: Criteres): readonly Re
     }
   }
 
-  const texte = sansAccent(`${o.titre} ${o.description ?? ''}`)
+  // Le texte le plus complet dont on dispose, jamais le résumé quand on a
+  // mieux : ce qu'on filtre doit être ce que le modèle aurait lu.
+  const texte = sansAccent(`${o.titre} ${o.texteComplet ?? o.description ?? ''}`)
   for (const mot of c.motsRedhibitoires) {
     if (mot.trim() !== '' && texte.includes(sansAccent(mot))) {
       bloquants.push({
         code: 'mot-redhibitoire',
-        explication: `L'offre mentionne « ${mot} », que vous avez marqué comme rédhibitoire.`,
+        explication: `L'offre mentionne « ${mot} », que vous avez marqué comme rédhibitoire. Je ne vous la présente pas.`,
       })
     }
   }

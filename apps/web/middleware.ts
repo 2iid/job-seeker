@@ -12,7 +12,7 @@ import { NextResponse, type NextRequest } from 'next/server'
  *     s'applique dans la base quel que soit le chemin emprunté.
  */
 
-const PROTEGES = ['/accueil', '/opportunites', '/approbations', '/suivi', '/profil', '/agent']
+const PROTEGES = ['/accueil', '/opportunites', '/approbations', '/suivi', '/profil', '/criteres', '/agent']
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })

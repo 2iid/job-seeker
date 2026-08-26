@@ -83,11 +83,33 @@ describe('chaque table fille est cloisonnée', () => {
     )
   })
 
-  it.each(TABLES_FILLES)('DENY : personne ne supprime dans %s', async (table) => {
-    // La suppression passe par le parcours de suppression de compte, qui doit
-    // d'abord ARRÊTER l'automatisation (REQ-014).
+  // La liste s'est SCINDÉE avec le constat F22 (JOB-034), et la scission est
+  // la décision, pas un assouplissement.
+  //
+  // L'interdiction posée par JOB-030 protégeait REQ-014 : arrêter
+  // l'automatisation avant d'effacer. Cela vise la suppression du COMPTE. Ce
+  // n'est pas une raison d'empêcher quelqu'un de retirer une expérience saisie
+  // par erreur — sur de la donnée personnelle, c'est un défaut de maîtrise et
+  // non une protection.
+  //
+  // Ce qui reste fermé l'est pour une raison qui, elle, tient : une version
+  // effaçable ne prouve rien, et une candidature envoyée a EU LIEU — la
+  // retirer de la base ne la retire pas de la boîte mail du recruteur.
+  const INEFFACABLES = ['criteres_recherche', 'candidatures'] as const
+
+  it.each(INEFFACABLES)('DENY : personne ne supprime dans %s', async (table) => {
     await expect(
       asUser(c, alice, (x) => x.query(`delete from public.${table} where profile_id = $1`, [profilAlice])),
+    ).rejects.toThrow(/permission denied/i)
+  })
+
+  // `documents` reste sans DELETE côté base : le fichier vit dans le bucket,
+  // et retirer la ligne sans le fichier laisserait un CV orphelin que plus
+  // rien ne désigne. Le retrait des deux ensemble est le constat F20, porté
+  // par JOB-057 avec la rétention.
+  it('DENY : personne ne supprime dans documents — le fichier survivrait à sa ligne', async () => {
+    await expect(
+      asUser(c, alice, (x) => x.query('delete from public.documents where profile_id = $1', [profilAlice])),
     ).rejects.toThrow(/permission denied/i)
   })
 })

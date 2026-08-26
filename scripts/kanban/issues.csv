@@ -32,7 +32,7 @@ JOB-030,Modèle de données profil documents et candidatures avec RLS,EPIC 3 —
 JOB-031,Import de CV et extraction structurée,EPIC 3 — Profil et CV,ai,ai-integration-engineer,P0,L,JOB-030,done,S3,packages/parsing/**,REQ-001,yes
 JOB-032,Écran de confirmation de l extraction du CV,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-031;JOB-013,done,S3,apps/web/app/profil/import/**,REQ-001,yes
 JOB-033,Profil canonique édition et versionnement,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-032,done,S3,apps/web/app/profil/**,REQ-002,yes
-JOB-034,Critères de recherche préférences et exclusions,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-033,backlog,S3,apps/web/app/criteres/**,REQ-002,no
+JOB-034,Critères de recherche préférences et exclusions,EPIC 3 — Profil et CV,frontend,frontend-engineer,P0,M,JOB-033,done,S3,apps/web/app/criteres/**;apps/worker/src/matching/**;supabase/migrations/**,REQ-002,yes
 JOB-035,Moteur de score de correspondance explicable,EPIC 4 — Correspondance,ai,ai-integration-engineer,P0,L,JOB-027;JOB-034,done,S3,apps/worker/src/matching/**,REQ-005,yes
 JOB-036,Critères rédhibitoires bloquant la soumission automatique,EPIC 4 — Correspondance,backend,backend-engineer,P0,S,JOB-035,done,S3,apps/worker/src/matching/blockers.ts,REQ-005,yes
 JOB-037,Reproductibilité du score et conservation des preuves,EPIC 4 — Correspondance,backend,backend-engineer,P1,M,JOB-035,backlog,S4,apps/worker/src/matching/replay.ts,REQ-005,yes

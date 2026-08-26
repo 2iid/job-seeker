@@ -1,7 +1,7 @@
 import { CONSIGNE_FRONTIERE, citationPresente, encadrer, estSuspect } from '@job-seeker/llm-guard'
 import type { Journal } from '@job-seeker/observability'
 import type { Demande } from '@job-seeker/llm'
-import { evaluerRedhibitoires, peutPostulerSeule, type Criteres, type OffreAEvaluer, type Redhibitoire } from './redhibitoires.ts'
+import { evaluerRedhibitoires, exclusion, peutPostulerSeule, type Criteres, type OffreAEvaluer, type Redhibitoire } from './redhibitoires.ts'
 
 /**
  * REQ-005 — le score, et ses preuves.
@@ -33,6 +33,12 @@ export type Score = {
   /** Citations rejetées parce qu'introuvables dans l'offre. Comptées, pas cachées. */
   readonly citationsRejetees: number
   readonly contenuSuspect: boolean
+  /**
+   * Vrai quand la personne avait explicitement demandé à ne pas voir ça.
+   * L'offre n'a alors PAS été soumise à un modèle, et elle ne doit pas être
+   * présentée. C'est ce champ, pas le score, qui décide de l'affichage.
+   */
+  readonly exclue: boolean
 }
 
 export const SCHEMA_SORTIE = {
@@ -99,11 +105,37 @@ export async function evaluer(
   completer: Completer,
   options: { imputableA: string; journal?: Journal },
 ): Promise<Score> {
-  // Les rédhibitoires D'ABORD : s'ils bloquent, on peut vouloir économiser
-  // l'appel. Mais on l'exécute quand même, parce que REQ-005 exige d'expliquer
-  // POURQUOI une offre a été écartée — un rejet sans explication est un rejet
-  // que l'utilisateur ne peut pas corriger.
   const redhibitoires = evaluerRedhibitoires(offre, criteres)
+
+  // ── Ce qui est EXCLU ne se score pas ──
+  //
+  // REQ-002 : une offre exclue n'est « jamais présentée, jamais scorée ». Une
+  // exclusion est une consigne explicite — cet employeur, jamais ; ce mot,
+  // jamais. La scorer dépenserait un appel de modèle pour produire une
+  // explication que personne ne doit lire, et l'explication elle-même serait
+  // une façon de montrer l'offre à quelqu'un qui a demandé à ne pas la voir.
+  //
+  // On sort donc AVANT l'appel. Le test qui garde cette règle observe que le
+  // modèle n'a PAS ÉTÉ APPELÉ — pas que le résultat est vide : un résultat
+  // vide se produirait aussi si l'appel avait eu lieu et mal tourné.
+  const exclue = exclusion(redhibitoires)
+  if (exclue !== undefined) {
+    options.journal?.log('info', 'offre exclue, non scoree', {
+      source: offre.employeurCanonique,
+      code: exclue.code,
+    })
+    return {
+      valeur: 0, correspondances: [], manques: [], redhibitoires,
+      peutPostulerSeule: false, citationsRejetees: 0, contenuSuspect: false, exclue: true,
+    }
+  }
+
+  // Les autres rédhibitoires, eux, N'ARRÊTENT PAS l'évaluation. Ce sont des
+  // faits sur le monde — pas d'autorisation de travail, présence hors zone —
+  // que la personne n'a jamais demandé à ne pas voir, et REQ-005 exige
+  // d'expliquer POURQUOI l'offre a été écartée. Un rejet sans explication est
+  // un rejet qu'elle ne peut pas corriger : elle ne verrait jamais qu'un
+  // critère trop étroit lui coûte des offres.
 
   const encadre = encadrer(offre.texteComplet, "annonce d'emploi")
   if (estSuspect(encadre)) {
@@ -128,6 +160,7 @@ export async function evaluer(
     return {
       valeur: 0, correspondances: [], manques: [], redhibitoires,
       peutPostulerSeule: false, citationsRejetees: 0, contenuSuspect: estSuspect(encadre),
+      exclue: false,
     }
   }
 
@@ -146,6 +179,7 @@ export async function evaluer(
     peutPostulerSeule: peutPostulerSeule(redhibitoires),
     citationsRejetees: correspondances.rejetees + manques.rejetees,
     contenuSuspect: estSuspect(encadre),
+    exclue: false,
   }
 }
 

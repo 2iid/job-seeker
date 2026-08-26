@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { evaluerRedhibitoires, peutPostulerSeule, type Criteres, type OffreAEvaluer } from './redhibitoires.ts'
+import { evaluerRedhibitoires, exclusion, peutPostulerSeule, type Criteres, type OffreAEvaluer } from './redhibitoires.ts'
 import { evaluer, verifierCitations, type Completer } from './score.ts'
 
 const criteres = (o: Partial<Criteres> = {}): Criteres => ({
@@ -187,5 +187,76 @@ describe('le score complet', () => {
       { imputableA: 'c1', journal: journal as never },
     )
     expect(JSON.stringify(lignes)).not.toContain('collecte@evil.example')
+  })
+})
+
+describe('exclusion — ce qui est exclu ne se score pas', () => {
+  const texteOffre = 'Product Manager senior chez Qonto. Astreintes de nuit une semaine sur quatre.'
+  const aEvaluer = { ...offre(), texteComplet: texteOffre }
+
+  it("n'appelle PAS le modèle quand l'employeur est exclu", async () => {
+    // On observe que le modèle N'A PAS ÉTÉ APPELÉ, pas que le résultat est
+    // vide : un résultat vide se produirait aussi si l'appel avait eu lieu et
+    // mal tourné. Seul le compteur d'appels distingue les deux.
+    const modele = vi.fn<Completer>(async () => ({ texte: '{}', refus: false }))
+    const s = await evaluer(aEvaluer, 'PM', criteres({ employeursExclus: ['Qonto'] }), modele, {
+      imputableA: 'c1',
+    })
+
+    expect(modele).not.toHaveBeenCalled()
+    expect(s.exclue).toBe(true)
+    expect(s.peutPostulerSeule).toBe(false)
+    expect(s.correspondances).toEqual([])
+  })
+
+  it("n'appelle PAS le modèle sur un mot rédhibitoire", async () => {
+    const modele = vi.fn<Completer>(async () => ({ texte: '{}', refus: false }))
+    const s = await evaluer(aEvaluer, 'PM', criteres({ motsRedhibitoires: ['astreintes'] }), modele, {
+      imputableA: 'c1',
+    })
+    expect(modele).not.toHaveBeenCalled()
+    expect(s.exclue).toBe(true)
+  })
+
+  it('APPELLE le modèle sur un rédhibitoire qui n’est pas une exclusion', async () => {
+    // La distinction qui compte. Une exclusion est une consigne : « je ne veux
+    // pas voir ça ». Un rédhibitoire est un fait sur le monde : « vous n'avez
+    // pas le droit de travailler là ». REQ-005 exige d'expliquer le second —
+    // sans quoi la personne ne verrait jamais qu'un critère trop étroit lui
+    // coûte des offres, et ne pourrait pas le corriger.
+    const modele = vi.fn<Completer>(async () => ({
+      texte: JSON.stringify({ valeur: 70, correspondances: [], manques: [] }),
+      refus: false,
+    }))
+    const horsAutorisation = { ...offre({ pays: 'DE' }), texteComplet: texteOffre }
+    const s = await evaluer(horsAutorisation, 'PM', criteres(), modele, { imputableA: 'c1' })
+
+    expect(modele).toHaveBeenCalledTimes(1)
+    expect(s.exclue).toBe(false)
+    expect(s.valeur).toBe(70)
+    expect(s.peutPostulerSeule).toBe(false)
+    expect(s.redhibitoires.map((r) => r.code)).toContain('sans-autorisation')
+  })
+
+  it('le journal d’une exclusion ne recopie pas le texte de l’offre', async () => {
+    const journal = { log: vi.fn(), enfant: vi.fn(), erreur: vi.fn() }
+    await evaluer(aEvaluer, 'PM', criteres({ employeursExclus: ['Qonto'] }),
+      vi.fn<Completer>(async () => ({ texte: '{}', refus: false })),
+      { imputableA: 'c1', journal: journal as never })
+    expect(journal.log).toHaveBeenCalledWith('info', 'offre exclue, non scoree', expect.anything())
+    expect(JSON.stringify(journal.log.mock.calls)).not.toContain('Astreintes')
+  })
+
+  it('exclusion() distingue les codes, et ne se fie pas à l’ordre', () => {
+    const melange = evaluerRedhibitoires(
+      offre({ pays: 'DE' }),
+      criteres({ employeursExclus: ['Qonto'] }),
+    )
+    expect(melange.length).toBeGreaterThan(1)
+    expect(exclusion(melange)?.code).toBe('employeur-exclu')
+    expect(peutPostulerSeule(melange)).toBe(false)
+
+    const sansExclusion = evaluerRedhibitoires(offre({ pays: 'DE' }), criteres())
+    expect(exclusion(sansExclusion)).toBeUndefined()
   })
 })
