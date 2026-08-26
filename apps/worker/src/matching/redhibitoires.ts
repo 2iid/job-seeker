@@ -14,6 +14,8 @@
  * Le modèle explique et cite. Le code décide.
  */
 
+import { plateformeAssistee } from '../sources/assiste/registre.ts'
+
 export type Criteres = {
   readonly zones: readonly string[]
   readonly autorisationTravail: readonly string[]
@@ -39,10 +41,26 @@ export type OffreAEvaluer = {
    * écarter — « astreintes de nuit » figure rarement dans le chapeau.
    */
   readonly texteComplet?: string | null
+  /**
+   * Le palier de la source (ADR-0002). `'c'` interdit toute candidature
+   * automatique, quel que soit le score — c'est JOB-082, et c'est du CODE
+   * plutôt qu'une consigne parce qu'une plateforme qu'on n'a pas le droit de
+   * parcourir ne devient pas parcourable un jour où le modèle est confiant.
+   */
+  readonly palier?: 'a' | 'b' | 'c'
+  /** L'URL de candidature, quand on l'a : elle peut désigner une plateforme assistée. */
+  readonly urlCandidature?: string | null
 }
 
 export type Redhibitoire = {
-  readonly code: 'employeur-exclu' | 'hors-zone' | 'sans-autorisation' | 'presence-refusee' | 'mot-redhibitoire'
+  readonly code:
+    | 'employeur-exclu'
+    | 'hors-zone'
+    | 'sans-autorisation'
+    | 'presence-refusee'
+    | 'mot-redhibitoire'
+    /** JOB-082 — palier C : je vous assiste, je ne postule pas. */
+    | 'plateforme-assistee'
   readonly explication: string
 }
 
@@ -96,6 +114,25 @@ function presenceDeLOffre(o: OffreAEvaluer): 'distanciel' | 'hybride' | 'present
  */
 export function evaluerRedhibitoires(o: OffreAEvaluer, c: Criteres): readonly Redhibitoire[] {
   const bloquants: Redhibitoire[] = []
+
+  // ── Palier C : le seul rédhibitoire qui ne dépend PAS des critères ──
+  //
+  // Les autres décrivent un désaccord entre l'offre et ce que la personne a
+  // demandé ; celui-ci décrit ce que NOUS n'avons pas le droit de faire. Il
+  // ne se lève donc pas en changeant un critère, et il n'a pas à être
+  // configurable — un cran d'autonomie poussé au maximum ne le franchit pas.
+  //
+  // Ce n'est pas une exclusion : l'offre EST présentée, on prépare le dossier,
+  // et l'envoi reste le geste de la personne.
+  const assistee = o.urlCandidature != null ? plateformeAssistee(o.urlCandidature) : undefined
+  if (o.palier === 'c' || assistee !== undefined) {
+    bloquants.push({
+      code: 'plateforme-assistee',
+      explication:
+        assistee?.explication
+        ?? 'Cette plateforme ne peut pas être parcourue automatiquement. Je vous prépare votre dossier, l\'envoi reste votre geste.',
+    })
+  }
 
   if (c.employeursExclus.some((e) => sansAccent(e) === sansAccent(o.employeurCanonique))) {
     bloquants.push({

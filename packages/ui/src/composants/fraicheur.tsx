@@ -54,6 +54,12 @@ export function Fraicheur({
   avecPromesse?: boolean
 }) {
   const tier = TIERS[palier]
+  // Le palier C est le SEUL dont la promesse est une limite : « je vous
+  // assiste, je ne postule pas ». Les deux autres annoncent ce qu'on fait ;
+  // celui-là annonce ce qu'on ne fera pas. La masquer par défaut reviendrait à
+  // taire exactement ce que REQ-003 demande de dire — et l'utilisateur
+  // croirait cette plateforme couverte comme les autres.
+  const montrerPromesse = avecPromesse || palier === 'c'
   const allumees = barresAllumees(palier, minutes)
   const age = ageEnMots(minutes, t)
   // Sur le palier B on ne sait pas quand l'offre a été publiée — seulement
@@ -87,7 +93,7 @@ export function Fraicheur({
       <span>
         {t(tier.labelKey)} · {libelleAge}
       </span>
-      {avecPromesse && (
+      {montrerPromesse && (
         <span style={{ color: 'var(--text-muted)' }}>— {t(tier.promiseKey as Cle)}</span>
       )}
     </span>

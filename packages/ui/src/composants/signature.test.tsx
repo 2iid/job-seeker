@@ -33,6 +33,16 @@ describe('JOB-017 — la fraîcheur ne promet que ce qu’on sait', () => {
     expect(s).toContain('sans relevé')
   })
 
+  it('le palier C annonce SA LIMITE sans qu’on ait à la demander', () => {
+    // C'est le seul palier dont la promesse est une limite : les deux autres
+    // annoncent ce qu'on fait, celui-là ce qu'on ne fera pas. La masquer par
+    // défaut laisserait croire cette plateforme couverte comme les autres.
+    expect(texte(<Fraicheur palier="c" minutes={null} t={t} />)).toContain('je ne postule pas')
+    // Les paliers A et B, eux, ne bavardent que si on le demande.
+    expect(texte(<Fraicheur palier="a" minutes={2} t={t} />)).not.toContain('premiers dossiers')
+    expect(texte(<Fraicheur palier="a" minutes={2} t={t} avecPromesse />)).toContain('premiers dossiers')
+  })
+
   it('aucun rang chiffré n’est jamais affiché', () => {
     // « 3ᵉ candidat » est une information que nous n'avons pas. La fabriquer
     // gagnerait de la confiance sur une chose fausse.
