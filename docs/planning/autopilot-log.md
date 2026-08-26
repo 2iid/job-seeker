@@ -220,6 +220,18 @@ figé — **accepté, périmètre vérifié**).
 **Le smoke vérifie que le script est dans le HTML SERVI**, pas seulement écrit dans le code : la
 différence entre les deux est exactement le genre de régression qu'une revue ne voit pas.
 
+## Exécution 11 — 2026-08-26 · primitives et états
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 49 | JOB-013 | Comment tenir G3 (44 px) sur tous les écrans ? | **Non paramétrable dans la primitive** | Une valeur par défaut surchargeable | ASSUMED | Une règle que chaque écran doit se rappeler d'appliquer sera manquée au douzième. Une primitive qui laisse la contourner ne sert à rien. |
+| 50 | JOB-013 | Comment garantir qu'un état vide porte une action ? | **Le type l'exige** | Une consigne dans la doc | BRIEF | Le système dit que l'état vide *est* de l'onboarding. Un champ optionnel serait un champ oublié : `Vide` sans `action` ne compile pas, `Erreur` sans `ceQueCaNImpliquePas` non plus. |
+| 51 | JOB-013 | Comment tester des composants sans DOM ? | **Rendu serveur, assertions sur le HTML émis** | jsdom + testing-library | ASSUMED | Le produit est rendu côté serveur : tester ce qui est réellement ÉMIS est plus proche de la vérité, et évite une dépendance lourde. Un composant testé sur ses props prouve seulement qu'on a bien passé des props. |
+
+**Un défaut trouvé et corrigé en route :** `build-css.ts` écrivait `tokens.css` **à l'import**. Le
+simple fait qu'un test importe `renderCss` réécrivait donc un fichier suivi, ce qui périmait le reçu
+de vérification à chaque exécution et faisait bloquer la porte sans raison visible.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
