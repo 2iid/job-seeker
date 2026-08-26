@@ -356,6 +356,28 @@ quatre `verify` enchaînés passent.
 **Constat** — F22 (aucune suppression possible d'une expérience saisie par erreur : sur de la donnée
 personnelle, c'est un défaut de maîtrise, pas une protection).
 
+## Exécution 18 — 2026-08-26 · trois mots qui n'étaient pas synonymes
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 76 | JOB-034 | Une offre exclue doit-elle être scorée ? | **Non — sortie avant l'appel de modèle** | La traiter comme un rédhibitoire de plus | BRIEF | REQ-002 : « jamais présentée, **jamais scorée**, jamais soumise ». Une exclusion est une **consigne** ; la scorer dépenserait un appel pour produire une explication que personne ne doit lire, et l'explication elle-même serait une façon de montrer l'offre à qui a demandé à ne pas la voir. |
+| 77 | JOB-034 | Et un rédhibitoire qui n'est pas une exclusion ? | **Scorée, et expliquée** | Sortir aussi | BRIEF | C'est un **fait sur le monde**, pas une consigne. REQ-005 exige d'expliquer pourquoi l'offre a été écartée : sans quoi la personne ne verrait jamais qu'un critère trop étroit lui coûte des offres. |
+| 78 | JOB-034 | F22 : autoriser la suppression d'une ligne ? | **Oui, sur les quatre tables de saisie** | Maintenir l'interdiction de JOB-030 | *constat* | L'interdiction visait la suppression du **compte** (REQ-014). L'appliquer à une ligne de parcours disait : vous pouvez la remplacer, jamais la retirer. Sur de la donnée personnelle, c'est un défaut de maîtrise. |
+| 79 | JOB-034 | Qui numérote une version de critères ? | **La base**, par déclencheur | Le client, en lisant le maximum | ASSUMED | Deux enregistrements simultanés lisent le même maximum, et l'un montre une erreur de base à quelqu'un qui vient de cliquer. Le seul endroit qui voit toutes les écritures est celui qui doit décider. |
+| 80 | JOB-034 | « environ 45 » comme salaire minimum ? | **Refuser** | Interpréter | BRIEF | 45 € ou 45 000 € ? L'écart est de mille. Un refus coûte un aller-retour ; une supposition coûte une recherche entière menée sur le mauvais seuil. |
+
+**Une faille trouvée en écrivant un test.** Le mot rédhibitoire n'était cherché que dans le titre et la
+**description**, pendant que le modèle lit le **texte complet**. « astreintes de nuit » figure rarement
+dans le chapeau — le filtre que la personne avait posé ne s'appliquait pas là où ça comptait.
+
+**Une intermittence poursuivie jusqu'au bout.** `verify` échouait une fois sur trois environ, sur
+« le port 3100 est tenu » — alors que `lsof` ne voyait rien. La cause était **ma propre sonde** : elle
+posait `exclusive: true`, que Next ne pose pas, donc elle refusait des ports que Next aurait acceptés.
+Une sonde plus stricte que ce qu'elle protège ne mesure pas la chose qu'elle prétend mesurer. Elle rend
+désormais le **code** de l'erreur, et n'attend que sur `EADDRINUSE`. **Dix `verify` enchaînés passent.**
+
+**Constat** — **F22 CLOS**.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
