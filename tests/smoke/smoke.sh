@@ -51,24 +51,34 @@ trap cleanup EXIT INT TERM
 
 fail() { echo "  ✗ smoke: $1"; exit 1; }
 
-# Echouer ICI, en nommant la cause, plutot que par un « mort avant d etre pret »
-# vingt lignes plus bas.
-port_libre "$PORT"
-port_libre "$PORT_WORKER"
+# vantry.yml declare `start` et `ready` : quand ce script est lance par
+# verify.sh, l application TOURNE DEJA. En demarrer une seconde sur le meme
+# port faisait echouer silencieusement la notre, pendant que nos requetes
+# touchaient en realite le serveur du contrat — un smoke qui n exerçait pas ce
+# qu il croyait exercer. On adopte donc le serveur en place s il repond, et on
+# n en demarre un que s il n y en a pas. On ne tue que ce qu on a demarre.
+adopte_ou_demarre() {   # $1 = port, $2 = sonde, $3 = commande, $4 = nom de variable de pid
+  if curl -sf --max-time 2 "$2" >/dev/null 2>&1; then
+    echo "  · serveur deja en place sur $1 (demarre par le contrat) — adopte"
+    return 0
+  fi
+  port_libre "$1"
+  eval "$3" >>"$LOG" 2>&1 &
+  eval "$4=$!"
+  for _ in $(seq 1 40); do
+    curl -sf --max-time 2 "$2" >/dev/null 2>&1 && return 0
+    kill -0 "$(eval echo \$$4)" 2>/dev/null || { tail -20 "$LOG"; fail "le service sur $1 est mort avant d etre pret"; }
+    sleep 0.5
+  done
+  fail "le service sur $1 n a jamais repondu"
+}
 
 echo "→ [smoke] build"
 pnpm --filter @job-seeker/web build >"$LOG" 2>&1 || { tail -20 "$LOG"; fail "le build a échoué"; }
 
-echo "→ [smoke] start"
-pnpm --filter @job-seeker/web start >>"$LOG" 2>&1 &
-PID=$!
-
-echo "→ [smoke] ready"
-for _ in $(seq 1 40); do
-  if curl -sf "http://localhost:$PORT/api/health" >/dev/null 2>&1; then break; fi
-  kill -0 "$PID" 2>/dev/null || { tail -20 "$LOG"; fail "le serveur est mort avant d'être prêt"; }
-  sleep 0.5
-done
+echo "→ [smoke] l application repond"
+adopte_ou_demarre "$PORT" "http://localhost:$PORT/api/health" \
+  "pnpm --filter @job-seeker/web start" PID
 
 BODY="$(curl -sf --max-time 5 "http://localhost:$PORT/api/health" || true)"
 [ -n "$BODY" ] || { tail -20 "$LOG"; fail "/api/health n'a jamais répondu"; }
@@ -114,13 +124,8 @@ printf '%s' "$OUVERTE" | grep -q "evil.example" \
   && fail "le callback a suivi une destination externe : REDIRECTION OUVERTE"
 
 echo "→ [smoke] le worker démarre et répond"
-pnpm --filter @job-seeker/worker dev >>"$LOG" 2>&1 &
-PID_WORKER=$!
-for _ in $(seq 1 30); do
-  curl -sf "http://localhost:$PORT_WORKER/health" >/dev/null 2>&1 && break
-  kill -0 "$PID_WORKER" 2>/dev/null || { tail -20 "$LOG"; fail "le worker est mort avant d'être prêt"; }
-  sleep 0.5
-done
+adopte_ou_demarre "$PORT_WORKER" "http://localhost:$PORT_WORKER/health" \
+  "pnpm --filter @job-seeker/worker dev" PID_WORKER
 SANTE="$(curl -sf --max-time 5 "http://localhost:$PORT_WORKER/health" || true)"
 echo "$SANTE" | grep -q '"status":"ok"' \
   || fail "le worker ne se déclare pas sain : « $SANTE » (la base locale tourne-t-elle ?)"
