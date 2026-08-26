@@ -165,3 +165,9 @@ export function enregistrerUsage(journal: Journal, usage: UsageModele, tarif: {
   })
   return costEur
 }
+
+export {
+  TARIFS, PEREMPTION_JOURS, coutEur, tarif,
+  creerCompteur, CANDIDATURE_NOMINALE_EUR, PLAFOND_CANDIDATURE_EUR, PlafondAtteint,
+} from './cout/index.ts'
+export type { Compteur, Depense, EtatBudget, EtatTarif, Tarif } from './cout/index.ts'
