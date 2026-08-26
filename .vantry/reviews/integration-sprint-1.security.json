@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T06:13:54Z",
-  "head": "212ff6c7803aeef8c5872973883680105028c8fa",
+  "at": "2026-08-26T06:57:34Z",
+  "head": "1431a610683028ac4b11b458ffb280876eae594f",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -28,7 +28,8 @@
     "packages/env/** — renommage des clés publiques (F2)",
     "apps/worker/src/sources/** — contrat, registre, normalisation, cadence (aucun chemin sensible, relu par prudence)",
     "supabase/migrations/20260825180000_modele_profil.sql — sept tables portant de la donnée personnelle",
-    "apps/worker/src/sources/ats/** — connecteurs, découverte, analyseurs (sortie réseau vers des tiers)"
+    "apps/worker/src/sources/ats/** — connecteurs, découverte, analyseurs (sortie réseau vers des tiers)",
+    "supabase/migrations/20260826020000_registre_employeurs.sql — registre PARTAGÉ entre tous les comptes"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -45,7 +46,8 @@
     "ai-context : le moteur de veille manipule du texte de source, qui est une ENTREE HOSTILE (OBL-6). Rien ici ne l'interprete comme une instruction : le registre ne conserve meme pas le message d'une exception levee par un connecteur, et un test verifie qu'il ne fuite pas dans le resultat. Quand JOB-035 fera passer ce texte a un modele, JOB-052 devra poser la frontiere.",
     "Verdict reemis : vantry.yml a bouge (parametrage des ports) apres la revue precedente. Le changement relu ne touche ni les chemins sensibles declares, ni les portes : il rend seulement le port du service configurable, defauts inchanges.",
     "data-authz sur le modele complet : les tables filles n ont pas de user_id, l appartenance passe par une sous-requete sur profiles — elle-meme soumise a la RLS de profiles, donc une ligne dont le profil n appartient pas a l appelant est invisible et la condition est fausse. 35 tests couvrent les sept tables, chacune avec son test de refus : lecture d autrui, insertion au nom d autrui, acces anonyme, et suppression.",
-    "boundary-validation sur les connecteurs ATS : la sortie reseau ne va QUE vers des URL construites par urlBoard a partir d un fournisseur enumere et d un slug lu sur la page carriere — jamais vers une URL fournie par la reponse d une source. C est la meme regle que REQ-011 : aucune destination sortante ne provient du contenu recupere. La reponse est plafonnee a 8 Mo avant d etre chargee."
+    "boundary-validation sur les connecteurs ATS : la sortie reseau ne va QUE vers des URL construites par urlBoard a partir d un fournisseur enumere et d un slug lu sur la page carriere — jamais vers une URL fournie par la reponse d une source. C est la meme regle que REQ-011 : aucune destination sortante ne provient du contenu recupere. La reponse est plafonnee a 8 Mo avant d etre chargee.",
+    "data-authz sur un registre PARTAGE : worker.employeurs est le premier objet du produit lu par tous les comptes. Un identifiant de profil qui s y glisserait serait un canal de fuite entre comptes, et il aurait l air parfaitement normal. Un test interroge information_schema et refuse toute colonne dont le nom evoque un utilisateur ; un autre verifie qu aucun role client n a de privilege sur le schema worker. Le lien « qui suit qui » vit dans public sous RLS, avec ses tests allow et deny."
   ],
   "findings": [
     {
@@ -127,6 +129,15 @@
       "line": 0,
       "summary": "detecterBoard lit un slug dans le HTML d une page carriere, c est-a-dire dans du contenu controle par un tiers. Le slug est ensuite interpole dans une URL d API. Une page hostile pourrait tenter d y glisser autre chose.",
       "fix": "Le slug est contraint par la classe [A-Za-z0-9_.-] du motif lui-meme, filtre contre une liste de jetons non-slugs, et refuse en dessous de deux caracteres. Il ne peut donc contenir ni schema, ni barre oblique, ni caractere d echappement. A retester si les motifs sont elargis un jour.",
+      "status": "accepté, périmètre vérifié"
+    },
+    {
+      "severity": "low",
+      "id": "F16",
+      "file": "supabase/migrations/20260826020000_registre_employeurs.sql",
+      "line": 0,
+      "summary": "worker.maj_suivi_par est SECURITY DEFINER et ecrit dans le registre partage a partir d un declencheur sur une table utilisateur. Un utilisateur controle donc indirectement une ecriture dans un objet partage entre tous les comptes.",
+      "fix": "L ecriture est bornee a l increment d un compteur et a l insertion d un nom canonique — aucune donnee de profil ne transite. search_path est fige, ce qui empeche le detournement par un schema injecte. Le nom canonique passe par canoniserEmployeur, qui ne laisse que [a-z0-9 ]. A retester si la fonction gagne un jour d autres ecritures.",
       "status": "accepté, périmètre vérifié"
     }
   ]
