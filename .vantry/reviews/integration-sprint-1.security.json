@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T06:57:34Z",
-  "head": "1431a610683028ac4b11b458ffb280876eae594f",
+  "at": "2026-08-26T12:57:18Z",
+  "head": "7a95aac7a23040eeea7ab716874b258186036a8d",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -29,7 +29,9 @@
     "apps/worker/src/sources/** — contrat, registre, normalisation, cadence (aucun chemin sensible, relu par prudence)",
     "supabase/migrations/20260825180000_modele_profil.sql — sept tables portant de la donnée personnelle",
     "apps/worker/src/sources/ats/** — connecteurs, découverte, analyseurs (sortie réseau vers des tiers)",
-    "supabase/migrations/20260826020000_registre_employeurs.sql — registre PARTAGÉ entre tous les comptes"
+    "supabase/migrations/20260826020000_registre_employeurs.sql — registre PARTAGÉ entre tous les comptes",
+    "packages/llm/** — appels de modele, cles d API, journalisation des couts",
+    "packages/env/** — OPENROUTER_API_KEY declaree comme secret optionnel"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -47,7 +49,9 @@
     "Verdict reemis : vantry.yml a bouge (parametrage des ports) apres la revue precedente. Le changement relu ne touche ni les chemins sensibles declares, ni les portes : il rend seulement le port du service configurable, defauts inchanges.",
     "data-authz sur le modele complet : les tables filles n ont pas de user_id, l appartenance passe par une sous-requete sur profiles — elle-meme soumise a la RLS de profiles, donc une ligne dont le profil n appartient pas a l appelant est invisible et la condition est fausse. 35 tests couvrent les sept tables, chacune avec son test de refus : lecture d autrui, insertion au nom d autrui, acces anonyme, et suppression.",
     "boundary-validation sur les connecteurs ATS : la sortie reseau ne va QUE vers des URL construites par urlBoard a partir d un fournisseur enumere et d un slug lu sur la page carriere — jamais vers une URL fournie par la reponse d une source. C est la meme regle que REQ-011 : aucune destination sortante ne provient du contenu recupere. La reponse est plafonnee a 8 Mo avant d etre chargee.",
-    "data-authz sur un registre PARTAGE : worker.employeurs est le premier objet du produit lu par tous les comptes. Un identifiant de profil qui s y glisserait serait un canal de fuite entre comptes, et il aurait l air parfaitement normal. Un test interroge information_schema et refuse toute colonne dont le nom evoque un utilisateur ; un autre verifie qu aucun role client n a de privilege sur le schema worker. Le lien « qui suit qui » vit dans public sous RLS, avec ses tests allow et deny."
+    "data-authz sur un registre PARTAGE : worker.employeurs est le premier objet du produit lu par tous les comptes. Un identifiant de profil qui s y glisserait serait un canal de fuite entre comptes, et il aurait l air parfaitement normal. Un test interroge information_schema et refuse toute colonne dont le nom evoque un utilisateur ; un autre verifie qu aucun role client n a de privilege sur le schema worker. Le lien « qui suit qui » vit dans public sous RLS, avec ses tests allow et deny.",
+    "privileged-credential : ANTHROPIC_API_KEY et OPENROUTER_API_KEY sont declarees `secret: true`, donc readOptional REFUSE de leur donner une valeur par defaut. readOptionalSecret renvoie undefined quand la cle manque — jamais un repli, parce qu un secret par defaut est un secret commite. Les deux cles restent requises du seul runtime worker : aucune ne porte le prefixe NEXT_PUBLIC_ et aucune ne peut donc atteindre le navigateur.",
+    "ai-context : la bascule ne joue que sur les PANNES. Un refus du modele remonte tel quel et n est jamais rejoue chez un autre fournisseur — contourner un refus en changeant de fournisseur serait du magasinage de complaisance. Trois tests verrouillent cette regle."
   ],
   "findings": [
     {
@@ -139,6 +143,24 @@
       "summary": "worker.maj_suivi_par est SECURITY DEFINER et ecrit dans le registre partage a partir d un declencheur sur une table utilisateur. Un utilisateur controle donc indirectement une ecriture dans un objet partage entre tous les comptes.",
       "fix": "L ecriture est bornee a l increment d un compteur et a l insertion d un nom canonique — aucune donnee de profil ne transite. search_path est fige, ce qui empeche le detournement par un schema injecte. Le nom canonique passe par canoniserEmployeur, qui ne laisse que [a-z0-9 ]. A retester si la fonction gagne un jour d autres ecritures.",
       "status": "accepté, périmètre vérifié"
+    },
+    {
+      "severity": "medium",
+      "id": "F17",
+      "file": "packages/llm/src/types.ts",
+      "line": 0,
+      "summary": "La couche de fournisseurs accepte un `systeme` et des `messages` en texte libre. Rien ici n empeche encore qu un appelant y injecte directement le texte d une offre — qui est une ENTREE HOSTILE (OBL-6, REQ-011) et pourrait contenir des instructions.",
+      "fix": "JOB-052 (defense contre l injection) doit poser la frontiere AVANT que JOB-035 fasse passer du texte d offre a un modele : contenu tiers dans un bloc delimite et jamais dans le systeme, sortie contrainte par schema, et aucune action derivee de la sortie du modele. La couche de fournisseurs ne doit pas etre le lieu de cette defense, mais elle ne doit pas non plus la rendre facile a oublier — a rappeler dans les criteres de JOB-035.",
+      "status": "reporté à JOB-052 et JOB-035"
+    },
+    {
+      "severity": "low",
+      "id": "F18",
+      "file": "packages/llm/src/bascule.ts",
+      "line": 0,
+      "summary": "Les tarifs du modele sont saisis en dur dans TARIFS. Un tarif qui change rend le cout journalise faux sans que rien ne le signale — et c est ce cout qui mesure l hypothese risquee n 4 du brief.",
+      "fix": "Saisis a la main et jamais releves sur le web, precisement pour rester auditables. A revoir a chaque changement de tarif ; JOB-072 (instrumentation du cout) doit prevoir une alerte quand le cout par candidature s ecarte de l attendu.",
+      "status": "accepté, documenté"
     }
   ]
 }
