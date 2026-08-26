@@ -24,6 +24,9 @@ importers:
       '@job-seeker/llm':
         specifier: workspace:*
         version: link:packages/llm
+      '@job-seeker/llm-guard':
+        specifier: workspace:*
+        version: link:packages/llm-guard
       '@job-seeker/observability':
         specifier: workspace:*
         version: link:packages/observability
@@ -103,6 +106,9 @@ importers:
       '@job-seeker/llm':
         specifier: workspace:*
         version: link:../../packages/llm
+      '@job-seeker/llm-guard':
+        specifier: workspace:*
+        version: link:../../packages/llm-guard
       '@job-seeker/observability':
         specifier: workspace:*
         version: link:../../packages/observability
@@ -143,6 +149,12 @@ importers:
       '@job-seeker/observability':
         specifier: workspace:*
         version: link:../observability
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/llm-guard:
     devDependencies:
       typescript:
         specifier: ^5.7.3
