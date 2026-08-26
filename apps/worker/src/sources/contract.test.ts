@@ -17,6 +17,7 @@ const base = (o: Partial<Connecteur> = {}): Connecteur => ({
   latenceAttendueSecondes: 180,
   regime: 'libre',
   cadenceMaxParMinute: 20,
+  attribution: null,
   recolter: async () => ({ etat: 'aucun-resultat', offres: [] }),
   ...o,
 })

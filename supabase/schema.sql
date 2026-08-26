@@ -199,6 +199,27 @@ COMMENT ON FUNCTION "worker"."claim_job"("p_worker" "text", "p_lease_seconds" in
 
 
 
+CREATE OR REPLACE FUNCTION "worker"."maj_suivi_par"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+begin
+  if tg_op = 'INSERT' then
+    insert into worker.employeurs (nom_canonique, nom_affiche)
+    values (new.nom_canonique, new.nom_canonique)
+    on conflict (nom_canonique) do nothing;
+    update worker.employeurs set suivi_par = suivi_par + 1 where nom_canonique = new.nom_canonique;
+  elsif tg_op = 'DELETE' then
+    update worker.employeurs set suivi_par = greatest(0, suivi_par - 1) where nom_canonique = old.nom_canonique;
+  end if;
+  return null;
+end;
+$$;
+
+
+ALTER FUNCTION "worker"."maj_suivi_par"() OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."candidatures" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "profile_id" "uuid" NOT NULL,
@@ -309,6 +330,24 @@ COMMENT ON TABLE "public"."employeurs_exclus" IS 'Une offre d un employeur exclu
 
 
 
+CREATE TABLE IF NOT EXISTS "public"."employeurs_suivis" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "profile_id" "uuid" NOT NULL,
+    "nom_canonique" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE ONLY "public"."employeurs_suivis" FORCE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."employeurs_suivis" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."employeurs_suivis" IS 'Savoir quelles entreprises quelqu un surveille en dit long sur sa recherche : RLS obligatoire.';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."experiences" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "profile_id" "uuid" NOT NULL,
@@ -378,6 +417,33 @@ COMMENT ON COLUMN "public"."profiles"."autorisation_travail" IS 'Codes pays ou l
 
 
 
+CREATE TABLE IF NOT EXISTS "worker"."employeurs" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "nom_canonique" "text" NOT NULL,
+    "nom_affiche" "text" NOT NULL,
+    "site_carriere" "text",
+    "ats_fournisseur" "text",
+    "ats_slug" "text",
+    "palier" character(1) DEFAULT 'b'::"bpchar" NOT NULL,
+    "suivi_par" integer DEFAULT 0 NOT NULL,
+    "dernier_releve" timestamp with time zone,
+    "dernier_etat" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "employeurs_ats_fournisseur_check" CHECK (("ats_fournisseur" = ANY (ARRAY['greenhouse'::"text", 'ashby'::"text", 'lever'::"text", 'workable'::"text", 'smartrecruiters'::"text"]))),
+    CONSTRAINT "employeurs_palier_check" CHECK (("palier" = ANY (ARRAY['a'::"bpchar", 'b'::"bpchar", 'c'::"bpchar"]))),
+    CONSTRAINT "employeurs_suivi_par_check" CHECK (("suivi_par" >= 0)),
+    CONSTRAINT "palier_a_exige_un_board" CHECK ((("palier" <> 'a'::"bpchar") OR (("ats_fournisseur" IS NOT NULL) AND ("ats_slug" IS NOT NULL))))
+);
+
+
+ALTER TABLE "worker"."employeurs" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "worker"."employeurs" IS 'Registre PARTAGE. Ne contient que des donnees publiques d entreprise : aucune colonne n y designe un utilisateur.';
+
+
+
 ALTER TABLE ONLY "public"."candidatures"
     ADD CONSTRAINT "candidatures_pkey" PRIMARY KEY ("id");
 
@@ -427,6 +493,16 @@ ALTER TABLE ONLY "public"."employeurs_exclus"
 
 
 
+ALTER TABLE ONLY "public"."employeurs_suivis"
+    ADD CONSTRAINT "employeurs_suivis_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."employeurs_suivis"
+    ADD CONSTRAINT "employeurs_suivis_profile_id_nom_canonique_key" UNIQUE ("profile_id", "nom_canonique");
+
+
+
 ALTER TABLE ONLY "public"."experiences"
     ADD CONSTRAINT "experiences_pkey" PRIMARY KEY ("id");
 
@@ -447,6 +523,16 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
+ALTER TABLE ONLY "worker"."employeurs"
+    ADD CONSTRAINT "employeurs_nom_canonique_key" UNIQUE ("nom_canonique");
+
+
+
+ALTER TABLE ONLY "worker"."employeurs"
+    ADD CONSTRAINT "employeurs_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "worker"."jobs"
     ADD CONSTRAINT "jobs_idempotency_key_key" UNIQUE ("idempotency_key");
 
@@ -454,6 +540,10 @@ ALTER TABLE ONLY "worker"."jobs"
 
 ALTER TABLE ONLY "worker"."jobs"
     ADD CONSTRAINT "jobs_pkey" PRIMARY KEY ("id");
+
+
+
+CREATE INDEX "employeurs_a_relever" ON "worker"."employeurs" USING "btree" ("palier", "dernier_releve" NULLS FIRST, "suivi_par" DESC);
 
 
 
@@ -485,6 +575,10 @@ CREATE OR REPLACE TRIGGER "employeurs_exclus_set_updated_at" BEFORE UPDATE ON "p
 
 
 
+CREATE OR REPLACE TRIGGER "employeurs_suivis_set_updated_at" BEFORE UPDATE ON "public"."employeurs_suivis" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
+
+
+
 CREATE OR REPLACE TRIGGER "experiences_set_updated_at" BEFORE UPDATE ON "public"."experiences" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
 
 
@@ -494,6 +588,14 @@ CREATE OR REPLACE TRIGGER "formations_set_updated_at" BEFORE UPDATE ON "public".
 
 
 CREATE OR REPLACE TRIGGER "profiles_set_updated_at" BEFORE UPDATE ON "public"."profiles" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
+
+
+
+CREATE OR REPLACE TRIGGER "suivis_maj_compteur" AFTER INSERT OR DELETE ON "public"."employeurs_suivis" FOR EACH ROW EXECUTE FUNCTION "worker"."maj_suivi_par"();
+
+
+
+CREATE OR REPLACE TRIGGER "employeurs_set_updated_at" BEFORE UPDATE ON "worker"."employeurs" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
 
 
 
@@ -523,6 +625,11 @@ ALTER TABLE ONLY "public"."documents"
 
 ALTER TABLE ONLY "public"."employeurs_exclus"
     ADD CONSTRAINT "employeurs_exclus_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."employeurs_suivis"
+    ADD CONSTRAINT "employeurs_suivis_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
 
 
 
@@ -645,6 +752,29 @@ CREATE POLICY "employeurs_exclus_update_mien" ON "public"."employeurs_exclus" FO
   WHERE (("p"."id" = "employeurs_exclus"."profile_id") AND ("p"."user_id" = ( SELECT "auth"."uid"() AS "uid")))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
   WHERE (("p"."id" = "employeurs_exclus"."profile_id") AND ("p"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
+
+
+
+ALTER TABLE "public"."employeurs_suivis" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "employeurs_suivis_insert_mien" ON "public"."employeurs_suivis" FOR INSERT TO "authenticated" WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles" "p"
+  WHERE (("p"."id" = "employeurs_suivis"."profile_id") AND ("p"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
+
+
+
+CREATE POLICY "employeurs_suivis_select_mien" ON "public"."employeurs_suivis" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles" "p"
+  WHERE (("p"."id" = "employeurs_suivis"."profile_id") AND ("p"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
+
+
+
+CREATE POLICY "employeurs_suivis_update_mien" ON "public"."employeurs_suivis" FOR UPDATE TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."profiles" "p"
+  WHERE (("p"."id" = "employeurs_suivis"."profile_id") AND ("p"."user_id" = ( SELECT "auth"."uid"() AS "uid")))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."profiles" "p"
+  WHERE (("p"."id" = "employeurs_suivis"."profile_id") AND ("p"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
@@ -914,6 +1044,11 @@ GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."documents" TO "ser
 
 GRANT SELECT,INSERT,REFERENCES,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE "public"."employeurs_exclus" TO "authenticated";
 GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."employeurs_exclus" TO "service_role";
+
+
+
+GRANT SELECT,INSERT,REFERENCES,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE "public"."employeurs_suivis" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."employeurs_suivis" TO "service_role";
 
 
 

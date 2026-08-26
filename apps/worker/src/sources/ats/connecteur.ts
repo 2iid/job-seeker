@@ -56,6 +56,8 @@ export function connecteurAts(
     latenceAttendueSecondes: options.latenceSecondes ?? 180,
     regime: 'libre',
     cadenceMaxParMinute: 12,
+    // Un board public d'employeur n'exige aucune attribution.
+    attribution: null,
 
     async recolter(ctx): Promise<Recolte> {
       if (board.fournisseur === 'workable') {

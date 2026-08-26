@@ -101,6 +101,16 @@ export type Connecteur = {
   readonly regime: RegimeAcces
   /** Plafond que le moteur ne dépassera jamais, quoi qu'il arrive. */
   readonly cadenceMaxParMinute: number
+  /**
+   * L'attribution que la source EXIGE d'afficher, ou `null`.
+   *
+   * Ce champ existe parce que certaines conditions d'utilisation la rendent
+   * obligatoire — Remotive, par exemple, coupe l'accès sans elle. Une
+   * obligation légale portée par la mémoire de quelqu'un est une obligation
+   * qu'on oubliera au troisième écran ; portée par le contrat, l'interface
+   * peut la lire et l'afficher sans avoir à la connaître.
+   */
+  readonly attribution: string | null
   readonly recolter: (ctx: ContexteRecolte) => Promise<Recolte>
 }
 
@@ -140,6 +150,9 @@ export function valider(c: Connecteur): readonly string[] {
   }
   if (!Number.isInteger(c.cadenceMaxParMinute) || c.cadenceMaxParMinute <= 0) {
     p.push('cadenceMaxParMinute : entier strictement positif')
+  }
+  if (c.attribution !== null && c.attribution.trim() === '') {
+    p.push("attribution : employez null si la source n'en exige pas — une chaîne vide se lit comme un oubli")
   }
 
   // Cohérence palier / latence : c'est ici qu'on empêche une source lente de
