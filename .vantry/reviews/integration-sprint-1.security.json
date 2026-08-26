@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T01:16:03Z",
-  "head": "434a66553bd658b547ad9b93c75a86af71392858",
+  "at": "2026-08-26T01:27:11Z",
+  "head": "ad8d571a05d80244b16cf11c7be31c46df12a37e",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -40,7 +40,8 @@
     "boundary-validation : la destination de redirection passe par une liste d'autorisation à correspondance exacte, assainie au callback ET à l'affichage du formulaire. Seize tests couvrent les contournements connus.",
     "secrets-pii : F2 traité. NEXT_PUBLIC_* pour ce qui part au navigateur, et la clé de service reste sans préfixe, requise du seul worker, déclarée secrète — donc interdite de valeur par défaut par readOptional.",
     "Verdict réémis : packages/env a été modifié APRÈS la revue précédente, ce que la porte a détecté comme un verdict périmé. Le changement relu ici durcit le comportement — readOptional refuse tout repli quand NODE_ENV vaut production — et ne relâche rien.",
-    "ai-context : le moteur de veille manipule du texte de source, qui est une ENTREE HOSTILE (OBL-6). Rien ici ne l'interprete comme une instruction : le registre ne conserve meme pas le message d'une exception levee par un connecteur, et un test verifie qu'il ne fuite pas dans le resultat. Quand JOB-035 fera passer ce texte a un modele, JOB-052 devra poser la frontiere."
+    "ai-context : le moteur de veille manipule du texte de source, qui est une ENTREE HOSTILE (OBL-6). Rien ici ne l'interprete comme une instruction : le registre ne conserve meme pas le message d'une exception levee par un connecteur, et un test verifie qu'il ne fuite pas dans le resultat. Quand JOB-035 fera passer ce texte a un modele, JOB-052 devra poser la frontiere.",
+    "Verdict reemis : vantry.yml a bouge (parametrage des ports) apres la revue precedente. Le changement relu ne touche ni les chemins sensibles declares, ni les portes : il rend seulement le port du service configurable, defauts inchanges."
   ],
   "findings": [
     {
@@ -96,6 +97,15 @@
       "summary": "OffreBrute porte des champs de texte libre venus de sources tierces (titre, employeur, description, url). Rien ne les borne aujourd'hui en taille ni en forme : une source hostile ou defaillante pourrait renvoyer des megaoctets, ou une urlCandidature en javascript:.",
       "fix": "JOB-027 (deduplication) et JOB-038 (affichage) doivent borner la taille a l'entree et valider que urlCandidature est bien http(s) avant tout affichage ou toute navigation. La liste d'autorisation de packages/auth donne le motif a suivre.",
       "status": "reporté à JOB-027 et JOB-038"
+    },
+    {
+      "severity": "info",
+      "id": "F13",
+      "file": "tests/smoke/smoke.sh",
+      "line": 0,
+      "summary": "Le smoke demarrait un second serveur sur un port deja pris par le contrat. Le sien mourait en silence sur EADDRINUSE pendant que ses requetes touchaient le serveur du contrat — et sur clone propre, celui de l HOTE. La contre-verification independante validait donc, par moments, du code qui n etait pas le sien.",
+      "fix": "Le smoke adopte un serveur qui repond au lieu d en demarrer un second, ne tue que ce qu il a demarre, et le clone de ci-local tourne sur ses propres ports (3200/3210).",
+      "status": "corrigé"
     }
   ]
 }

@@ -127,6 +127,26 @@ sur le nouveau commit.
 indifférenciée est délibérée, documentée pour qu'on ne l'« améliore » pas en oracle), F11
 (repli de configuration interdit en production, **corrigé**).
 
+## Exécution 6 — 2026-08-25 · socle du moteur de veille
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 27 | JOB-019 | Champs du contrat : obligatoires ou optionnels ? | **Tous obligatoires** | Optionnels avec valeurs par défaut | ASSUMED | Un champ optionnel est un champ qu'un connecteur omettra, et le moteur devra alors deviner. La cohérence palier/latence est vérifiée à l'**enregistrement**, pas en production. |
+| 28 | JOB-019 | Que faire d'une source qui échoue ? | **Dégrader sa propre couverture, jamais conclure** | Ignorer, ou faire échouer le balayage | BRIEF | REQ-003 : *« Un échec n'est jamais présenté comme une absence d'offres. »* `couvertureAffirmable` est le point unique où la règle s'applique, pour qu'aucun écran n'ait à s'en souvenir. |
+| 29 | JOB-020 | Représentation de l'argent | **Entiers d'unité mineure + table d'exposants** | Flottants ; centimes universels | ASSUMED | `0.1 + 0.2` ne fait pas `0.3`, et le franc CFA n'a **aucune** décimale : diviser par cent un salaire dakarois l'afficherait cent fois trop petit. |
+| 30 | JOB-020 | Une date sans heure | **Midi UTC** | Minuit | ASSUMED | Minuit vieillit l'offre d'un jour dans la moitié des fuseaux, et la fraîcheur est la promesse du produit. |
+| 31 | JOB-028 | Tester le retrait progressif | **Horloge injectée, aucun timer** | `setTimeout` et attente réelle | ASSUMED | Un test qui dort vraiment n'est jamais relancé assez souvent pour attraper une régression. |
+| 32 | — | Le clone de `ci-local` dispute ses ports à l'hôte | **Ports dédiés au clone (3200/3210)** | Attendre que l'hôte libère | ASSUMED | Une collision se lisait comme une régression du produit. Pire : avant le correctif du smoke, les requêtes du clone touchaient le serveur de l'hôte — la contre-vérification validait le code de quelqu'un d'autre. |
+
+**Trois bugs trouvés par les tests, avant livraison :** un `\b` en tête de motif empêchait `« / mois »`
+de matcher, faute de frontière de mot avant une barre oblique — un salaire mensuel dakarois était lu
+comme annuel, **douze fois trop bas** · le suffixe `k` d'une fourchette ne s'appliquait qu'à la borne
+haute, écartant silencieusement la borne basse · et le smoke démarrait un **second serveur** dont
+l'échec était masqué par celui du contrat.
+
+**Constats** — F12 (les champs texte d'une offre viennent de tiers et ne sont pas bornés → `JOB-027`,
+`JOB-038`) et F13 (le smoke validait par moments un serveur qui n'était pas le sien, **corrigé**).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
