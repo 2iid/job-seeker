@@ -209,6 +209,17 @@ et refuse toute colonne dont le nom évoque un utilisateur.
 déclencheur sur une table utilisateur ; écriture bornée au compteur et au nom canonique, `search_path`
 figé — **accepté, périmètre vérifié**).
 
+## Exécution 10 — 2026-08-26 · planificateur et thème
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 46 | JOB-029 | Une source pénalisée : attendre ou sauter ? | **Sauter** | Attendre son délai | ASSUMED | L'attendre bloquerait les autres, et une source en panne pénaliserait tout le balayage au lieu d'elle seule. Sauter est aussi réversible : elle revient au tour suivant. |
+| 47 | JOB-012 | Deux états de thème ou trois ? | **Trois — « comme mon système » par défaut** | Un simple bascule clair/sombre | ASSUMED | Deux boutons forcent un choix déjà fait ailleurs et cessent de le suivre quand l'utilisateur en change. Le troisième état est aussi le plus réversible : il ne décide rien. |
+| 48 | JOB-012 | Où appliquer le thème ? | **Un script avant la première peinture** | Un effet React après hydratation | BRIEF | Le système de design impose la parité des thèmes. Appliqué après l'hydratation, un utilisateur en sombre reçoit un éclair blanc à chaque navigation — sur un produit qu'on consulte la nuit parce qu'on dort mal, ce n'est pas esthétique. |
+
+**Le smoke vérifie que le script est dans le HTML SERVI**, pas seulement écrit dans le code : la
+différence entre les deux est exactement le genre de régression qu'une revue ne voit pas.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
