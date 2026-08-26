@@ -12,7 +12,8 @@
   "dependencies": {
     "@job-seeker/env": "workspace:*",
     "@job-seeker/observability": "workspace:*",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "@job-seeker/llm": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

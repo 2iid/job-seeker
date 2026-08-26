@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    // Ce paquet est consommé par le WORKER, qui tourne sous Node en retirant
+    // les types : Node exige l'extension réelle. Le web la tolère, le worker
+    // non — un paquet partagé doit satisfaire le régime le plus strict, sinon
+    // il casse au démarrage et non au typecheck.
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src"]
+}

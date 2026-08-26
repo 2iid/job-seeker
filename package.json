@@ -29,6 +29,7 @@
     "@job-seeker/env": "workspace:*",
     "@job-seeker/observability": "workspace:*",
     "@job-seeker/testing": "workspace:*",
-    "@job-seeker/auth": "workspace:*"
+    "@job-seeker/auth": "workspace:*",
+    "@job-seeker/llm": "workspace:*"
   }
 }

@@ -50,6 +50,10 @@ export const SPECS: readonly Spec[] = [
   { name: 'SUPABASE_URL', required: ['worker'], secret: false, validate: isUrl },
   { name: 'SUPABASE_SERVICE_ROLE_KEY', required: ['worker'], secret: true, validate: minLength(20) },
   { name: 'ANTHROPIC_API_KEY', required: ['worker'], secret: true, validate: minLength(20) },
+  // Optionnelle : `required: []`. Le produit fonctionne sans elle — simplement
+  // sans bascule. La déclarer ici plutôt que de la lire ailleurs garde la porte
+  // unique, et `secret: true` interdit qu'on lui donne une valeur par défaut.
+  { name: 'OPENROUTER_API_KEY', required: [], secret: true, validate: minLength(20) },
 ]
 
 export class EnvError extends Error {
@@ -116,6 +120,18 @@ export function loadEnv(runtime: Runtime): Readonly<Record<string, string>> {
  * l'appelant et doit être une valeur publique — jamais un secret : une valeur
  * par défaut secrète est un secret commité.
  */
+/**
+ * Lit un secret OPTIONNEL. Renvoie `undefined` quand il manque — jamais une
+ * valeur de repli, parce qu'un secret par défaut est un secret commité.
+ *
+ * Sert aux capacités qui dégradent proprement : sans clé OpenRouter, le produit
+ * marche, il n'a simplement plus de fournisseur de secours.
+ */
+export function readOptionalSecret(name: string): string | undefined {
+  const raw = process.env[name]
+  return raw === undefined || raw.trim() === '' ? undefined : raw.trim()
+}
+
 export function readOptional(name: string, fallback: string): string {
   if (SPECS.some((s) => s.name === name && s.secret)) {
     throw new Error(
