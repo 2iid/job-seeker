@@ -85,6 +85,30 @@ trois piles déjà en service. `JOB-004` et `JOB-005` redeviennent faisables.
 F5 (exception du scanner, **acceptée, périmètre vérifié sur trois cas**) et F6 (aucun chemin de
 suppression n'existe encore, **reporté à `JOB-059`**).
 
+## Exécution 4 — 2026-08-25 · branche d'intégration
+
+2iD approuve la branche d'intégration et fusionne #4. Fin des PR par issue jusqu'au retour de la
+facturation : tout atterrit sur `integration/sprint-1`, chaque issue avec son reçu de vérification
+et son verdict de revue. Une seule PR quand la CI repartira.
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 17 | JOB-009 | Où vit la file ? | **Postgres, avec bail et `skip locked`** | File en mémoire ; service externe | BRIEF | Le worker fait des actions sortantes au nom de quelqu'un : un travail perdu est une candidature qui ne part pas, un travail rejoué est une candidature envoyée deux fois. La base est déjà là et donne durabilité et concurrence sans dépendance de plus. |
+| 18 | JOB-009 | La clé d'idempotence : optionnelle ou obligatoire ? | **Obligatoire** | Optionnelle avec valeur par défaut | ASSUMED | Rendre l'idempotence optionnelle revient à la rendre absente : personne ne se souvient de l'activer. Un appelant sans clé naturelle doit en fabriquer une, et ce choix est visible dans le type. |
+| 19 | JOB-010 | Liste de refus ou liste d'autorisation pour la journalisation ? | **Autorisation** | Liste de refus des champs sensibles | ASSUMED | Une liste de refus laisse passer le champ auquel personne n'a pensé. Une liste d'autorisation réduit l'inconnu à son type et sa taille — assez pour déboguer, rien pour fuir. Plus strict est ici plus réversible : on peut toujours ajouter une clé sûre. |
+| 20 | JOB-010 | Que doit dire la sonde du worker ? | **`degraded` + 503 si la file n'avance plus** | 200 tant que le processus répond | BRIEF | Un worker vivant dont la file est bloquée est une panne invisible jusqu'à ce qu'un utilisateur constate qu'on n'a rien fait pour lui de la nuit. `REQ-013` exige qu'une action sans reçu soit un incident : encore faut-il savoir que rien ne s'est produit. |
+| 21 | — | Helpers de test partagés entre `tests/rls` et le worker | **Paquet `@job-seeker/testing`** | Import relatif entre dossiers | ASSUMED | Un import qui traverse la racine d'un paquet casse `NodeNext` et le typage. Un paquet est la structure que le monorepo attendait de toute façon. |
+
+**Trois défauts trouvés avant livraison, tous par des tests ou des portes :** un bug de précédence
+SQL (`and` liant plus fort que `or`) qui laissait un worker spécialisé réclamer des travaux
+étrangers · une propriété de constructeur TypeScript qui cassait le démarrage du worker et non le
+typecheck, donc en production · et la règle « `process.env` n'est lu qu'à un endroit » qui a attrapé
+le worker lui-même.
+
+**Constats de sécurité** — F7 (le `payload` d'un travail est un jsonb libre : à borner par
+`JOB-049`, `JOB-055`, `JOB-059` pour qu'il ne porte que des identifiants) et F8 (syntaxe refusée
+par ESLint, **corrigé**).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
