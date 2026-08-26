@@ -378,6 +378,29 @@ désormais le **code** de l'erreur, et n'attend que sur `EADDRINUSE`. **Dix `ver
 
 **Constat** — **F22 CLOS**.
 
+## Exécution 19 — 2026-08-26 · le vocabulaire, puis les quatre composants
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 81 | JOB-018 | `status.ts` porte ses libellés en dur. | **Il garde la structure, l'i18n prend les mots** | Laisser deux exemplaires | *garde-fou* | Deux exemplaires d'un libellé divergent toujours : l'un est corrigé, l'autre pas, et quelqu'un lit deux mots différents pour la même chose selon l'écran. |
+| 82 | JOB-018 | Une clé inconnue : chaîne vide ou repli sur le français ? | **Rendre la clé** | Les deux autres | ASSUMED | Une chaîne vide disparaît dans la mise en page ; un repli met un mot français dans un écran anglais. Les deux passent inaperçus — la clé, non. |
+| 83 | JOB-018 | Le test G6 mesure des caractères, pas des pixels. | **Le livrer en le disant, et créer `JOB-084`** | Le présenter comme la vérification G6 | *garde-fou* | Un budget de caractères ne voit ni une police en repli, ni un mot insécable, ni un `flex` qui refuse de rétrécir. Annoncer G6 tenu serait faux. |
+| 84 | JOB-014 | Le dépliage du score : état React ou `<details>` ? | **`<details>` natif** | Un état de composant | BRIEF | « Un score sans explication **atteignable** » fait échouer une revue de design. Un dépliage qui dépend d'un script n'est pas atteignable quand le script n'a pas chargé — et c'est là que quelqu'un regarde un nombre sans savoir d'où il sort. |
+| 85 | JOB-015 | Quelle est la première phrase de la carte ? | **Ce qui n'est PAS parti** | « Prêt à envoyer ! » | BRIEF | La seconde décrit l'état de la machine. La première répond à la question que la personne se pose en arrivant. |
+
+**Le test a attrapé un libellé, et c'est le budget qui a bougé.** « Escalade — je rends la main » fait
+27 caractères pour un budget de 26. Ma **catégorie** était fausse : un libellé de statut n'est pas une
+pastille — la pastille est la forme, et sous 768 px le statut occupe sa propre ligne. Raccourcir un
+libellé que le design a écrit pour être compris aurait fait passer le test en dégradant exactement ce
+qu'il protège.
+
+**Deux vérifications nouvelles.** Les substitutions `{n}` doivent être les mêmes dans les deux langues
+— une traduction qui perd la sienne affiche « il y a min », et aucune relecture de code ne voit ça. Et
+les contrôles de ton portent désormais sur **les deux langues** : « ce n'est pas votre échec » n'a
+aucune valeur si l'anglais dit « you failed ».
+
+**Issue créée** — `JOB-084` : le harnais de bout en bout et la vérification G6 **au pixel**.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
