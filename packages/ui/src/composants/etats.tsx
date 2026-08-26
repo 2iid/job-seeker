@@ -78,7 +78,14 @@ export function Erreur({ quoi, depuis, ceQueCaNImpliquePas, action }: {
   quoi: string
   depuis: string
   ceQueCaNImpliquePas: string
-  action?: { libelle: string; onClick?: () => void }
+  /**
+   * `href` autant que `onClick` : une erreur se rend le plus souvent depuis un
+   * composant SERVEUR, où aucun gestionnaire d'événement ne peut être posé.
+   * N'offrir qu'un `onClick` obligeait à rendre l'écran d'erreur côté client —
+   * c'est-à-dire à dépendre de JavaScript précisément quand quelque chose vient
+   * de mal se passer.
+   */
+  action?: { libelle: string; onClick?: () => void; href?: string }
 }) {
   return (
     <div
@@ -102,7 +109,10 @@ export function Erreur({ quoi, depuis, ceQueCaNImpliquePas, action }: {
       <p style={{ margin: 0, fontSize: '13.5px', lineHeight: 1.5, color: 'var(--text-secondary)' }}>
         {ceQueCaNImpliquePas}
       </p>
-      {action === undefined ? null : <Bouton onClick={action.onClick}>{action.libelle}</Bouton>}
+      {action === undefined ? null
+        : action.href === undefined
+          ? <Bouton onClick={action.onClick}>{action.libelle}</Bouton>
+          : <a href={action.href} style={{ textDecoration: 'none' }}><Bouton>{action.libelle}</Bouton></a>}
     </div>
   )
 }
@@ -112,7 +122,7 @@ export function TropDeDonnees({ total, montres, critere, action, children }: {
   total: number
   montres: number
   critere: string
-  action: { libelle: string; onClick?: () => void }
+  action: { libelle: string; onClick?: () => void; href?: string }
   children?: ReactNode
 }) {
   return (
@@ -124,7 +134,9 @@ export function TropDeDonnees({ total, montres, critere, action, children }: {
         {' '}{critere}. Le reste est consultable, pas caché.
       </p>
       {children}
-      <Bouton onClick={action.onClick}>{action.libelle}</Bouton>
+      {action.href === undefined
+        ? <Bouton onClick={action.onClick}>{action.libelle}</Bouton>
+        : <a href={action.href} style={{ textDecoration: 'none' }}><Bouton>{action.libelle}</Bouton></a>}
     </div>
   )
 }

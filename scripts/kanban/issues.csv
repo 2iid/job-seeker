@@ -36,8 +36,8 @@ JOB-034,Critères de recherche préférences et exclusions,EPIC 3 — Profil et 
 JOB-035,Moteur de score de correspondance explicable,EPIC 4 — Correspondance,ai,ai-integration-engineer,P0,L,JOB-027;JOB-034,done,S3,apps/worker/src/matching/**,REQ-005,yes
 JOB-036,Critères rédhibitoires bloquant la soumission automatique,EPIC 4 — Correspondance,backend,backend-engineer,P0,S,JOB-035,done,S3,apps/worker/src/matching/blockers.ts,REQ-005,yes
 JOB-037,Reproductibilité du score et conservation des preuves,EPIC 4 — Correspondance,backend,backend-engineer,P1,M,JOB-035,backlog,S4,apps/worker/src/matching/replay.ts,REQ-005,yes
-JOB-038,Flux d opportunités avec fraîcheur provenance et filtres persistants,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,L,JOB-035;JOB-017,backlog,S3,apps/web/app/opportunites/**,REQ-004,no
-JOB-039,Détail d une offre avec score déplié en preuves,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,M,JOB-038;JOB-014,backlog,S3,apps/web/app/opportunites/detail/**,REQ-004;REQ-005,no
+JOB-038,Flux d opportunités avec fraîcheur provenance et filtres persistants,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,L,JOB-035;JOB-017,done,S3,apps/web/app/opportunites/**;supabase/migrations/**;packages/ui/src/salaire.ts,REQ-004,yes
+JOB-039,Détail d une offre avec score déplié en preuves,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,M,JOB-038;JOB-014,done,S3,apps/web/app/opportunites/**,REQ-004;REQ-005,no
 JOB-040,Génération de CV adapté contrainte au profil canonique,EPIC 5 — Documents,ai,ai-integration-engineer,P0,L,JOB-033;JOB-035,backlog,S4,apps/worker/src/documents/cv/**,REQ-007,yes
 JOB-041,Vue de différence et refus modification par modification,EPIC 5 — Documents,frontend,frontend-engineer,P0,M,JOB-040,backlog,S4,apps/web/app/cv/diff/**,REQ-007,no
 JOB-042,Mise au format de CV attendu par le marché visé,EPIC 5 — Documents,ai,ai-integration-engineer,P1,M,JOB-040,backlog,S4,apps/worker/src/documents/cv/markets/**,REQ-007,yes
@@ -84,3 +84,4 @@ JOB-082,Palier C plateformes assistées détection sans candidature,EPIC 2 — M
 JOB-083,Connecteur Workable verifie contre une reponse reelle,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,S,JOB-021,backlog,S3,apps/worker/src/sources/ats/**,REQ-003,no
 JOB-084,Harnais de bout en bout et verification G6 au pixel a 390 px,EPIC 1 — Système d interface,frontend,qa-test-engineer,P1,M,JOB-018,backlog,S5,tests/e2e/**,,no
 JOB-085,Rejouer le lecteur JobPosting contre vingt pages carrieres reelles,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-023,backlog,S5,apps/worker/src/sources/jsonld/**,REQ-003,no
+JOB-086,Source de taux de change avec date de releve et politique de peremption,EPIC 4 — Correspondance,backend,backend-engineer,P1,M,JOB-038,backlog,S5,apps/worker/src/taux/**,REQ-004,no

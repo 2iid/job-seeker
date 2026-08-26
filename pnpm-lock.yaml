@@ -66,6 +66,9 @@ importers:
       '@job-seeker/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@job-seeker/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@job-seeker/llm':
         specifier: workspace:*
         version: link:../../packages/llm
