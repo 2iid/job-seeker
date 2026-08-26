@@ -417,6 +417,32 @@ propre conteneur.
 
 **Issues créées** — `JOB-085` (rejouer contre vingt pages réelles, dans cinq pays et cinq secteurs).
 
+## Exécution 21 — 2026-08-26 · le flux, et l'âge dont nous répondons
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 90 | JOB-038 | Une offre est-elle cloisonnée par profil ? | **Non — le SCORE l'est** | Dupliquer l'offre par candidat | ASSUMED | Une annonce publique n'appartient à personne ; la dupliquer ne protégerait rien que le monde ne sache déjà. Ce qui est personnel, c'est le **lien** — savoir quelles offres quelqu'un s'est vu proposer révèle son niveau, sa mobilité, et parfois qu'il cherche sans que son employeur le sache. |
+| 91 | JOB-038 | Une ou deux dates ? | **Deux** — `publiee_le` et `vue_le` | N'en garder qu'une | BRIEF | N'en garder qu'une obligerait l'interface à choisir, et elle choisirait la plus flatteuse. L'âge affiché vient toujours de **notre** relevé. |
+| 92 | JOB-038 | Trier par score ou par fraîcheur ? | **Par fraîcheur** | Par score | BRIEF | Un flux trié par score se lit comme un classement ; la promesse de ce produit est la **primeur**. Le score sert à filtrer, pas à ordonner. |
+| 93 | JOB-038 | Convertir un salaire sans source de taux ? | **Ne pas convertir** | Un « ≈ » sur une valeur devinée | BRIEF | Un montant converti à un taux inconnu est une information fausse présentée comme une aide. `JOB-086` créé pour la source de taux, avec sa politique de péremption. |
+| 94 | JOB-039 | Recalculer le score à l'affichage ? | **Non — il est figé** | Le recalculer | BRIEF | REQ-002. Recalculer donnerait un autre nombre, et l'explication ne correspondrait plus à la décision prise. Le numéro de version des critères est stocké avec. |
+
+**Un piège de conversion épinglé.** 4 500 000 centimes d'euro ne sont pas 4 500 000 francs CFA : le
+passage d'une devise **à** sous-unité vers une devise **sans** change l'échelle, et sans réajustement
+la conversion se trompe d'un **facteur cent** — dans un sens ou dans l'autre selon le couple. Deux
+tests l'épinglent sur des valeurs exactes (45 000 € = 29 518 065 F CFA).
+
+**F23 levé et corrigé dans la même livraison.** La recherche composait un motif `ilike` à partir de
+l'URL : « % » y demandait à la base de balayer toute la table. Ce n'était pas une injection — la
+requête est paramétrée — mais un coût qu'on laissait imposer de l'extérieur. Reporter une correction
+de trois lignes aurait coûté plus cher que la faire.
+
+**Un manque de l'outillage.** `Erreur` n'acceptait qu'un `onClick` : une erreur se rend le plus
+souvent depuis un composant **serveur**, ce qui obligeait à dépendre de JavaScript précisément quand
+quelque chose vient de mal se passer. Elle accepte désormais un `href`.
+
+**Issue créée** — `JOB-086` (source de taux de change, avec date de relevé et péremption).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
