@@ -109,6 +109,24 @@ le worker lui-même.
 `JOB-049`, `JOB-055`, `JOB-059` pour qu'il ne porte que des identifiants) et F8 (syntaxe refusée
 par ESLint, **corrigé**).
 
+## Exécution 5 — 2026-08-25 · authentification
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 22 | JOB-006 | Vérifier l'identité par `getSession()` ou `getUser()` ? | **`getUser()`** | `getSession()`, plus rapide | BRIEF | `getSession()` lit le cookie et le croit ; un cookie vient du client, donc de l'attaquant le cas échéant. La spec exige que l'identité soit vérifiée **côté serveur** à chaque requête protégée (`JOB-006`). |
+| 23 | JOB-006 | Où créer le profil applicatif ? | **Trigger sur `auth.users`** | Dans le code de connexion | ASSUMED | Un compte créé par la console, un import ou un futur fournisseur d'identité obtient son profil de la même façon. Un provisionnement qui ne vit que sur un chemin est un provisionnement qu'on oubliera sur le deuxième. |
+| 24 | JOB-006 | Fermer la course de double provisionnement où ? | **Contrainte d'unicité + `on conflict`** | Vérification applicative avant insertion | ASSUMED | Un `select` puis `insert` ne ferme aucune course : deux processus se croisent toujours entre les deux. Un test prouve que sans `on conflict`, la base rejette — c'est elle qui garantit, pas le code. |
+| 25 | JOB-006 | Que répondre quand l'adresse n'a pas de compte ? | **La même chose que si elle en avait un** | Message utile « compte inconnu » | ASSUMED | Répondre différemment ferait de cette route un oracle : on y testerait des adresses pour savoir qui cherche un emploi. Sur ce produit, cette fuite peut trahir quelqu'un auprès de son employeur. |
+| 26 | — | Le clone propre de `ci-local` n'a pas de `.env` | **Injecter l'environnement dans le clone** | Donner des replis à toutes les variables | ASSUMED | C'est ce que fait la CI avec ses secrets : ce qui doit être propre, c'est le CODE et l'absence de reçu, pas la configuration. Sans cela on ne vérifiait que des pages d'erreur. En contrepartie, `readOptional` refuse désormais tout repli en production. |
+
+**La porte a encore fait son travail :** après le durcissement de `packages/env`, `ci-local` a
+déclaré le verdict de sécurité **périmé** — un chemin sensible avait bougé après la revue. Réémis
+sur le nouveau commit.
+
+**Constats** — F9 (pas de limitation de débit sur la demande de lien → `JOB-073`), F10 (la réponse
+indifférenciée est délibérée, documentée pour qu'on ne l'« améliore » pas en oracle), F11
+(repli de configuration interdit en production, **corrigé**).
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
