@@ -12,7 +12,16 @@ strictness: standard
 
 run:
   install: pnpm install --frozen-lockfile
-  test: pnpm test
+  # `verifier` enchaîne lint → typecheck → tests, et pas seulement les tests.
+  #
+  # `run.test` valait `pnpm test`, c'est-à-dire `vitest run` seul. Le gate
+  # passait donc au vert avec un lint rouge et un type cassé — ce qui a été
+  # constaté, pas supposé : deux erreurs `no-irregular-whitespace` ont survécu
+  # à une vérification VERIFIED.
+  #
+  # Un contrôle qu'il faut penser à lancer à la main n'est pas un contrôle :
+  # c'est une habitude, et une habitude se perd le jour où l'on est pressé.
+  test: pnpm verifier
   build: pnpm build
   start: bash scripts/demarrer-web.sh
   ready: curl -sf "http://localhost:${PORT_WEB:-3100}/api/health"
@@ -67,6 +76,9 @@ sensitive_paths:
   - "supabase/migrations/**"
   # JOB-033 : `evaluerCompletude` décide `peutAutomatiser`. C'est un contrôle,
   # pas un affichage — l'écran ET le moteur s'y fient.
+  # JOB-040 : engendre un document qui sera envoye en votre nom, a partir de
+  # votre parcours. La contrainte qui l empeche d inventer vit ici.
+  - "packages/documents/**"
   - "packages/profil/**"
   - "packages/auth/**"
   - "packages/audit/**"
