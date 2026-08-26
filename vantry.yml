@@ -14,7 +14,7 @@ run:
   install: pnpm install --frozen-lockfile
   test: pnpm test
   build: pnpm build
-  start: pnpm --filter @job-seeker/web start
+  start: bash scripts/demarrer-web.sh
   ready: curl -sf "http://localhost:${PORT_WEB:-3100}/api/health"
   # Le smoke construit, démarre, et vérifie qu'une VRAIE page se rend et qu'une
   # VRAIE requête aboutit. Une suite de tests verte n'est pas une vérification :
