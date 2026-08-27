@@ -575,6 +575,25 @@ pas le premier élément focalisable » : le premier `<input>` d'une page Next e
 d'action serveur, que la touche Tab n'atteint jamais. Le contrôle mesurait le balisage, pas ce qui est
 focalisable.
 
+## Exécution 26 — 2026-08-26 · relire, et refuser sans revenir dessus
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 114 | JOB-041 | Différence par lignes ou par mots ? | **Par mots, ponctuation détachée** | Par lignes | BRIEF | Un diff de lignes rend « toute la ligne a changé » sur un adjectif remplacé. La relecture coûte alors autant que la réécriture, et **quelqu'un qui doit relire vingt fois accepte en bloc** — ce qui annule REQ-007. |
+| 115 | JOB-041 | Peut-on annuler un refus ? | **Non — aucune fonction, aucune action** | Un bouton « annuler » | BRIEF | REQ-007 dit « définitif pour cette candidature ». Le reproposer transformerait un refus en une préférence qu'on repose à chaque écran, et à la troisième fois la personne accepterait pour en finir. |
+| 116 | JOB-041 | « Définitif » : pour la candidature ou pour toujours ? | **Pour la candidature** | Pour toujours | BRIEF | La même reformulation peut être juste pour une autre offre. Décider à sa place qu'il ne la voudra jamais irait **au-delà de ce qu'il a dit**. |
+| 117 | JOB-045 | Reconnaître une question de screening par un modèle ? | **Non — par motifs étroits** | Un modèle | BRIEF | Un modèle répondrait la réponse d'une **autre** question une fois sur dix : « oui » à « accepteriez-vous de déménager ? » parce qu'on avait dit oui au télétravail. C'est une affirmation fausse envoyée sous le nom de quelqu'un. |
+| 118 | JOB-045 | Une réponse proposée mais non confirmée est-elle utilisable ? | **Non** | Oui | BRIEF | Sans cette distinction, la bibliothèque se remplirait de « disponible immédiatement » qu'un modèle aurait posé — exactement les phrases qu'un recruteur retient contre quelqu'un. |
+
+**Un défaut que le diff lui-même ne montrait pas.** La ponctuation était collée au mot, donc
+« agences. » et « agences » étaient deux jetons différents : remplacer « trois agences. » par « trois
+agences externes. » faisait paraître toute la fin de phrase réécrite. Le défaut ne se voyait pas sur le
+diff — il se voyait sur **ce qu'il donnait à relire**.
+
+**Deux systèmes volontairement peu couvrants.** La reconnaissance de screening rend `undefined` sur une
+question inconnue **et** sur une question ambiguë ; le contrôle des organisations d'une lettre ne vise
+qu'une construction. Dans les deux cas : *il vaut mieux escalader souvent que se tromper une fois*.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
