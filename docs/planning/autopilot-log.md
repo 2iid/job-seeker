@@ -617,6 +617,25 @@ gras. `JOB-091` la porte, et rappelle que « échec = story non livrée » veut 
 d'agir* et *pourquoi la personne a écarté une offre*. Deux concepts homonymes finissent par être
 manipulés l'un pour l'autre — ici, l'un autorise un envoi et l'autre l'empêche.
 
+## Exécution 28 — 2026-08-26 · omise du document, et lisible par la machine
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 124 | JOB-042 | Masquer une donnée proscrite, ou l'omettre ? | **L'omettre du document** | La masquer | BRIEF | REQ-007 dit « omise et **non transmise** ». Un PDF dont on a caché une image contient toujours l'image, et une date de naissance retirée de l'affichage reste dans les métadonnées. |
+| 125 | JOB-042 | Un usage suffit-il à retirer une donnée ? | **Non — seule la loi omet** | Omettre aussi sur un usage | ASSUMED | Retirer sur la foi d'un usage reviendrait à décider à la place de quelqu'un, et un usage se discute. « Je l'ai retirée » n'est pas la même phrase que « vous pourriez la retirer ». |
+| 126 | JOB-042 | Un marché non vérifié ? | **N'omet rien, et le dit** | Omettre par précaution | ASSUMED | Omettre par précaution retirerait une information que le marché **attendait peut-être**, sans que personne puisse dire pourquoi. |
+| 127 | JOB-043 | Comment garantir un PDF lisible par un ATS ? | **L'écrire à la main, et le RELIRE avec pdf.js** | Un rendu HTML | BRIEF | Un PDF-image est superbe, s'imprime bien, et l'ATS n'y lit **rien**. La candidature arrive vide, et la personne ne le saura jamais — elle croira que son profil ne convenait pas. |
+| 128 | JOB-043 | Un caractère hors WinAnsi ? | **Translittérer, sinon avouer** | Écrire l'octet le plus proche | ASSUMED | Un « ł » devenu « ? » dans un nom propre est pire qu'un « l ». Et au-delà, se tromper de lettre est pire que de dire qu'on ne sait pas. |
+
+**La boucle qui rend JOB-043 vérifiable.** Le test écrit le PDF, puis le **relit avec pdf.js** — le même
+lecteur que le connecteur JOB-023 — et vérifie que tout le texte en ressort, accents compris. C'est
+exactement ce que fera l'ATS de l'employeur. Un PDF réel de 1 735 octets a été produit et relu.
+
+**Trois détails venus de ce que contient réellement un CV.** Les parenthèses sont échappées — une
+parenthèse non échappée corrompt le fichier, et « (depuis 2021) » est une ligne ordinaire. L'apostrophe
+typographique et le tiret cadratin sont cartographiés en CP1252 : ils sont partout dans un CV français
+et absents de Latin-1.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
