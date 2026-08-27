@@ -1,10 +1,12 @@
 import { redirect } from 'next/navigation'
 import { creerTraducteur } from '@job-seeker/i18n'
+import { evaluer, expliquerFluxVide } from '@job-seeker/couverture'
 import { Erreur, TropDeDonnees, Vide, type TierName } from '@job-seeker/ui'
 import { clientServeur, utilisateurCourant } from '@/lib/supabase/server'
 import { LigneOffre, type EntreeFlux } from './LigneOffre'
 import { BarreFiltres } from './BarreFiltres'
 import { compte, ecrireFiltres, estVide, lireFiltres, motifLike } from './filtres.ts'
+import { observations } from './couverture.ts'
 
 export const metadata = { title: 'Opportunités — Cabine' }
 export const dynamic = 'force-dynamic'
@@ -57,8 +59,12 @@ export default async function Opportunites({
   const supabase = await clientServeur()
 
   const [profilRes, critRes] = await Promise.all([
-    supabase.from('profiles').select('id, locale').single(),
-    supabase.from('criteres_recherche').select('intitules').order('version', { ascending: false }).limit(1),
+    supabase.from('profiles').select('id, locale, autorisation_travail').single(),
+    supabase
+      .from('criteres_recherche')
+      .select('intitules, zones, presence')
+      .order('version', { ascending: false })
+      .limit(1),
   ])
   if (profilRes.data === null) redirect('/connexion?next=%2Fopportunites')
   const t = creerTraducteur(profilRes.data.locale === 'en' ? 'en' : 'fr')
@@ -118,7 +124,18 @@ export default async function Opportunites({
     }))
     .filter((e) => !filtres.seulementSansBloquant || e.bloquants === 0)
 
-  const aDesCriteres = (critRes.data?.[0]?.intitules ?? []).length > 0
+  const criteres = critRes.data?.[0] ?? null
+  const aDesCriteres = (criteres?.intitules ?? []).length > 0
+
+  // JOB-090 — « aucune offre ne correspond » et « aucune source ne couvre ce
+  // que vous cherchez » sont deux phrases différentes, et la personne n'a
+  // aucun moyen de faire la différence si on ne la lui dit pas. La première la
+  // renvoie à son profil ; la seconde nous renvoie à notre travail.
+  const cible = {
+    pays: (profilRes.data.autorisation_travail as string[] | null)?.[0] ?? null,
+    accepteDistanciel: (criteres?.presence ?? []).includes('distanciel'),
+  }
+  const verdictCouverture = entrees.length === 0 ? evaluer(await observations(), cible) : null
 
   return (
     <main
@@ -155,19 +172,23 @@ export default async function Opportunites({
         estVide(filtres) ? (
           <Vide
             titre={
-              aDesCriteres
-                ? 'Je n’ai encore rien trouvé qui vous corresponde.'
-                : 'Je ne sais pas encore ce que je cherche pour vous.'
+              !aDesCriteres
+                ? 'Je ne sais pas encore ce que je cherche pour vous.'
+                : verdictCouverture?.aucuneSourceLocale === true
+                  ? 'Je n’ai pas de source pour ce marché.'
+                  : 'Je n’ai encore rien trouvé qui vous corresponde.'
             }
             explication={
-              aDesCriteres
-                ? 'Je relève les sources en continu. Dès qu’une offre correspond à vos critères, elle apparaît ici — vous n’avez rien à rafraîchir.'
-                : 'Donnez-moi un intitulé de poste et une zone, et je commence à chercher. Vous pourrez tout changer ensuite.'
+              !aDesCriteres
+                ? 'Donnez-moi un intitulé de poste et une zone, et je commence à chercher. Vous pourrez tout changer ensuite.'
+                : verdictCouverture !== null
+                  ? expliquerFluxVide(verdictCouverture, cible)
+                  : 'Je relève les sources en continu. Dès qu’une offre correspond à vos critères, elle apparaît ici.'
             }
             action={
-              aDesCriteres
-                ? { libelle: 'Revoir mes critères', href: '/criteres' }
-                : { libelle: 'Définir mes critères', href: '/criteres' }
+              verdictCouverture?.aucuneSourceLocale === true
+                ? { libelle: 'Ouvrir le distanciel', href: '/criteres' }
+                : { libelle: 'Revoir mes critères', href: '/criteres' }
             }
           />
         ) : (

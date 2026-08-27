@@ -55,6 +55,23 @@ export function Parcours({ aUnCv, cranInitial }: { aUnCv: boolean; cranInitial: 
             Il y a des endroits où je ne vais pas : LinkedIn, Indeed et quelques autres interdisent la
             collecte automatisée. Je vous y prépare votre dossier, vous l’envoyez.
           </p>
+          {/*
+            JOB-087 — ce que la mesure de JOB-076 interdit de taire.
+            Trois profils sur cinq y ont obtenu ZÉRO offre pertinente, et
+            les 393 offres relevées se répartissaient sur une poignée de pays.
+            Annoncer une couverture mondiale tous secteurs vendrait une portée
+            qu'on n'a pas — la seule chose qu'un produit d'agent autonome ne
+            peut pas se permettre, puisque toute sa valeur repose sur le fait
+            qu'on puisse le croire. Le dire ici coûte des inscriptions ; ne pas
+            le dire coûterait la confiance de ceux qui restent.
+          */}
+          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>
+            Et une chose que je préfère dire maintenant : aujourd’hui, mes sources couvrent surtout le
+            travail <strong style={{ fontWeight: 600 }}>distanciel</strong> et les marchés
+            nord-américain et européen. Si vous cherchez sur place ailleurs, je vous montrerai ce que
+            je trouve, et je vous dirai quand je ne trouve rien parce que je ne regarde pas au bon
+            endroit.
+          </p>
           <div>
             <Bouton ton="machine" pleine onClick={suivant}>Commencer</Bouton>
           </div>
