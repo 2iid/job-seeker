@@ -594,6 +594,29 @@ diff — il se voyait sur **ce qu'il donnait à relire**.
 question inconnue **et** sur une question ambiguë ; le contrôle des organisations d'une lettre ne vise
 qu'une construction. Dans les deux cas : *il vaut mieux escalader souvent que se tromper une fois*.
 
+## Exécution 27 — 2026-08-26 · la file, et ce qui ne doit jamais partir en silence
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 119 | JOB-048 | Quand archiver ce qui a expiré ? | **À l'ouverture de la file** | Une tâche de fond | ASSUMED | Une tâche horaire laisse une fenêtre d'une heure pendant laquelle le bouton « envoyer » est là et n'aboutira à rien. **Faire cliquer quelqu'un sur un bouton sans effet est une façon de lui mentir.** |
+| 120 | JOB-048 | Faut-il relire l'échéance avant d'approuver ? | **Oui, côté serveur** | Se fier à l'affichage | BRIEF | Entre l'affichage de la file et le clic, l'offre a pu expirer. Se fier à ce qui était affiché, c'est décider dans un monde périmé. |
+| 121 | JOB-048 | Un élément sans échéance connue ? | **Reste en file** | Lui inventer une date | ASSUMED | Inventer une date archiverait une offre **encore ouverte**, et la personne découvrirait que le produit a décidé à sa place qu'il était trop tard. |
+| 122 | JOB-048 | Le motif de refus : contrainte de base ou règle applicative ? | **Contrainte de base** | Le code | *garde-fou* | Sinon la moitié des refus arriveraient sans motif et REQ-006 n'aurait rien à lire. Elle a d'ailleurs cassé un test de JOB-038 qui employait « ecartee » comme statut arbitraire — **c'est la contrainte qui avait raison**. |
+| 123 | JOB-048 | Tous les motifs enseignent-ils quelque chose ? | **Non** | Tous | ASSUMED | « L'intitulé ne correspond pas au poste décrit » parle de l'**offre**, pas des critères. En tirer une leçon resserrerait la recherche à cause d'un employeur qui rédige mal. |
+
+**Ce qui a été livré, et ce qui ne l'a pas été.** US-05 exige « ≤ 10 s à une main, **mesuré**, médiane
+sur 3 éléments ». L'écran est construit pour ce budget — approuver est **un** geste, sur un bouton plus
+haut que la cible minimale ; pas de confirmation, parce que ce qui part a déjà été relu sur l'écran de
+différence ; `A` / `R` au clavier, ignorés dans un champ de saisie.
+
+Mais la **mesure** n'est pas faite. Compter les boutons pour en conclure « moins de dix secondes »
+serait remplacer une mesure par une intuition — exactement ce que US-05 refuse en écrivant *mesuré* en
+gras. `JOB-091` la porte, et rappelle que « échec = story non livrée » veut dire **rouvrir** JOB-048.
+
+**Une collision de noms levée.** `MotifRefus` désignait à la fois *pourquoi l'agent n'a pas le droit
+d'agir* et *pourquoi la personne a écarté une offre*. Deux concepts homonymes finissent par être
+manipulés l'un pour l'autre — ici, l'un autorise un envoi et l'autre l'empêche.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
