@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T08:35:46Z",
-  "head": "96d006887200c01884d3b497f84579e472b39dd0",
+  "at": "2026-08-27T10:44:10Z",
+  "head": "d0f036d2218a8d59b9a18cf8c9bbd1177240c74e",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -130,7 +130,8 @@
     "JOB-002 : le harnais de la pointe NE SOUMET RIEN, et la clause est verifiee sur son CODE par trois tests — aucun `click`, aucun `fill`/`setInputFiles`, aucune mention d un service de resolution de captcha. Une clause de portee qui ne vit que dans un commentaire est une clause qu on enfreint le jour ou l on ajoute une ligne sans relire l en-tete.",
     "Remplir sans envoyer aurait deja ete trop : un formulaire ATS enregistre souvent une candidature « brouillon » des la premiere saisie, et le recruteur la voit.",
     "Un anti-robot detecte ARRETE le sondage. Aucune tentative de resolution, aucune recherche de porte de service — et ADR-0003 rend cette regle structurelle en supprimant le chemin de code ou la tentation existait.",
-    "ADR-0003 : `apps/worker/src/envoi/**` devient le SEUL canal d envoi autonome, et entre dans les chemins sensibles. Le risque se concentre desormais la ou les gardes existent — mandat, quota, plage horaire, arret d urgence, recu immuable."
+    "ADR-0003 : `apps/worker/src/envoi/**` devient le SEUL canal d envoi autonome, et entre dans les chemins sensibles. Le risque se concentre desormais la ou les gardes existent — mandat, quota, plage horaire, arret d urgence, recu immuable.",
+    "JOB-089 : le filtre de lieu de The Muse est silencieusement permissif — 0 concordance sur 33 pour Dakar et Lyon, alors que l API annonce 6 340 offres. Le connecteur ne reprend JAMAIS le compte de la source : il filtre sur le lieu reellement rendu et ne compte que ce qui passe. Une source qui rend des offres hors sujet sans le dire est une source qui nous ferait mentir a notre tour."
   ],
   "findings": [
     {
