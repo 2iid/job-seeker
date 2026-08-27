@@ -1,0 +1,201 @@
+[
+  {
+    "url": "https://careers.airbnb.com/positions/7995153?gh_jid=7995153",
+    "fournisseur": "greenhouse",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 10653,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://careers.airbnb.com/positions/7995199?gh_jid=7995199",
+    "fournisseur": "greenhouse",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 10033,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://stripe.com/jobs/search?gh_jid=7532733",
+    "fournisseur": "greenhouse",
+    "etat": "remplissable",
+    "champs": [
+      {
+        "etiquette": "Search for a role",
+        "type": "search",
+        "requis": false,
+        "connu": null
+      }
+    ],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": null,
+    "boutonSoumission": false,
+    "msJusquAuPret": 11306,
+    "note": ""
+  },
+  {
+    "url": "https://stripe.com/jobs/search?gh_jid=8130725",
+    "fournisseur": "greenhouse",
+    "etat": "escalade",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": null,
+    "boutonSoumission": false,
+    "msJusquAuPret": 10041,
+    "note": "aucun champ lisible — formulaire probablement derrière une navigation"
+  },
+  {
+    "url": "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245/application",
+    "fournisseur": "ashby",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 7391,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.ashbyhq.com/ramp/f564dcf9-9390-4a3f-896f-8047a5086040/application",
+    "fournisseur": "ashby",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 7150,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.ashbyhq.com/linear/d3bc1ced-3ce4-4086-a050-555055dbb1ff/application",
+    "fournisseur": "ashby",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 7124,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.ashbyhq.com/linear/cd5ae036-0223-427a-b038-ba16ef9dcb32/application",
+    "fournisseur": "ashby",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 7812,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.lever.co/palantir/ac978161-6f46-4f6b-ad9e-a258e642751c",
+    "fournisseur": "lever",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 3495,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.lever.co/palantir/a237973c-cb29-41fe-9c80-416e6f42e087",
+    "fournisseur": "lever",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 3351,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.lever.co/swordhealth/186e2e60-79cb-4dcd-b4eb-f728f4fcbd67",
+    "fournisseur": "lever",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 3176,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://jobs.lever.co/swordhealth/8fb78d10-7b06-42a1-aa51-b5e1f8e3bb87",
+    "fournisseur": "lever",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 3158,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://apply.workable.com/j/933DA8CE76/apply",
+    "fournisseur": "workable",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 4472,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://apply.workable.com/j/CFF550F9FE/apply",
+    "fournisseur": "workable",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 4165,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://apply.workable.com/j/0FD01ABC66/apply",
+    "fournisseur": "workable",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 4339,
+    "note": "dispositif détecté : recaptcha"
+  },
+  {
+    "url": "https://apply.workable.com/j/186545F8C1/apply",
+    "fournisseur": "workable",
+    "etat": "anti-robot",
+    "champs": [],
+    "inattendus": [],
+    "piecesJointes": 0,
+    "antiRobot": "recaptcha",
+    "boutonSoumission": false,
+    "msJusquAuPret": 4213,
+    "note": "dispositif détecté : recaptcha"
+  }
+]
