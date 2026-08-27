@@ -13,3 +13,7 @@ export { appliquer, differencier, modifications, segmenter } from './difference.
 export type { DifferenceChamp, Modification, Segment } from './difference.ts'
 export { cle, compter, preparer, refuser, resultat } from './revision.ts'
 export type { ChampRevisable, Compte, Revision } from './revision.ts'
+export { annoncer, formaterPour, marcheDe, MARCHES, PAR_DEFAUT } from './marche.ts'
+export type { Convention, DonneePersonnelle, Formatage, Marche, Omission, Traitement } from './marche.ts'
+export { ecrirePdf, encoderWinAnsi } from './pdf.ts'
+export type { Bloc, DocumentPdf } from './pdf.ts'

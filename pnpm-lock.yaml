@@ -162,6 +162,9 @@ importers:
         specifier: workspace:*
         version: link:../llm-guard
     devDependencies:
+      '@job-seeker/parsing':
+        specifier: workspace:*
+        version: link:../parsing
       typescript:
         specifier: ^5.7.3
         version: 5.9.3

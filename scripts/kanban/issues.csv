@@ -40,8 +40,8 @@ JOB-038,Flux d opportunités avec fraîcheur provenance et filtres persistants,E
 JOB-039,Détail d une offre avec score déplié en preuves,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,M,JOB-038;JOB-014,done,S3,apps/web/app/opportunites/**,REQ-004;REQ-005,no
 JOB-040,Génération de CV adapté contrainte au profil canonique,EPIC 5 — Documents,ai,ai-integration-engineer,P0,L,JOB-033;JOB-035,done,S4,packages/documents/**,REQ-007,yes
 JOB-041,Vue de différence et refus modification par modification,EPIC 5 — Documents,frontend,frontend-engineer,P0,M,JOB-040,done,S4,packages/documents/**;apps/web/app/opportunites/**;supabase/migrations/**,REQ-007,yes
-JOB-042,Mise au format de CV attendu par le marché visé,EPIC 5 — Documents,ai,ai-integration-engineer,P1,M,JOB-040,backlog,S4,apps/worker/src/documents/cv/markets/**,REQ-007,yes
-JOB-043,Export PDF fidèle et lisible par un ATS,EPIC 5 — Documents,backend,backend-engineer,P0,M,JOB-040,backlog,S4,apps/worker/src/documents/pdf/**,REQ-007,yes
+JOB-042,Mise au format de CV attendu par le marché visé,EPIC 5 — Documents,ai,ai-integration-engineer,P1,M,JOB-040,done,S4,packages/documents/**,REQ-007,yes
+JOB-043,Export PDF fidèle et lisible par un ATS,EPIC 5 — Documents,backend,backend-engineer,P0,M,JOB-040,done,S4,packages/documents/**,REQ-007,yes
 JOB-044,Génération de lettre dans la langue de l offre,EPIC 5 — Documents,ai,ai-integration-engineer,P0,M,JOB-040,done,S4,packages/documents/**,REQ-008,yes
 JOB-045,Bibliothèque de réponses aux questions de screening,EPIC 5 — Documents,frontend,frontend-engineer,P0,M,JOB-030,done,S4,packages/profil/**;supabase/migrations/**,REQ-008,yes
 JOB-046,Cadran d autonomie par canal et mandat horodaté,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-030,done,S4,supabase/migrations/**;packages/profil/**,REQ-009,yes
