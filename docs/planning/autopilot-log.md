@@ -873,3 +873,51 @@ après 63 issues, alors qu'AGENTS.md en demande un à la fin de chaque issue. Le
 deux premiers critères sont posés ici. Les issues déjà livrées ne sont PAS
 reconstituées : inventer des critères après coup donnerait un tableau vert sans
 rien prouver de plus.
+
+## Exécution 36 — JOB-051, idempotence d'envoi
+
+**Décidé sans demander.** Un bail expiré conduit à « incertain » et jamais à une
+nouvelle tentative (règle 3 — REQ-011 dit qu'une soumission n'est jamais rejouée
+à l'identique). C'est le choix contre-intuitif : la pente naturelle est de se
+dire « le worker est mort il y a trois jours, l'envoi a dû échouer, réessayons ».
+Le temps ne transforme pas une ignorance en certitude, et l'erreur ne se reprend
+pas dans un sens.
+
+**Décidé sans demander.** Une republication probable ESCALADE au lieu de refuser
+(règle 2 — l'option la plus réversible). Recandidater au même poste six mois
+plus tard est légitime, et nous ne savons pas distinguer une republication d'une
+nouvelle campagne. Nous signalons, la personne tranche. Fenêtre bornée à 90
+jours pour la même raison : non bornée, la protection deviendrait une
+interdiction.
+
+**Deux défauts sur mon propre travail :**
+
+- *Une candidature bloquée par le quota ne repartait jamais.* La trace de son
+  refus d'hier lui barrait la route à chaque tour. `reprendre()` existait et
+  n'était appelé nulle part. Le défaut était invisible en test unitaire : il
+  demande DEUX passages, et le premier avait l'air correct. Il a fallu une
+  mutation pour le voir en creux.
+- *F27, plus grave.* Rien n'imposait que `dossiers.profile_id` corresponde au
+  propriétaire de l'opportunité. Le worker écrit avec `service_role`, qui
+  contourne la RLS : deux paramètres incohérents rendaient le CV et la lettre
+  d'Alice visibles par Bob. Aucun code ne le faisait — c'est précisément
+  pourquoi il fallait une contrainte plutôt qu'une vigilance.
+
+**Trois tests corrigés parce qu'ils ne prouvaient pas ce qu'ils annonçaient :**
+
+- Une première mutation « lire puis écrire » n'a rien cassé, parce que mon
+  `try/catch` rétablissait la correction. La leçon vaut plus que la mutation :
+  la garantie n'est pas le `on conflict`, c'est la CONTRAINTE D'UNICITÉ.
+- Un test lisait l'ORDRE des lignes de traiter.ts pour vérifier « réclamer avant
+  d'envoyer ». Il échouait, et il avait tort de réussir : le canal ATS appelle
+  légitimement `executer` sans réclamer. Remplacé par une preuve
+  comportementale — compter les fois où quelque chose est réellement sorti.
+- Mon harnais de faucheuse d'orphelin utilisait `timeout`, qui n'existe pas sur
+  macOS : le script n'était jamais lancé, et j'ai cru pendant deux essais que le
+  correctif ne marchait pas. Le défaut était dans la vérification.
+
+**Hors périmètre, assumé.** `scripts/demarrer-web.sh` fauche désormais
+l'orphelin qu'un SIGKILL laisse derrière lui — deuxième fois que ce fantôme fait
+tomber la barrière. La faucheuse n'affaiblit aucun contrôle et sa borne de
+sûreté est prouvée : un serveur d'un autre projet sur le même port est épargné.
+Signalé au verdict plutôt que glissé dans le lot.
