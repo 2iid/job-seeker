@@ -682,6 +682,51 @@ Elle passe **P0**.
    délai dépassé se présentait chez nous comme « aucun employeur trouvé » — c'est-à-dire **exactement
    comme la lacune qu'on cherchait à mesurer**. La mesure aurait confirmé son propre défaut.
 
+## Exécution 31 — 2026-08-27 · la pointe, la bascule, et ce qui couvre vraiment
+
+Trois issues, et chacune a changé le produit plutôt que de l'agrandir.
+
+### JOB-002 — la soumission automatisée n'est pas viable
+
+**14 formulaires sur 16 (88 %) portent un reCAPTCHA.** Le brief posait 70 % comme seuil de viabilité ;
+on est à **6 %**.
+
+| # | la question | choisi | pourquoi |
+|---|---|---|---|
+| 135 | Jusqu'où va la pointe ? | **Jusqu'au bouton, sans le presser** | Vingt candidatures fictives feraient perdre son temps à vingt recruteurs. La clause est portée par **trois tests sur le code** du harnais — une clause de portée qui ne vit que dans un commentaire est une clause qu'on enfreint. |
+| 136 | Que faire d'un anti-robot ? | **S'arrêter et le consigner** | Un produit qui apprend à les franchir se ferme lui-même les portes qu'il veut ouvrir tous les jours. |
+
+**Une erreur de mesure, dite parce qu'elle se trompait du bon côté.** La première version
+n'interrogeait que la page parente — or Greenhouse rend son formulaire dans une **iframe**. Premier
+relevé : 75 % / 19 %. Après correction : **88 % / 6 %**. L'erreur rendait le produit *plus viable qu'il
+ne l'est* — la direction dans laquelle une erreur ne se remarque pas, parce qu'elle confirme ce qu'on
+espérait.
+
+### ADR-0003 — préparer en dix secondes, envoyer en un clic
+
+Arbitrage de l'utilisateur : bascule sur les ATS, **envoi autonome conservé sur le courriel**. La
+décision rend **structurelle** une règle qui reposait sur la discipline — il n'y a plus de chemin de
+code où la tentation du contournement existe. `apps/worker/src/envoi/**` devient le seul canal
+autonome, et entre dans les chemins sensibles.
+
+### JOB-089 — un portail national couvre ce qu'aucun agrégateur ne couvre
+
+**JobTech Suède : 2 028 postes d'infirmier, 963 d'enseignant, 79 de comptable, sur place, avec leur
+date limite.** Exactement les trois métiers que `JOB-076` laissait à zéro.
+
+Et il apporte `application_deadline`, que nulle autre source ne donnait — c'est ce dont `JOB-048` a
+besoin pour archiver au lieu d'envoyer après coup. Jusqu'ici l'échéance était toujours nulle, **donc
+la règle ne s'appliquait jamais**.
+
+| # | la question | choisi | pourquoi |
+|---|---|---|---|
+| 137 | Croire le filtre de lieu de The Muse ? | **Non — filtrer chez nous** | « Dakar » rend 33 offres dont **zéro** au Sénégal, et l'API en annonce 6 340. Le filtre n'échoue pas : **il est ignoré, et la réponse a l'air normale.** |
+| 138 | JobTech en palier A ou B ? | **B** | Le portail date la publication **chez lui**, pas chez l'employeur. Le déclarer A ferait promettre une primeur qu'on n'a pas. |
+
+**Deuxième source mesurée, même échec pour les mêmes trois profils.** Le motif est net : toute source
+généraliste anglophone sans clé est centrée sur l'Amérique du Nord. `JOB-093` porte les inscriptions —
+gratuites mais humaines — aux cinq portails qui combleraient réellement la lacune.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
