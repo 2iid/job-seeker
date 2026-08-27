@@ -4,7 +4,7 @@
   "verdict": "pass",
   "reviewer": "security-engineer",
   "at": "2026-08-27T22:05:00Z",
-  "head": "4e162d505adfbe2c0b1412d6523fb34f08d7ab7c",
+  "head": "093475a18f39534de842e7c7f274fadac43a6ef8",
   "checklist": [
     "data-authz",
     "privileged-credential",
