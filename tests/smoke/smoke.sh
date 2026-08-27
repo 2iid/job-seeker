@@ -123,7 +123,7 @@ echo "→ [smoke] toute page protégée renvoie vers la connexion"
 # La liste est explicite, et chaque nouvelle page protégée s'y ajoute. Une
 # vérification qui ne teste que /profil laisserait passer un écran ajouté plus
 # tard — et c'est le dernier écran ajouté qui oublie la garde, pas le premier.
-for CHEMIN in /profil /profil/import /criteres /opportunites /entree /approbations; do
+for CHEMIN in /profil /profil/import /criteres /opportunites /entree /approbations /recus; do
   CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT$CHEMIN")"
   [ "$CODE" = "307" ] || [ "$CODE" = "302" ] \
     || fail "$CHEMIN a répondu $CODE sans session — une page protégée doit rediriger"
@@ -135,6 +135,20 @@ done
 # JOB-053 / US-01 — l'arrêt d'urgence est un bouton, sur TOUTE page servie.
 # Un bouton présent sur neuf écrans sur dix est un bouton qu'on cherchera sur
 # le dixième, et REQ-012 dit « depuis n'importe quel écran ».
+# JOB-056 — les routes d'EXPORT ne sont pas des pages : elles ne redirigent pas,
+# elles doivent simplement ne rien rendre. Une redirection vers la connexion
+# serait acceptable pour un humain et trompeuse pour un script, qui la suivrait
+# et enregistrerait une page HTML sous le nom d'un reçu.
+echo "→ [smoke] les exports de reçus ne rendent rien sans session"
+for CHEMIN in "/recus/export" "/recus/00000000-0000-0000-0000-000000000000/export"; do
+  CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:$PORT$CHEMIN")"
+  case "$CODE" in
+    200) fail "$CHEMIN a rendu 200 SANS SESSION — un export de reçus est accessible à tous" ;;
+    30[1237]|401|404) ;;
+    *) fail "$CHEMIN a répondu $CODE — attendu un refus" ;;
+  esac
+done
+
 echo "→ [smoke] l arrêt d urgence est atteignable, et en premier"
 PAGE="$(curl -s --max-time 5 "http://localhost:$PORT/connexion")"
 printf '%s' "$PAGE" | grep -q "Tout arrêter" \

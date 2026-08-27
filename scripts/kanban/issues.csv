@@ -54,7 +54,7 @@ JOB-052,Défense contre l injection par le contenu d une offre,EPIC 6 — Automa
 JOB-053,Arrêt d urgence global effectif sous cinq secondes,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-047,done,S4,apps/web/app/arret/**;apps/web/components/**;supabase/migrations/**,REQ-012,yes
 JOB-054,Table de reçus immuable en insertion seule,EPIC 7 — Traçabilité,data,database-architect,P0,M,JOB-005,done,S4,supabase/migrations/**,REQ-013,yes
 JOB-055,Écriture d un reçu pour chaque action sortante,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-054;JOB-049,done,S5,apps/worker/src/receipts/**,REQ-013,yes
-JOB-056,Consultation et export des reçus par leur propriétaire,EPIC 7 — Traçabilité,frontend,frontend-engineer,P0,S,JOB-055;JOB-016,backlog,S5,apps/web/app/recus/**,REQ-013,no
+JOB-056,Consultation et export des reçus par leur propriétaire,EPIC 7 — Traçabilité,frontend,frontend-engineer,P0,S,JOB-055;JOB-016,done,S5,apps/web/app/recus/**,REQ-013,no
 JOB-057,Journal d audit incluant les accès du support,EPIC 7 — Traçabilité,security,security-engineer,P0,M,JOB-005,done,S5,packages/audit/**;supabase/migrations/**,REQ-014,yes
 JOB-058,Export de données en libre-service,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-057,done,S5,supabase/migrations/**;packages/profil/**,REQ-014,yes
 JOB-059,Suppression dure avec annulation préalable de l automatisation,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-053;JOB-057,done,S5,supabase/migrations/**;packages/profil/**,REQ-014,yes
@@ -92,3 +92,4 @@ JOB-090,Dire OU l agent a regarde quand il ne trouve rien,EPIC 4 — Corresponda
 JOB-091,Mesurer l approbation a une main sous dix secondes,EPIC 1 — Système d interface,frontend,qa-test-engineer,P0,S,JOB-048;JOB-084,backlog,S5,tests/e2e/**,REQ-010,no
 JOB-092,Elargir la decouverte d employeurs et enregistrer les paliers C,EPIC 2 — Moteur de veille,backend,backend-engineer,P1,M,JOB-088,backlog,S5,apps/worker/src/sources/decouverte/**,REQ-003,no
 JOB-093,Obtenir les cles des portails nationaux et brancher leurs connecteurs,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,M,JOB-089,blocked,S5,apps/worker/src/sources/nationales/**,REQ-003,no
+JOB-094,Navigation transverse entre les ecrans,EPIC 3 — Interface,frontend,frontend-engineer,P1,S,JOB-016,backlog,Backlog,apps/web/app/layout.tsx;apps/web/components/**,REQ-012,no

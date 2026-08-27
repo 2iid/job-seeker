@@ -12,7 +12,18 @@ import { NextResponse, type NextRequest } from 'next/server'
  *     s'applique dans la base quel que soit le chemin emprunté.
  */
 
-const PROTEGES = ['/accueil', '/opportunites', '/approbations', '/suivi', '/profil', '/criteres', '/entree', '/agent']
+/**
+ * Les préfixes que le middleware redirige AVANT de rendre la page.
+ *
+ * Ce n'est pas la garantie — chaque page se garde elle-même, et la RLS garde la
+ * base — mais une page absente d'ici se rend d'abord et redirige ensuite, ce
+ * qui fait clignoter un écran vide. `protections.test.ts` vérifie que la liste
+ * et les gardes des pages ne divergent pas.
+ */
+const PROTEGES = [
+  '/accueil', '/opportunites', '/approbations', '/suivi', '/profil',
+  '/criteres', '/entree', '/agent', '/recus',
+]
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
