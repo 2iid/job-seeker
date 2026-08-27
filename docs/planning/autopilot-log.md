@@ -788,3 +788,46 @@ push a été refusé. C'est exactement ce pour quoi elle existe.
   `verify.sh --gate` exit 0. Les trois contrôles locaux passent désormais ; seule la CI bloque.
 - `merge.authority` n'a **jamais** été passé à `agent` : l'exécution s'est arrêtée au préflight, donc
   l'étape 0 n'a pas eu lieu et aucune autonomie n'a été accordée. `.vantry/autopilot.json` n'existe pas.
+
+## Exécution 34 — JOB-073, limitation de débit
+
+**Décidé sans demander.** Plafond IP à 100/h et non 20/h (règle 2 — l'option la
+plus réversible : desserrer un plafond ne perd aucune donnée, et le resserrer
+plus tard est un changement d'une ligne). Le premier chiffre venait du réflexe
+« serrer fort » ; c'est le smoke qui l'a mis en défaut en s'auto-bloquant à la
+deuxième exécution — la démonstration gratuite de ce qui attend un NAT partagé
+(coworking, université, CGNAT). Sur un produit où l'on postule souvent depuis
+son lieu de travail, ce n'est pas un cas limite.
+
+**Décidé sans demander.** Le magasin de compteurs injoignable REFUSE plutôt que
+de laisser passer, sur les trois politiques déclarées (règle 3 — le brief dit
+que rien ne part sans mandat, et un courriel expédié pendant une panne ne se
+rattrape pas). La règle est écrite par route, pas globale, pour que la première
+route « lecture » n'ait pas à la redécouvrir.
+
+**Deux fautes trouvées sur mon propre travail**, et c'est le vrai contenu de
+cette exécution :
+
+- *F24* — j'ai écrit `security definer` + `grant to anon` et j'ai continué à
+  raisonner comme si la fonction n'était appelée que par mon code. Elle est
+  appelable directement : on pouvait s'en servir pour insérer sans fin des
+  lignes que la purge ne réclame jamais. Le limiteur de débit servait à remplir
+  le disque.
+- *F25* — Postgres accorde EXECUTE à PUBLIC par défaut. J'avais posé le
+  `revoke` sur une fonction et pas sur sa voisine, **dans la même migration**.
+
+Les deux corrections sont des invariants, pas des rappels : une précaution
+appliquée à la main s'oublie à la deuxième occasion.
+
+**Une correction de méthode.** L'invariant RLS du socle a refusé ma table. Le
+réflexe était de l'assortir d'une liste d'exceptions ; une liste se périme en
+silence — le jour où quelqu'un accorde `select` sur une table exemptée,
+l'exemption tient toujours. L'invariant a été RESSERRÉ à la place : l'exemption
+est calculée sur les privilèges réels, donc un `grant` fautif rallume
+l'exigence au lieu de la contourner. Prouvé par mutation : un seul
+`grant select` fait tomber deux tests.
+
+**Dérive de registre corrigée.** F14 et F22 étaient marqués « reporté » dans le
+verdict alors qu'ils sont corrigés depuis deux jours ; F20 était affecté à
+JOB-057, qui traite l'audit et pas le stockage. Vérifié dans les migrations
+avant de réécrire les états, pas de mémoire.
