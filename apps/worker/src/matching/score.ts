@@ -2,6 +2,7 @@ import { CONSIGNE_FRONTIERE, citationPresente, encadrer, estSuspect } from '@job
 import type { Journal } from '@job-seeker/observability'
 import type { Demande } from '@job-seeker/llm'
 import { evaluerRedhibitoires, exclusion, peutPostulerSeule, type Criteres, type OffreAEvaluer, type Redhibitoire } from './redhibitoires.ts'
+import type { ResumeScoring } from './resume.ts'
 
 /**
  * REQ-005 — le score, et ses preuves.
@@ -100,7 +101,15 @@ export type Completer = (d: Demande) => Promise<{ texte: string; refus: boolean 
 
 export async function evaluer(
   offre: OffreAEvaluer & { readonly texteComplet: string },
-  profil: string,
+  /**
+   * Le RÉSUMÉ de scoring, jamais le profil complet — constat F19.
+   *
+   * Le type l'impose, et c'est le point : offrir un résumé sans obliger à s'en
+   * servir n'aurait rien fermé. Le scoring tourne sur chaque offre, plusieurs
+   * fois par jour, pendant des mois — c'est de loin le chemin par lequel un
+   * profil part le plus souvent chez un sous-traitant.
+   */
+  profil: ResumeScoring,
   criteres: Criteres,
   completer: Completer,
   options: { imputableA: string; journal?: Journal },
@@ -149,7 +158,7 @@ export async function evaluer(
     systeme: SYSTEME,
     messages: [{
       role: 'user',
-      content: `Profil du candidat :\n${profil}\n\nOffre à évaluer :\n\n${encadre.bloc}\n\nRéponds UNIQUEMENT par un objet JSON conforme à ce schéma, sans texte autour :\n${JSON.stringify(SCHEMA_SORTIE)}`,
+      content: `Profil du candidat :\n${JSON.stringify(profil)}\n\nOffre à évaluer :\n\n${encadre.bloc}\n\nRéponds UNIQUEMENT par un objet JSON conforme à ce schéma, sans texte autour :\n${JSON.stringify(SCHEMA_SORTIE)}`,
     }],
     maxTokens: 2000,
     imputableA: options.imputableA,
