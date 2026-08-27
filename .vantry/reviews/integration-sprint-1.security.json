@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T15:10:00Z",
-  "head": "80e0b4c8009710976a1cc8e6a519dfd00182336b",
+  "at": "2026-08-27T17:40:00Z",
+  "head": "c758d167a261f91017a006e18b1c9dd57642be85",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -39,6 +39,16 @@
     "apps/web/lib/limitation/adresse-ip.test.ts",
     "apps/web/lib/limitation/adresse-ip.ts",
     "apps/web/lib/limitation/index.ts",
+    "apps/worker/src/envoi/destination.test.ts",
+    "apps/worker/src/envoi/destination.ts",
+    "apps/worker/src/envoi/dossier.test.ts",
+    "apps/worker/src/envoi/dossier.ts",
+    "apps/worker/src/envoi/enregistrer.test.ts",
+    "apps/worker/src/envoi/enregistrer.ts",
+    "apps/worker/src/envoi/envoyer.test.ts",
+    "apps/worker/src/envoi/envoyer.ts",
+    "apps/worker/src/envoi/etanche.test.ts",
+    "apps/worker/src/envoi/index.ts",
     "apps/worker/src/matching/matching.test.ts",
     "apps/worker/src/matching/redhibitoires.ts",
     "apps/worker/src/matching/replay.test.ts",
@@ -112,6 +122,8 @@
     "packages/profil/src/approbation.ts",
     "packages/profil/src/autonomie.test.ts",
     "packages/profil/src/autonomie.ts",
+    "packages/profil/src/canal.test.ts",
+    "packages/profil/src/canal.ts",
     "packages/profil/src/completude.test.ts",
     "packages/profil/src/completude.ts",
     "packages/profil/src/envoi.test.ts",
@@ -156,8 +168,12 @@
     "supabase/migrations/20260827160000_journal_lisible_par_son_sujet.sql",
     "supabase/migrations/20260827180000_limitation_debit.sql",
     "supabase/migrations/20260827200000_limitation_bornee.sql",
+    "supabase/migrations/20260827220000_dossiers_prets.sql",
+    "supabase/migrations/20260827240000_dossiers.sql",
+    "supabase/migrations/20260827260000_confirmation_envoi.sql",
     "tests/rls/audit-support.test.ts",
     "tests/rls/autonomie.test.ts",
+    "tests/rls/dossiers.test.ts",
     "tests/rls/export-suppression.test.ts",
     "tests/rls/fonctions-definer.test.ts",
     "tests/rls/limitation-debit.test.ts",
@@ -260,7 +276,8 @@
     "`packages/audit` refuse d écrire du contenu : clés d identité écartées quelle que soit leur casse, valeurs bornées, objets et tableaux refusés plutôt qu aplatis. Un journal qui recopie ce qu il protège est une SECONDE fuite, plus durable que la première.",
     "JOB-058/059 : l export et la suppression s exécutent avec les droits de l APPELANT. Une `security definer` aurait contourné toute la RLS sous couvert d un droit de la personne, et le premier export du profil d autrui ne se serait pas remarqué.",
     "`suppression-en-cours` bloque l envoi AVANT l arrêt d urgence. Sans cet état, un travail déjà en file partirait pendant les secondes qui séparent la demande de l effacement — et la preuve de l envoi serait effacée juste après.",
-    "JOB-073 (2026-08-27) : revue de la limitation de débit. F9/F10/F21 fermés. DEUX constats nouveaux trouvés sur mon propre changement (F24, F25), nés de la même erreur : avoir traité une fonction `security definer` accordée à `anon` comme si elle n'était appelée que par mon code. Corrigés, et gardés par des invariants calculés plutôt que par des listes d'exceptions — un `grant` fautif rallume l'exigence au lieu de la contourner."
+    "JOB-073 (2026-08-27) : revue de la limitation de débit. F9/F10/F21 fermés. DEUX constats nouveaux trouvés sur mon propre changement (F24, F25), nés de la même erreur : avoir traité une fonction `security definer` accordée à `anon` comme si elle n'était appelée que par mon code. Corrigés, et gardés par des invariants calculés plutôt que par des listes d'exceptions — un `grant` fautif rallume l'exigence au lieu de la contourner.",
+    "JOB-049 (2026-08-27) : envoi. L'injection est traitée par un TYPE que seul verifierDestination peut produire, DOUBLÉ d'un contrôle à l'exécution (un symbole ne survit pas à un aller-retour JSON, et la file transite par du JSON — c'est là que la défense s'évaporait), et d'un test qui refuse que le dossier d'envoi voie le texte d'une annonce. Une limite est consignée en F26 : la garantie s'arrête là où JOB-065 construira les contacts."
   ],
   "findings": [
     {
@@ -431,6 +448,14 @@
       "summary": "Postgres accorde EXECUTE à PUBLIC par défaut sur toute fonction neuve. `purger_limitation` était donc exécutable par `anon` sans que ce soit voulu — le `revoke` était posé sur consommer_jeton et pas sur celle-ci, dans la même migration. Impact faible (elle ne supprime que des lignes expirées) ; la classe de défaut ne l'est pas.",
       "fix": "Droit révoqué. Surtout : tests/rls/fonctions-definer.test.ts interdit toute fonction security definer atteignable par un rôle client sans justification écrite — l'exemption des fonctions de déclencheur y est vérifiée par un refus réel de Postgres, pas citée. Balayage : 5 fonctions definer, 3 déclencheurs (appel direct refusé), 1 délibérée, 1 fautive.",
       "status": "corrigé"
+    },
+    {
+      "id": "F26",
+      "severity": "medium",
+      "file": "apps/worker/src/envoi/destination.ts",
+      "summary": "La défense contre l'injection est complète DANS le chemin d'envoi : le type, le contrôle d'exécution et le test d'étanchéité garantissent qu'aucune adresse ne peut venir du texte d'une annonce depuis apps/worker/src/envoi/. Mais `SourcesServeur` est un PARAMÈTRE : la garantie ne vaut que ce que vaut le module qui le construira. Ce module est JOB-065 et n'existe pas encore. Si l'identification des contacts lisait l'adresse dans le corps de l'annonce, les trois couches tomberaient d'un coup, sans qu'aucun test actuel ne s'en aperçoive.",
+      "fix": "À porter par JOB-065 : les contacts doivent être établis par une source distincte du texte de l'annonce (en-têtes MX, page carrières sur le domaine de l'employeur, registre), et le garde-fou d'étanchéité doit être ÉTENDU au dossier apps/worker/src/contacts/**. Consigné plutôt que sous-entendu : la couverture actuelle est réelle, sa frontière l'est aussi.",
+      "status": "reporté à JOB-065"
     }
   ]
 }
