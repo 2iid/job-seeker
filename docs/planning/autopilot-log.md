@@ -727,6 +727,33 @@ la règle ne s'appliquait jamais**.
 généraliste anglophone sans clé est centrée sur l'Amérique du Nord. `JOB-093` porte les inscriptions —
 gratuites mais humaines — aux cinq portails qui combleraient réellement la lacune.
 
+## Exécution 32 — 2026-08-27 · rejouer sans prétendre recalculer
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 139 | JOB-037 | « Rejouer redonne la même explication » — comment ? | **Séparer ce qui se recalcule de ce qui se conserve** | Rappeler le modèle | BRIEF | Un modèle n'est **pas déterministe**. Le rappeler rendrait une explication *voisine*, et un rejeu qui dit « ce n'est plus la même » sans savoir pourquoi n'apprend rien. |
+| 140 | JOB-037 | Quel texte lit le rejeu ? | **Celui qui a été conservé** | L'annonce d'aujourd'hui | ASSUMED | Une offre éditée depuis fausserait le rejeu. Ce qu'on vérifie est ce qui a été **décidé**, à partir de ce qui avait été **lu**. |
+| 141 | JOB-037 (F19) | Offrir un résumé, ou l'imposer ? | **L'imposer par le TYPE** | L'offrir | *garde-fou* | Offrir un résumé sans obliger à s'en servir n'aurait **rien fermé**. Le compilateur a immédiatement refusé les onze appels qui passaient un profil libre. |
+
+**Les deux moitiés d'un score.** La **calculée** — les rédhibitoires, qui viennent du code — se
+recalcule, et une divergence est un fait dur. La **jugée** — la valeur et les preuves — se conserve, et
+ce qu'on vérifie est qu'elle *tient encore*. Un rejeu qui prétendrait tout recalculer mentirait ; un
+rejeu qui relirait seulement le stockage ne vérifierait rien.
+
+> La chose la plus utile que ce rejeu puisse trouver : un rédhibitoire qui **disparaît** est une
+> candidature qui pourrait désormais partir seule là où elle était bloquée.
+
+**F19 CLOS.** Le scoring tourne sur chaque offre, plusieurs fois par jour, pendant des mois — c'est de
+loin le chemin par lequel un profil part le plus souvent chez un sous-traitant. Le résumé retire le
+nom, le courriel, le téléphone, la date au jour près et l'année de diplôme ; la ville reste, la rue
+non. Une minimisation qui ne se fait pas maintenant ne se fait jamais : **après coup, tout est déjà
+parti.**
+
+**Et une faute de méthode, la seconde fois.** J'ai de nouveau enchaîné `--observe` dans la même
+commande que `verify.sh`, et annoté un reçu `fail` sans avoir lu son verdict. Le reçu s'est avéré
+`pass` à la relance, mais l'ordre reste : **lire le verdict, puis annoter** — jamais dans la même
+commande.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
