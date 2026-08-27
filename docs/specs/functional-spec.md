@@ -221,16 +221,28 @@ propose, afin de garder la main sans y passer ma journée.
   - [ ] Un élément non traité avant l'expiration de l'offre est archivé avec son motif, jamais envoyé
         en silence après coup.
 
-#### REQ-011 · MUST — Soumission de candidature avec escalade obligatoire
+#### REQ-011 · MUST — Dossier prêt à envoyer, et envoi autonome par courriel
 
-**Histoire :** En tant que candidat, je veux que l'agent soumette ma candidature sur le site de
-l'employeur, et **s'arrête pour me demander** dès qu'il n'est plus sûr.
+> **Révisé le 2026-08-27 par [ADR-0003](../architecture/decisions/0003-preparer-puis-un-clic.md).**
+> `JOB-002` a mesuré 88 % de formulaires ATS protégés par un anti-robot que nous nous interdisons de
+> franchir. La soumission autonome sur un canal ATS n'est pas tenable ; elle l'est sur le courriel.
+
+**Histoire :** En tant que candidat, je veux que l'agent prépare un dossier complet et relu que je
+n'ai plus qu'à envoyer d'un clic — et qu'il envoie lui-même par courriel quand je le lui ai mandaté.
 
 - **Critères d'acceptation :**
+  - [ ] Sur un canal **ATS** : le produit rend un dossier complet — CV adapté et relu, lettre,
+        réponses de screening — et **s'arrête**. Le dernier geste appartient à la personne, et le
+        produit dit ce qu'il a préparé plutôt que ce qu'il a envoyé.
+  - [ ] Sur le canal **courriel** : l'agent envoie seul lorsque le cadran de ce canal est sur « agir
+        seule » ET qu'un mandat horodaté valide le couvre (REQ-009).
+  - [ ] « Agir seule » choisi sur un canal ATS est une valeur que le produit **refuse d'honorer** en
+        l'expliquant, jamais une valeur interdite de choisir : la personne comprend la limite, elle ne
+        la subit pas.
   - [ ] Une soumission réussie enregistre la confirmation obtenue (page, référence, email d'accusé).
-  - [ ] Un champ obligatoire inconnu, une question sans réponse validée, un téléversement refusé ou
-        un **anti-robot** interrompent la soumission et créent un élément d'approbation expliquant le
-        blocage. **Aucun contournement d'anti-robot n'est tenté, jamais.**
+  - [ ] Un anti-robot rencontré **arrête** le traitement et le consigne. **Aucun contournement n'est
+        tenté, jamais** — et depuis ADR-0003, il n'existe plus de chemin de code où la tentation
+        existe.
   - [ ] Une soumission n'est jamais rejouée à l'identique : un doublon sur la même offre est détecté
         et refusé, même après un incident ou un redémarrage du worker.
   - [ ] **Refus :** le texte d'une offre ne peut déclencher aucune action — instruction dissimulée,

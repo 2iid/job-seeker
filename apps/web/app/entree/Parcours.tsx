@@ -49,11 +49,24 @@ export function Parcours({ aUnCv, cranInitial }: { aUnCv: boolean; cranInitial: 
           <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.55 }}>
             Je relève les offres à la source — les boards des entreprises elles-mêmes — toutes les
             deux à cinq minutes. Je vous explique pourquoi chacune vous correspond, en citant
-            l’annonce. Et je ne postule jamais sans que vous l’ayez décidé.
+            l’annonce. Et je vous rends un dossier complet, relu, qu’il ne vous reste qu’à envoyer.
+          </p>
+          {/*
+            ADR-0003 — la promesse dite telle qu'elle est tenable.
+            JOB-002 a mesuré 88 % de formulaires ATS protégés par un anti-robot
+            que nous nous interdisons de franchir. « L'agent postule à votre
+            place » n'était pas tenable ; « il prépare, vous cliquez » l'est, et
+            chaque partie en est déjà construite.
+          */}
+          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>
+            <strong style={{ fontWeight: 600 }}>Le dernier clic reste le vôtre.</strong> Presque tous
+            les formulaires de candidature sont protégés contre les robots, et je ne franchis pas ces
+            protections — ni pour vous, ni contre eux. Alors je fais tout le reste : je trouve, je
+            juge, j’adapte, je rédige, et je vous rends un dossier prêt.
           </p>
           <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>
-            Il y a des endroits où je ne vais pas : LinkedIn, Indeed et quelques autres interdisent la
-            collecte automatisée. Je vous y prépare votre dossier, vous l’envoyez.
+            La seule chose que je peux envoyer seule, si vous me le confiez par écrit, c’est un
+            courriel à un recruteur.
           </p>
           {/*
             JOB-087 — ce que la mesure de JOB-076 interdit de taire.

@@ -103,6 +103,9 @@ sensitive_paths:
   - "apps/web/app/arret/**"
   # JOB-048 : c'est ici que quelqu'un autorise un envoi.
   - "apps/web/app/approbations/**"
+  # ADR-0003 : le seul canal d'envoi autonome qui subsiste. Tout ce qui part au
+  # nom de quelqu'un sort par là.
+  - "apps/worker/src/envoi/**"
   - "apps/web/app/auth/**"
   - "apps/worker/src/submission/**"
   - "apps/worker/src/contacts/**"
