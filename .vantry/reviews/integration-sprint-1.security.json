@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T12:05:21Z",
-  "head": "1d0fd1b2c04fd92ccdf0eb06e5d2fa4bd712f027",
+  "at": "2026-08-27T13:17:48Z",
+  "head": "533dae81f4af82c59cf4c9bce5bc90d263438821",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -47,7 +47,8 @@
     "packages/documents/** — engendre ce qui partira en votre nom, a partir de votre parcours",
     "apps/web/app/arret/** — le rendre inopérant serait la pire régression de ce produit",
     "apps/web/app/approbations/** — c est ici que quelqu un autorise un envoi",
-    "spikes/ats-submission/** — pilote un navigateur sur des sites tiers"
+    "spikes/ats-submission/** — pilote un navigateur sur des sites tiers",
+    "packages/audit/** — écrit le journal qui prouve qui a accédé à quoi"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -132,7 +133,13 @@
     "Un anti-robot detecte ARRETE le sondage. Aucune tentative de resolution, aucune recherche de porte de service — et ADR-0003 rend cette regle structurelle en supprimant le chemin de code ou la tentation existait.",
     "ADR-0003 : `apps/worker/src/envoi/**` devient le SEUL canal d envoi autonome, et entre dans les chemins sensibles. Le risque se concentre desormais la ou les gardes existent — mandat, quota, plage horaire, arret d urgence, recu immuable.",
     "JOB-089 : le filtre de lieu de The Muse est silencieusement permissif — 0 concordance sur 33 pour Dakar et Lyon, alors que l API annonce 6 340 offres. Le connecteur ne reprend JAMAIS le compte de la source : il filtre sur le lieu reellement rendu et ne compte que ce qui passe. Une source qui rend des offres hors sujet sans le dire est une source qui nous ferait mentir a notre tour.",
-    "F19 CLOS. Offrir un résumé sans obliger à s en servir n aurait rien fermé : la contrainte est portée par la signature, et le compilateur a refusé les onze appels qui passaient un profil libre. Le scoring tourne sur chaque offre plusieurs fois par jour pendant des mois — c est de loin le chemin par lequel un profil part le plus souvent chez un sous-traitant, et une minimisation qui ne se fait pas maintenant ne se fait jamais : après coup, tout est déjà parti."
+    "F19 CLOS. Offrir un résumé sans obliger à s en servir n aurait rien fermé : la contrainte est portée par la signature, et le compilateur a refusé les onze appels qui passaient un profil libre. Le scoring tourne sur chaque offre plusieurs fois par jour pendant des mois — c est de loin le chemin par lequel un profil part le plus souvent chez un sous-traitant, et une minimisation qui ne se fait pas maintenant ne se fait jamais : après coup, tout est déjà parti.",
+    "JOB-057 : la garantie « le support ne lit pas le contenu » est un PRIVILÈGE DE COLONNE, pas un contrôle d écran. Un contrôle applicatif ne tient pas contre un export improvisé ou une console ouverte un soir d incident — or c est exactement là qu on lit un CV « pour comprendre le problème ». Rien n est révoqué : ces droits n ont jamais été accordés, parce qu une garantie fondée sur un `revoke` se perd au prochain `grant all`. Teste : `select *` ne contourne pas.",
+    "RLS et privilège de colonne répondent à deux questions différentes — « de qui puis-je voir les lignes » et « quoi dans ces lignes ». La première version accordait des colonnes sans politique : le support pouvait lire des colonnes de zéro ligne. Chacun sans l autre est une demi-garantie.",
+    "Le journal d audit s ANONYMISE à la suppression d un compte, il ne s efface pas : il documente qui a accédé, support compris, et l effacer donnerait à un support un moyen très simple de faire disparaître ses propres accès. Le déclencheur laisse passer la mise à NULL de `profile_id` et RIEN d autre — sans cette égalité stricte, l anonymisation deviendrait une porte pour corriger un journal.",
+    "`packages/audit` refuse d écrire du contenu : clés d identité écartées quelle que soit leur casse, valeurs bornées, objets et tableaux refusés plutôt qu aplatis. Un journal qui recopie ce qu il protège est une SECONDE fuite, plus durable que la première.",
+    "JOB-058/059 : l export et la suppression s exécutent avec les droits de l APPELANT. Une `security definer` aurait contourné toute la RLS sous couvert d un droit de la personne, et le premier export du profil d autrui ne se serait pas remarqué.",
+    "`suppression-en-cours` bloque l envoi AVANT l arrêt d urgence. Sans cet état, un travail déjà en file partirait pendant les secondes qui séparent la demande de l effacement — et la preuve de l envoi serait effacée juste après."
   ],
   "findings": [
     {
