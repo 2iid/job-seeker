@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import type pg from 'pg'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { admin } from '@job-seeker/testing'
@@ -14,6 +15,10 @@ import { admin } from '@job-seeker/testing'
  */
 let c: pg.Client
 
+/** Les clés sont désormais contraintes à la forme d'un condensat (F24). */
+const digest = (graine: string): string =>
+  createHash('sha256').update(`test:${graine}`).digest('hex')
+
 const consommer = async (cle: string, fenetre: number, plafond: number) =>
   (
     await c.query<{ compte: number; fin_fenetre: Date; autorise: boolean }>(
@@ -24,16 +29,16 @@ const consommer = async (cle: string, fenetre: number, plafond: number) =>
 
 beforeAll(async () => {
   c = await admin()
-  await c.query("delete from public.limitation_debit where cle like 'test-%'")
+  await c.query('delete from public.limitation_debit')
 })
 afterAll(async () => {
-  await c.query("delete from public.limitation_debit where cle like 'test-%'")
+  await c.query('delete from public.limitation_debit')
   await c.end()
 })
 
 describe('consommer_jeton', () => {
   it('autorise jusqu’au plafond inclus, refuse au-delà', async () => {
-    const cle = 'test-plafond'
+    const cle = digest('test-plafond')
     for (let i = 1; i <= 3; i += 1) {
       const r = await consommer(cle, 3600, 3)
       expect(r.compte).toBe(i)
@@ -45,7 +50,7 @@ describe('consommer_jeton', () => {
   })
 
   it('continue de compter au-delà du refus — sinon marteler resterait gratuit', async () => {
-    const cle = 'test-au-dela'
+    const cle = digest('test-au-dela')
     for (let i = 0; i < 5; i += 1) await consommer(cle, 3600, 1)
     const r = await consommer(cle, 3600, 1)
     expect(r.compte).toBe(6)
@@ -53,7 +58,7 @@ describe('consommer_jeton', () => {
   })
 
   it('repart à un quand la fenêtre est passée', async () => {
-    const cle = 'test-fenetre'
+    const cle = digest('test-fenetre')
     // Fenêtre d'une seconde : on la laisse réellement expirer plutôt que de
     // truquer l'horloge — c'est `now()` de Postgres qui décide en production.
     expect((await consommer(cle, 1, 2)).compte).toBe(1)
@@ -66,7 +71,7 @@ describe('consommer_jeton', () => {
   })
 
   it('rend une fin de fenêtre dans le futur, cohérente avec la durée demandée', async () => {
-    const r = await consommer('test-fin', 600, 5)
+    const r = await consommer(digest('test-fin'), 600, 5)
     const dans = (r.fin_fenetre.getTime() - Date.now()) / 1000
     expect(dans).toBeGreaterThan(590)
     expect(dans).toBeLessThanOrEqual(601)
@@ -77,7 +82,7 @@ describe('consommer_jeton', () => {
     // les autres et échoue ici : les deux transactions lisent 4, écrivent 5, et
     // le sixième appel s'autorise. C'est pour cela que la fonction fait
     // l'incrément et la remise à zéro dans UNE instruction.
-    const cle = 'test-course'
+    const cle = digest('test-course')
     const clients = await Promise.all([admin(), admin(), admin(), admin(), admin(), admin()])
     try {
       const verdicts = await Promise.all(
@@ -97,9 +102,9 @@ describe('consommer_jeton', () => {
   })
 
   it('sépare les clés : le quota de quelqu’un n’est pas celui de son voisin', async () => {
-    await consommer('test-a', 3600, 1)
-    await consommer('test-a', 3600, 1)
-    expect((await consommer('test-b', 3600, 1)).autorise).toBe(true)
+    await consommer(digest('test-a'), 3600, 1)
+    await consommer(digest('test-a'), 3600, 1)
+    expect((await consommer(digest('test-b'), 3600, 1)).autorise).toBe(true)
   })
 })
 
@@ -125,12 +130,31 @@ describe('la table de limitation n’est pas un carnet d’adresses', () => {
     try {
       await c.query('set local role anon')
       const r = await c.query('select autorise from public.consommer_jeton($1, 60, 5)', [
-        'test-anon',
+        digest('test-anon'),
       ])
       expect(r.rows[0]!.autorise).toBe(true)
     } finally {
       await c.query('rollback')
     }
+  })
+
+  it('REFUSE une clé qui n’est pas un condensat (F24)', async () => {
+    // Sans cette borne, un appelant anonyme insère des lignes de forme
+    // arbitraire, en boucle : le limiteur devient le moyen de remplir le disque.
+    for (const mauvaise of ['clé-que-j-invente', '', 'ABC', 'a'.repeat(63), 'a'.repeat(65)])
+      await expect(consommer(mauvaise, 60, 5), mauvaise).rejects.toThrow(/clé de limitation/)
+  })
+
+  it('REFUSE une fenêtre hors bornes (F24)', async () => {
+    // `expire_le` décide combien de temps la ligne survit à la purge : une
+    // fenêtre de dix ans est une ligne que rien ne réclame jamais.
+    for (const f of [0, -1, 86401, 999_999_999])
+      await expect(consommer(digest('bornes'), f, 5), String(f)).rejects.toThrow(/fenêtre/)
+  })
+
+  it('REFUSE un plafond hors bornes (F24)', async () => {
+    for (const p of [0, -1, 100_001])
+      await expect(consommer(digest('bornes'), 60, p), String(p)).rejects.toThrow(/plafond/)
   })
 
   it('purge ce qui a expiré', async () => {
