@@ -117,15 +117,39 @@ describe('opportunites — c’est LÀ que le cloisonnement mord', () => {
   })
 
   it('Alice peut changer le STATUT de la sienne, jamais de celle de Bob', async () => {
+    // `en-file` et non `ecartee` : depuis JOB-048, une opportunité écartée doit
+    // PORTER SON MOTIF (contrainte `refus_porte_son_motif`), sans quoi REQ-006
+    // — apprendre des refus — n'aurait rien à lire. Ce test parle de
+    // cloisonnement, pas de refus : il n'a aucune raison de choisir ce
+    // statut-là.
     const { rowCount: sienne } = await asUser(c, alice, (x) =>
-      x.query("update public.opportunites set statut = 'ecartee' where profile_id = $1", [profilAlice]),
+      x.query("update public.opportunites set statut = 'en-file' where profile_id = $1", [profilAlice]),
     )
     expect(sienne).toBe(1)
 
     const { rowCount: autrui } = await asUser(c, alice, (x) =>
-      x.query("update public.opportunites set statut = 'ecartee' where profile_id = $1", [profilBob]),
+      x.query("update public.opportunites set statut = 'en-file' where profile_id = $1", [profilBob]),
     )
     expect(autrui).toBe(0)
+  })
+
+  it('une opportunité écartée DOIT porter son motif', async () => {
+    // La contrainte est en base parce qu'un refus sans motif n'écarte qu'une
+    // offre, là où un refus AVEC motif corrige la recherche. Trois refus
+    // « salaire » veulent dire que le seuil est mal réglé.
+    await expect(
+      asUser(c, alice, (x) =>
+        x.query("update public.opportunites set statut = 'ecartee' where profile_id = $1", [profilAlice]),
+      ),
+    ).rejects.toThrow(/refus_porte_son_motif/)
+
+    const { rowCount } = await asUser(c, alice, (x) =>
+      x.query(
+        "update public.opportunites set statut = 'ecartee', motif_refus = 'lieu' where profile_id = $1",
+        [profilAlice],
+      ),
+    )
+    expect(rowCount).toBe(1)
   })
 
   it('un visiteur non authentifié ne voit rien', async () => {

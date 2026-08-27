@@ -46,7 +46,7 @@ JOB-044,Génération de lettre dans la langue de l offre,EPIC 5 — Documents,ai
 JOB-045,Bibliothèque de réponses aux questions de screening,EPIC 5 — Documents,frontend,frontend-engineer,P0,M,JOB-030,done,S4,packages/profil/**;supabase/migrations/**,REQ-008,yes
 JOB-046,Cadran d autonomie par canal et mandat horodaté,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-030,done,S4,supabase/migrations/**;packages/profil/**,REQ-009,yes
 JOB-047,Quotas journaliers et plages horaires dans le fuseau du candidat,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-046,done,S4,packages/profil/**;supabase/migrations/**,REQ-009,yes
-JOB-048,File d approbation utilisable au pouce et au clavier,EPIC 6 — Automatisation,frontend,frontend-engineer,P0,L,JOB-046;JOB-015,backlog,S4,apps/web/app/approbations/**,REQ-010,no
+JOB-048,File d approbation utilisable au pouce et au clavier,EPIC 6 — Automatisation,frontend,frontend-engineer,P0,L,JOB-046;JOB-015,done,S4,apps/web/app/approbations/**;packages/profil/**;supabase/migrations/**,REQ-010,yes
 JOB-049,Soumission de candidature par navigateur piloté,EPIC 6 — Automatisation,backend,backend-engineer,P0,XL,JOB-002;JOB-044,backlog,S5,apps/worker/src/submission/**,REQ-011,yes
 JOB-050,Escalade obligatoire sur anti-robot et champ inconnu,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,backlog,S5,apps/worker/src/submission/escalate.ts,REQ-011,yes
 JOB-051,Idempotence de soumission et détection de doublon,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,backlog,S5,apps/worker/src/submission/idempotency.ts,REQ-011,yes
@@ -89,3 +89,4 @@ JOB-087,Annoncer la couverture reelle et pas la couverture visee,EPIC 1 — Syst
 JOB-088,Decouverte d employeurs par secteur et par pays,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-076;JOB-023,backlog,S4,apps/worker/src/sources/decouverte/**,REQ-003,no
 JOB-089,Sources nationales et sectorielles hors distanciel tech,EPIC 2 — Moteur de veille,backend,backend-engineer,P0,L,JOB-076,backlog,S4,apps/worker/src/sources/**,REQ-003,no
 JOB-090,Dire OU l agent a regarde quand il ne trouve rien,EPIC 4 — Correspondance,frontend,frontend-engineer,P0,M,JOB-076;JOB-038,backlog,S4,apps/web/app/opportunites/**,REQ-003,no
+JOB-091,Mesurer l approbation a une main sous dix secondes,EPIC 1 — Système d interface,frontend,qa-test-engineer,P0,S,JOB-048;JOB-084,backlog,S5,tests/e2e/**,REQ-010,no

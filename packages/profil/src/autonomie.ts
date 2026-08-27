@@ -36,9 +36,15 @@ export type EtatAutonomie = {
 
 export type Verdict =
   | { readonly autorise: true }
-  | { readonly autorise: false; readonly motif: MotifRefus; readonly explication: string }
+  | { readonly autorise: false; readonly motif: MotifAutonomie; readonly explication: string }
 
-export type MotifRefus = 'parcours-en-cours' | 'cran-insuffisant' | 'mandat-absent'
+/**
+ * Pourquoi l'AGENT n'a pas le droit d'agir — à ne pas confondre avec
+ * `MotifRefus` (`approbation.ts`), qui dit pourquoi LA PERSONNE a écarté une
+ * offre. Les deux se nommaient pareil ; deux concepts qui portent le même nom
+ * finissent par être manipulés l'un pour l'autre.
+ */
+export type MotifAutonomie = 'parcours-en-cours' | 'cran-insuffisant' | 'mandat-absent'
 
 /**
  * L'agent peut-il envoyer SEUL, sans nouvel accord ?
