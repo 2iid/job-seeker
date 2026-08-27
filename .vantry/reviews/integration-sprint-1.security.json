@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T17:40:00Z",
-  "head": "c758d167a261f91017a006e18b1c9dd57642be85",
+  "at": "2026-08-27T20:55:00Z",
+  "head": "f81c5d6062ac16d1b9139c224b72bb8c0048bbb7",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -48,7 +48,10 @@
     "apps/worker/src/envoi/envoyer.test.ts",
     "apps/worker/src/envoi/envoyer.ts",
     "apps/worker/src/envoi/etanche.test.ts",
+    "apps/worker/src/envoi/idempotence.test.ts",
+    "apps/worker/src/envoi/idempotence.ts",
     "apps/worker/src/envoi/index.ts",
+    "apps/worker/src/envoi/traiter.ts",
     "apps/worker/src/matching/matching.test.ts",
     "apps/worker/src/matching/redhibitoires.ts",
     "apps/worker/src/matching/replay.test.ts",
@@ -171,11 +174,14 @@
     "supabase/migrations/20260827220000_dossiers_prets.sql",
     "supabase/migrations/20260827240000_dossiers.sql",
     "supabase/migrations/20260827260000_confirmation_envoi.sql",
+    "supabase/migrations/20260827280000_reclamation_envoi.sql",
+    "supabase/migrations/20260827300000_dossier_appartenance.sql",
     "tests/rls/audit-support.test.ts",
     "tests/rls/autonomie.test.ts",
     "tests/rls/dossiers.test.ts",
     "tests/rls/export-suppression.test.ts",
     "tests/rls/fonctions-definer.test.ts",
+    "tests/rls/idempotence-envoi.test.ts",
     "tests/rls/limitation-debit.test.ts",
     "tests/rls/mandats-recus.test.ts",
     "tests/rls/modele.test.ts",
@@ -277,7 +283,8 @@
     "JOB-058/059 : l export et la suppression s exécutent avec les droits de l APPELANT. Une `security definer` aurait contourné toute la RLS sous couvert d un droit de la personne, et le premier export du profil d autrui ne se serait pas remarqué.",
     "`suppression-en-cours` bloque l envoi AVANT l arrêt d urgence. Sans cet état, un travail déjà en file partirait pendant les secondes qui séparent la demande de l effacement — et la preuve de l envoi serait effacée juste après.",
     "JOB-073 (2026-08-27) : revue de la limitation de débit. F9/F10/F21 fermés. DEUX constats nouveaux trouvés sur mon propre changement (F24, F25), nés de la même erreur : avoir traité une fonction `security definer` accordée à `anon` comme si elle n'était appelée que par mon code. Corrigés, et gardés par des invariants calculés plutôt que par des listes d'exceptions — un `grant` fautif rallume l'exigence au lieu de la contourner.",
-    "JOB-049 (2026-08-27) : envoi. L'injection est traitée par un TYPE que seul verifierDestination peut produire, DOUBLÉ d'un contrôle à l'exécution (un symbole ne survit pas à un aller-retour JSON, et la file transite par du JSON — c'est là que la défense s'évaporait), et d'un test qui refuse que le dossier d'envoi voie le texte d'une annonce. Une limite est consignée en F26 : la garantie s'arrête là où JOB-065 construira les contacts."
+    "JOB-049 (2026-08-27) : envoi. L'injection est traitée par un TYPE que seul verifierDestination peut produire, DOUBLÉ d'un contrôle à l'exécution (un symbole ne survit pas à un aller-retour JSON, et la file transite par du JSON — c'est là que la défense s'évaporait), et d'un test qui refuse que le dossier d'envoi voie le texte d'une annonce. Une limite est consignée en F26 : la garantie s'arrête là où JOB-065 construira les contacts.",
+    "JOB-051 (2026-08-27) : idempotence. La garantie est une contrainte d'unicité plus un ORDRE d'écriture — réclamer avant d'envoyer — et non du code : prouvé par mutation (réclamation naïve + contrainte retirée → cinq workers obtiennent la réclamation ; réclamation retirée de traiterEnvoi → trois envois au lieu d'un). Un bail expiré conduit à 'incertain' et jamais à une reprise. F27 trouvé sur mon propre travail. Note de périmètre : scripts/demarrer-web.sh a été modifié pour faucher un orphelin de CE dépôt — la faucheuse n'affaiblit aucun contrôle, et sa borne de sûreté (un serveur d'un autre projet est épargné) est prouvée par un test manuel documenté dans l'observation du reçu."
   ],
   "findings": [
     {
@@ -456,6 +463,14 @@
       "summary": "La défense contre l'injection est complète DANS le chemin d'envoi : le type, le contrôle d'exécution et le test d'étanchéité garantissent qu'aucune adresse ne peut venir du texte d'une annonce depuis apps/worker/src/envoi/. Mais `SourcesServeur` est un PARAMÈTRE : la garantie ne vaut que ce que vaut le module qui le construira. Ce module est JOB-065 et n'existe pas encore. Si l'identification des contacts lisait l'adresse dans le corps de l'annonce, les trois couches tomberaient d'un coup, sans qu'aucun test actuel ne s'en aperçoive.",
       "fix": "À porter par JOB-065 : les contacts doivent être établis par une source distincte du texte de l'annonce (en-têtes MX, page carrières sur le domaine de l'employeur, registre), et le garde-fou d'étanchéité doit être ÉTENDU au dossier apps/worker/src/contacts/**. Consigné plutôt que sous-entendu : la couverture actuelle est réelle, sa frontière l'est aussi.",
       "status": "reporté à JOB-065"
+    },
+    {
+      "id": "F27",
+      "severity": "high",
+      "file": "supabase/migrations/20260827240000_dossiers.sql",
+      "summary": "public.dossiers porte profile_id ET opportunite_id. La politique de lecture s'appuie sur le premier ; le contenu — CV et lettre — appartient au second. Le worker écrit avec service_role, qui contourne la RLS : deux paramètres incohérents suffisaient donc à créer un dossier contenant les documents d'Alice mais VISIBLE PAR BOB. Aucun code ne le faisait, ce qui est exactement pourquoi il fallait une contrainte : la garantie ne doit pas dépendre de la vigilance de l'appelant suivant, qui aura deux identifiants sous la main et une raison d'être pressé.",
+      "fix": "20260827300000_dossier_appartenance.sql : clé étrangère COMPOSITE (opportunite_id, profile_id) vers opportunites (id, profile_id). Un `check` ne peut pas faire de sous-requête et un déclencheur se désactive au prochain `alter table ... disable trigger` ; une clé étrangère, non. La migration refuse de s'appliquer si des lignes incohérentes existent déjà, plutôt que de les effacer en silence. Deux tests couvrent le refus et l'acceptation.",
+      "status": "corrigé"
     }
   ]
 }
