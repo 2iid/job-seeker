@@ -66,6 +66,9 @@ importers:
       '@job-seeker/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@job-seeker/documents':
+        specifier: workspace:*
+        version: link:../../packages/documents
       '@job-seeker/env':
         specifier: workspace:*
         version: link:../../packages/env

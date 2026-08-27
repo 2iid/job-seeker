@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@job-seeker/auth": "workspace:*",
+    "@job-seeker/documents": "workspace:*",
     "@job-seeker/env": "workspace:*",
     "@job-seeker/i18n": "workspace:*",
     "@job-seeker/llm": "workspace:*",
