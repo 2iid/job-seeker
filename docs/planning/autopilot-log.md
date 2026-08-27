@@ -831,3 +831,45 @@ l'exigence au lieu de la contourner. Prouvé par mutation : un seul
 verdict alors qu'ils sont corrigés depuis deux jours ; F20 était affecté à
 JOB-057, qui traite l'audit et pas le stockage. Vérifié dans les migrations
 avant de réécrire les états, pas de mémoire.
+
+## Exécution 35 — JOB-049, dossier prêt et envoi autonome par courriel
+
+**Décidé sans demander.** Un canal non mesuré est REFUSÉ, pas toléré (règle 2 —
+l'option la plus réversible : desserrer plus tard est une ligne, rattraper un
+envoi ne l'est pas). Le canal `formulaire` n'a pas été mesuré par JOB-002 ;
+« non mesuré » n'est pas « sûr », et le défaut d'une table de capacités doit
+être le refus.
+
+**Décidé sans demander.** Un échec de transport INCONNU est classé « incertain »
+et non « réessayable » (règle 3 — REQ-011 dit qu'une soumission n'est jamais
+rejouée à l'identique). Le défaut penche du côté qui ne duplique pas : présumer
+« rien n'est parti » sur une erreur qu'on n'avait pas prévue est exactement le
+raisonnement qui envoie deux candidatures au même recruteur.
+
+**Décidé sans demander.** L'ordre des refus place la capacité du canal APRÈS le
+cadran et AVANT le mandat (règle 3 — l'ADR-0003 dit « la personne comprend la
+limite, elle ne la subit pas »). Quelqu'un dont le cadran n'est pas sur « agir
+seule » n'a pas à recevoir un exposé qu'il n'a pas demandé ; et réclamer un
+mandat pour une action qu'on n'exécutera jamais ferait signer pour rien.
+
+**Deux tests qui ne prouvaient rien**, trouvés en les mettant en défaut :
+
+- Le test d'atomicité de `enregistrer` passait sans jamais exercer un retour
+  arrière : la clé étrangère fait échouer le PREMIER ordre, donc il n'y avait
+  rien à annuler. Refait sur un client feint dont le SECOND ordre échoue — il
+  tombe désormais quand on retire la transaction.
+- Huit fixtures de `packages/profil` utilisaient le canal ATS. Elles ont été
+  écrites quand un canal ATS pouvait envoyer seul, et elles sont tombées le jour
+  où le produit a cessé de l'honorer. Le signal était juste : ces tests
+  encodaient le monde d'avant la mesure.
+
+**Une limite consignée plutôt que sous-entendue (F26).** La défense contre
+l'injection est complète DANS le chemin d'envoi, mais `SourcesServeur` est un
+paramètre : elle ne vaut que ce que vaudra le module qui le construira, et ce
+module est JOB-065. Écrit au verdict avec l'extension du garde-fou à faire.
+
+**Dérive de méthode corrigée.** `vantry.yml` n'avait aucun bloc `acceptance:`
+après 63 issues, alors qu'AGENTS.md en demande un à la fin de chaque issue. Les
+deux premiers critères sont posés ici. Les issues déjà livrées ne sont PAS
+reconstituées : inventer des critères après coup donnerait un tableau vert sans
+rien prouver de plus.
