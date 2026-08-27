@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-26T23:35:33Z",
-  "head": "ee6d6a0fd29134d7c1df1247d7d1f3ef244003a5",
+  "at": "2026-08-27T00:35:42Z",
+  "head": "d31d91867043b3c7148c67a0f4d87d427a21a856",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -112,7 +112,10 @@
     "Un mandat vaut CANAL PAR CANAL : autoriser l envoi de candidatures ne vaut pas autorisation d ecrire a des recruteurs. Teste.",
     "JOB-053 : l arret est une ECRITURE en base, pas un signal. Un signal suppose un worker joignable et vivant ; la colonne est relue a chaque point de controle, y compris apres un redeploiement — c est la seule forme qui tienne « rien ne redemarre tout seul ».",
     "JOB-054 : l immuabilite du recu est portee par un DECLENCHEUR et non par une politique, parce que `service_role` contourne la RLS et que c est le role du worker. Teste : meme la connexion superutilisateur ne peut pas corriger un recu.",
-    "La limite de cette immuabilite est nommee : l UPDATE est refuse sans exception, la SUPPRESSION passe par un drapeau de session explicite que seul le parcours d effacement pose. REQ-013 protege de la correction silencieuse ; REQ-014 protege le droit d effacer. Le drapeau n ouvre PAS l UPDATE — sinon « je supprime » deviendrait « je corrige »."
+    "La limite de cette immuabilite est nommee : l UPDATE est refuse sans exception, la SUPPRESSION passe par un drapeau de session explicite que seul le parcours d effacement pose. REQ-013 protege de la correction silencieuse ; REQ-014 protege le droit d effacer. Le drapeau n ouvre PAS l UPDATE — sinon « je supprime » deviendrait « je corrige ».",
+    "JOB-041 : un refus de modification est DEFINITIF pour la candidature, et il n existe aucune fonction ni action serveur pour l annuler — un chemin qui n existe pas ne se prend pas par erreur. La cle est prefixee par le champ : sans prefixe, refuser une phrase en annulerait une autre que la personne n a jamais regardee. La cle recue du formulaire est validee contre un motif strict avant d entrer dans une liste dont elle ne sortira plus.",
+    "JOB-045 : la reconnaissance d une question de screening est faite par MOTIFS et non par un modele. Un modele repondrait la reponse d une AUTRE question une fois sur dix, et une mauvaise reponse de screening est une affirmation fausse envoyee a un recruteur sous le nom de quelqu un. Le systeme est volontairement peu couvrant : ambigu ou inconnu = escalade.",
+    "`validee_le` distingue une SUGGESTION d une REPONSE. Sans elle, la bibliotheque se remplirait de reponses plausibles qu un modele aurait posees et que l agent enverrait."
   ],
   "findings": [
     {
