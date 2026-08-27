@@ -90,6 +90,9 @@ importers:
       '@job-seeker/profil':
         specifier: workspace:*
         version: link:../../packages/profil
+      '@job-seeker/ratelimit':
+        specifier: workspace:*
+        version: link:../../packages/ratelimit
       '@job-seeker/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -248,6 +251,8 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
+
+  packages/ratelimit: {}
 
   packages/testing:
     dependencies:

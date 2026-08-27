@@ -120,21 +120,70 @@ describe('profiles — écriture', () => {
 })
 
 describe('le socle lui-même', () => {
-  it('AUCUNE table de public sans RLS activée ET forcée', async () => {
+  it('AUCUNE table de public atteignable par un client sans RLS activée ET forcée', async () => {
     // C'est ce test qui rend le socle réel : une table ajoutée demain sans
     // politique fait échouer la suite, plutôt que d'attendre une revue humaine.
-    const { rows } = await c.query<{ nom: string; activee: boolean; forcee: boolean }>(
-      `select c.relname as nom, c.relrowsecurity as activee, c.relforcerowsecurity as forcee
+    //
+    // La condition dit « ATTEIGNABLE PAR UN CLIENT », et pas simplement
+    // « existante », depuis JOB-073. `limitation_debit` n'accorde aucun
+    // privilège à `anon` ni à `authenticated` : la RLS y répondrait à une
+    // question qui ne se pose pas (« quelles LIGNES pour cette personne ? »
+    // alors que la réponse est « la table entière lui est fermée »), et elle
+    // serait en plus décorative — le seul chemin d'écriture est une fonction
+    // `security definer` dont le rôle porte BYPASSRLS.
+    //
+    // La forme retenue n'est PAS une liste d'exceptions par nom. Une liste se
+    // périme en silence : le jour où quelqu'un accorde `select` sur une table
+    // exemptée, l'exemption tient toujours et la protection est partie. Ici
+    // l'exemption est CALCULÉE à partir des privilèges réels, donc ce `grant`
+    // rallume immédiatement l'exigence de RLS sur cette table.
+    const { rows } = await c.query<{
+      nom: string
+      activee: boolean
+      forcee: boolean
+      atteignable: boolean
+    }>(
+      `select c.relname as nom,
+              c.relrowsecurity as activee,
+              c.relforcerowsecurity as forcee,
+              exists (
+                select 1 from information_schema.role_table_grants g
+                 where g.table_schema = 'public' and g.table_name = c.relname
+                   and g.grantee in ('anon', 'authenticated')
+              ) as atteignable
          from pg_class c
          join pg_namespace n on n.oid = c.relnamespace
         where n.nspname = 'public' and c.relkind = 'r'
         order by c.relname`,
     )
     expect(rows.length, 'aucune table lue — la requête ne teste rien').toBeGreaterThan(0)
-    const fautives = rows.filter((r) => !r.activee || !r.forcee)
+    expect(
+      rows.filter((r) => r.atteignable).length,
+      'aucune table atteignable — la condition a tout exclu, le test ne teste rien',
+    ).toBeGreaterThan(0)
+    const fautives = rows.filter((r) => r.atteignable && (!r.activee || !r.forcee))
     expect(
       fautives.map((r) => `${r.nom} (activée: ${r.activee}, forcée: ${r.forcee})`),
-      'table(s) sans RLS activée et forcée',
+      'table(s) atteignables par un client sans RLS activée et forcée',
+    ).toEqual([])
+  })
+
+  it('une table SANS RLS n’accorde vraiment aucun privilège de client', async () => {
+    // Le pendant du test ci-dessus, et sa raison d'être : l'exemption ne vaut
+    // que tant que la table est fermée. Ce test la relit dans l'autre sens, de
+    // sorte qu'aucune table ne puisse être à la fois sans RLS et ouverte.
+    const { rows } = await c.query<{ nom: string; role: string; privilege: string }>(
+      `select c.relname as nom, g.grantee as role, g.privilege_type as privilege
+         from pg_class c
+         join pg_namespace n on n.oid = c.relnamespace
+         join information_schema.role_table_grants g
+           on g.table_schema = 'public' and g.table_name = c.relname
+        where n.nspname = 'public' and c.relkind = 'r' and not c.relrowsecurity
+          and g.grantee in ('anon', 'authenticated')`,
+    )
+    expect(
+      rows.map((r) => `${r.nom}: ${r.privilege} à ${r.role}`),
+      'table(s) sans RLS mais ouvertes à un rôle client',
     ).toEqual([])
   })
 

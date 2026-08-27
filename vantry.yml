@@ -107,6 +107,9 @@ sensitive_paths:
   # nom de quelqu'un sort par là.
   - "apps/worker/src/envoi/**"
   - "apps/web/app/auth/**"
+  # JOB-073 : décide qui est limité et sur quelle clé. Une erreur ici ne casse
+  # rien de visible — elle rend simplement la limitation décorative.
+  - "apps/web/lib/limitation/**"
   - "apps/worker/src/submission/**"
   - "apps/worker/src/contacts/**"
   - "apps/worker/src/mailbox/**"

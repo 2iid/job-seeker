@@ -22,7 +22,8 @@
     "@supabase/supabase-js": "^2.112.4",
     "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@job-seeker/ratelimit": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

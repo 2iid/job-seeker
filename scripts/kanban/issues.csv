@@ -71,7 +71,7 @@ JOB-069,Brief entreprise et signaux de recrutement,EPIC 9 — Contact recruteur,
 JOB-070,Abonnement Stripe et paliers de quota,EPIC 10 — Facturation et lancement,payments,payments-engineer,P0,L,JOB-047,backlog,S6,apps/web/app/facturation/**;packages/billing/**,,yes
 JOB-071,Webhook Stripe signé et idempotent,EPIC 10 — Facturation et lancement,payments,payments-engineer,P0,M,JOB-070,backlog,S6,apps/web/app/api/webhooks/stripe/**,,yes
 JOB-072,Instrumentation du coût LLM par candidature,EPIC 10 — Facturation et lancement,devops,devops-engineer,P0,S,JOB-010,done,S3,packages/observability/**,,yes
-JOB-073,Limitation de débit sur les routes abusables,EPIC 10 — Facturation et lancement,security,security-engineer,P0,M,JOB-006,backlog,S5,packages/ratelimit/**,,yes
+JOB-073,Limitation de débit sur les routes abusables,EPIC 10 — Facturation et lancement,security,security-engineer,P0,M,JOB-006,done,S5,packages/ratelimit/**;apps/web/lib/limitation/**,,yes
 JOB-074,Audit d accessibilité WCAG 2.1 AA sur les écrans de la boucle,EPIC 10 — Facturation et lancement,design,ui-ux-designer,P0,M,JOB-063,backlog,S6,apps/web/app/**;tests/a11y/**,,yes
 JOB-075,Modèle de menaces STRIDE avant ouverture publique,EPIC 10 — Facturation et lancement,security,security-engineer,P0,M,JOB-059,backlog,S6,docs/security/**,,no
 JOB-076,Mesure de couverture sur cinq profils contrastés,EPIC 2 — Moteur de veille,research,product-strategist,P0,M,JOB-029;JOB-024,done,S3,docs/research/couverture/**,REQ-003,no

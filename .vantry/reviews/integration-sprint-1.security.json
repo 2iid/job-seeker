@@ -166,8 +166,8 @@
       "file": "apps/web/app/auth/lien/route.ts",
       "line": 0,
       "summary": "La route de demande de lien envoie un email pour toute adresse fournie, sans limitation de débit. Elle peut donc servir à expédier des emails au nom du produit, et à saturer la boîte de quelqu'un.",
-      "fix": "JOB-073 doit poser la limitation de débit sur cette route, clé sur l'adresse ET sur l'IP. Noté dans le fichier lui-même pour que le prochain qui le lise le sache.",
-      "status": "reporté à JOB-073"
+      "fix": "Corrigé par JOB-073. Limitation à deux clés sur /auth/lien : IP (20/h) puis adresse (5/15 min), dans cet ordre. Le compteur vit en base (atomique, une seule instruction), la clé est un HMAC-SHA-256 salé — jamais l'adresse — et le magasin injoignable REFUSE, parce qu'un courriel expédié ne se rattrape pas. Prouvé par 9 tests SQL dont un test de course à 6 clients simultanés qui tombe sur une implémentation « lire puis écrire ».",
+      "status": "corrigé"
     },
     {
       "severity": "low",
@@ -175,8 +175,8 @@
       "file": "apps/web/app/auth/lien/route.ts",
       "line": 0,
       "summary": "La route répond identiquement que l'adresse existe ou non — c'est délibéré et c'est la bonne décision, mais elle mérite d'être protégée d'une régression : quelqu'un « améliorera » un jour le message d'erreur pour être plus utile.",
-      "fix": "Le motif est écrit en tête du fichier : sur ce produit, distinguer les deux cas révélerait qui cherche un emploi, et peut trahir quelqu'un auprès de son employeur. À couvrir par un test quand JOB-073 touchera la route.",
-      "status": "documenté"
+      "fix": "Corrigé et désormais GARDÉ par JOB-073, qui aurait pu le rouvrir : une limite par adresse est elle-même un oracle. Trois mesures — le jeton d'adresse est consommé avant tout regard sur le compte, le refus est un 303 identique aux autres chemins, et le message ne nomme jamais la portée qui a refusé. Le smoke compare deux réponses réelles octet par octet ; quatre tests source gardent le code contre la « meilleure erreur » annoncée par le constat.",
+      "status": "corrigé"
     },
     {
       "severity": "info",
@@ -211,8 +211,8 @@
       "file": "supabase/migrations/20260825180000_modele_profil.sql",
       "line": 0,
       "summary": "public.documents enregistre un chemin de stockage, mais les politiques du bucket Supabase Storage ne sont PAS posees par cette migration. Une ligne cloisonnee qui pointe vers un fichier accessible a tous ne protege rien : c est le fichier qui porte le CV.",
-      "fix": "JOB-031 (import de CV) doit poser les politiques de stockage dans la MEME PR que l upload, avec leurs tests allow et deny — un utilisateur ne doit pas pouvoir lire le fichier d un autre, meme en connaissant son chemin. A rappeler dans ses criteres d acceptation.",
-      "status": "reporté à JOB-031"
+      "fix": "Corrigé par JOB-031 : 20260826060000_stockage_documents.sql pose 4 politiques sur storage.objects (une par opération), couvertes par tests/rls/stockage.test.ts — dont des tests de refus prouvés par mutation.",
+      "status": "corrigé"
     },
     {
       "severity": "low",
@@ -265,8 +265,8 @@
       "file": "supabase/bootstrap-local.sql",
       "line": 0,
       "summary": "Le bucket accepte encore un depot dont le premier segment de chemin est le bon mais dont le NOM DE DOCUMENT n est reference par aucune ligne `documents`. Un utilisateur peut donc remplir son propre dossier de fichiers orphelins que rien ne rattache ni ne purge.",
-      "fix": "Un quota par utilisateur et une purge des objets sans ligne correspondante. A porter par JOB-057 (retention) avec le parcours de suppression de compte de REQ-014, qui doit de toute facon parcourir le bucket.",
-      "status": "reporté à JOB-057"
+      "fix": "Le dépôt d'un objet orphelin (premier segment correct, nom de document inconnu) reste possible. Reporté à JOB-092 — JOB-057 n'était pas le bon porteur, il traite l'audit, pas le stockage.",
+      "status": "reporté à JOB-092"
     },
     {
       "severity": "medium",
@@ -274,8 +274,8 @@
       "file": "apps/web/app/profil/import/actions.ts",
       "line": 0,
       "summary": "L action `analyser` declenche un appel de modele facture, sans limite de debit. Quelqu un d authentifie peut la rappeler en boucle : c est une depense, pas une fuite, mais une depense qu un compte gratuit peut infliger.",
-      "fix": "Limiter le debit par utilisateur sur les actions qui appellent un modele. A porter par JOB-073 (limitation de debit), avec F9/F10 sur /auth/lien — meme mecanisme, deja prevu.",
-      "status": "reporté à JOB-073"
+      "fix": "Corrigé par JOB-073. `analyser` consomme un jeton (10/h, clé = identifiant du compte, pas l'IP) AVANT de lire le fichier. Surtout, le correctif ne se limite pas à cette ligne : `sans-limite.test.ts` lit toutes les sources du web et échoue en nommant le fichier dès qu'un appel de modèle facturé n'est pas accompagné d'une demande de jeton — vérifié par mutation.",
+      "status": "corrigé"
     },
     {
       "severity": "low",
@@ -283,8 +283,8 @@
       "file": "supabase/migrations/20260825180000_modele_profil.sql",
       "line": 0,
       "summary": "Aucun role client n a DELETE sur `experiences`, `formations` ni `competences`. Une personne ne peut donc pas retirer une experience saisie par erreur — elle ne peut que la remplacer. Sur de la donnee personnelle, c est un defaut de maitrise, pas une protection.",
-      "fix": "L interdiction de JOB-030 protege REQ-014 (arreter l automatisation avant d effacer), ce qui vise la suppression du COMPTE, pas d une ligne de parcours. Meme raisonnement que la divergence deja assumee sur le bucket. A porter par JOB-034 ou JOB-057 : accorder DELETE sur les tables filles du profil, avec ses tests allow/deny.",
-      "status": "ouvert"
+      "fix": "Corrigé par JOB-035 : 20260826120000_suppression_lignes_profil.sql accorde DELETE sur experiences, formations et competences à authenticated, sous politique par ligne. Couvert par tests/rls/suppression-profil.test.ts.",
+      "status": "corrigé"
     },
     {
       "severity": "low",

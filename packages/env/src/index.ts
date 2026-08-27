@@ -54,6 +54,16 @@ export const SPECS: readonly Spec[] = [
   // sans bascule. La déclarer ici plutôt que de la lire ailleurs garde la porte
   // unique, et `secret: true` interdit qu'on lui donne une valeur par défaut.
   { name: 'OPENROUTER_API_KEY', required: [], secret: true, validate: minLength(20) },
+  // JOB-073 — le sel de la limitation de débit. `secret: true` a ici un effet
+  // concret et pas seulement documentaire : `redact()` le masque, donc il ne
+  // peut pas se retrouver en clair dans un journal ou un rapport d'erreur. Le
+  // fait qu'il soit ABSENT, en revanche, n'est pas contrôlé au démarrage — le
+  // web ne passe pas par `loadEnv` — mais dans `empreinte()`, qui refuse de
+  // condenser sans lui. C'est le seul endroit qui ne se contourne pas.
+  { name: 'LIMITATION_SEL', required: [], secret: true, validate: minLength(16) },
+  // Combien de relais VOUS opérez devant l'application. Publique, et sa valeur
+  // par défaut est la plus prudente : 1 relais de confiance.
+  { name: 'RELAIS_DE_CONFIANCE', required: [], secret: false },
 ]
 
 export class EnvError extends Error {

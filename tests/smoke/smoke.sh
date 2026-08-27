@@ -155,6 +155,71 @@ if [ -n "$POS_CHAMP" ]; then
   fi
 fi
 
+# JOB-073 / F9 / F10 — la limitation de débit, vue de l'extérieur.
+#
+# C'est le seul endroit où les DEUX propriétés se contrôlent ensemble, parce
+# qu'elles se contredisent : F9 veut une limite par adresse, F10 veut qu'on ne
+# puisse rien apprendre de la réponse. Une limite par adresse mal posée répond
+# différemment pour une adresse inscrite — et devient l'oracle qu'elle devait
+# protéger.
+echo "→ [smoke] /auth/lien répond identiquement, inscrit ou non"
+# Une IP simulée, DIFFÉRENTE à chaque exécution.
+#
+# Sans cela ce contrôle s'auto-bloque : le plafond par IP court sur une heure et
+# la base survit au smoke, donc la deuxième exécution de la journée échouait sur
+# le quota de la première. Un contrôle qu'on ne peut lancer que deux fois par
+# heure n'est pas un contrôle. (C'est cet échec qui a fait relever le plafond
+# par IP : il montrait gratuitement ce qui attend un NAT partagé.)
+#
+# Poser soi-même x-forwarded-for ne marche ICI que parce qu'aucun proxy réel
+# n'est devant le serveur local. En production, adresseAppelante() ne lit que
+# l'entrée écrite par NOTRE relais, et refuse tout quand il n'y en a aucun ;
+# apps/web/lib/limitation/adresse-ip.test.ts couvre les deux cas.
+IP_SIMULEE="198.51.100.$(( ($$ % 250) + 1 ))"
+reponse_lien() {  # $1 = adresse ; rend "code|destination"
+  curl -s -o /dev/null -w '%{http_code}|%{redirect_url}' --max-time 5 \
+    -H "X-Forwarded-For: $IP_SIMULEE" \
+    -X POST "http://localhost:$PORT/auth/lien" \
+    --data-urlencode "email=$1" --data-urlencode "next=/tableau"
+}
+# CE QUE CE CONTRÔLE PROUVE, ET CE QU'IL NE PROUVE PAS.
+#
+# Il compare deux adresses INCONNUES. Il ne compare pas une inscrite à une
+# inconnue : le smoke n'a pas d'accès à la base, et lui donner la clé de service
+# pour fabriquer un compte mettrait un secret dans le seul script qui tourne
+# partout — mauvais échange pour ce qu'on y gagnerait.
+#
+# La preuve « inscrite = inconnue » est donc STRUCTURELLE, et elle est plus
+# forte qu'une comparaison : la route ne récupère jamais le résultat de
+# `signInWithOtp` et n'a qu'une seule destination de succès, donc il n'existe
+# aucun chemin par lequel elle POURRAIT différer. `tests/auth/oracle-inscription
+# .test.ts` garde ces deux propriétés sur la source.
+#
+# Ce que ce contrôle ajoute, et que la lecture ne donne pas : que la limitation
+# de débit, ajoutée par-dessus, n'a pas introduit la différence — c'était le
+# risque réel de JOB-073.
+
+A="$(reponse_lien "inexistant-$$@smoke.test")"
+B="$(reponse_lien "autre-inexistant-$$@smoke.test")"
+[ "$A" = "$B" ] || fail "/auth/lien répond différemment selon l adresse : [$A] vs [$B]"
+printf '%s' "$A" | grep -q "^303|" || fail "/auth/lien ne redirige pas (obtenu : $A)"
+printf '%s' "$A" | grep -q "envoye=1" || fail "/auth/lien ne confirme pas l envoi (obtenu : $A)"
+
+echo "→ [smoke] la limitation de débit se déclenche, et ne dit pas laquelle"
+# Le plafond par adresse est 5 sur 15 minutes. La 6e demande sur la MÊME
+# adresse doit être refusée — et le refus ne doit nommer aucune portée.
+LIM="smoke-limite-$$@smoke.test"
+for _ in 1 2 3 4 5; do reponse_lien "$LIM" >/dev/null; done
+SIXIEME="$(reponse_lien "$LIM")"
+printf '%s' "$SIXIEME" | grep -q "trop-de-demandes" \
+  || fail "la 6e demande sur la même adresse n a pas été limitée (obtenu : $SIXIEME)"
+printf '%s' "$SIXIEME" | grep -qiE "adresse=|ip=|portee=" \
+  && fail "le refus de limitation nomme la portée : c est l oracle que F10 interdit"
+# Et le refus doit rester un 303 comme tous les autres chemins : un 429 ici se
+# distinguerait à l œil nu dans l onglet réseau.
+printf '%s' "$SIXIEME" | grep -q "^303|" \
+  || fail "le refus de limitation ne ressemble pas aux autres réponses (obtenu : $SIXIEME)"
+
 echo "→ [smoke] la redirection ouverte est refusée"
 OUVERTE="$(curl -s -o /dev/null -w '%{redirect_url}' --max-time 5 "http://localhost:$PORT/auth/callback?next=https%3A%2F%2Fevil.example")"
 printf '%s' "$OUVERTE" | grep -q "evil.example" \

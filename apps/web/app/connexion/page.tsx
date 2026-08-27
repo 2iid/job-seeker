@@ -2,6 +2,18 @@ import { destinationSure } from '@job-seeker/auth'
 
 export const metadata = { title: 'Connexion — Cabine' }
 
+/**
+ * Un message par motif. Celui de la limitation dit d'attendre sans dire
+ * POURQUOI on a été limité : nommer la portée (« pour cette adresse » plutôt
+ * que « depuis cette machine ») rendrait l'écran de connexion capable de
+ * répondre à « est-ce que cette personne a un compte ici ? ».
+ */
+const MESSAGES_ERREUR: Record<string, string> = {
+  adresse: 'Cette adresse ne ressemble pas à une adresse électronique.',
+  'trop-de-demandes': 'Trop de demandes. Attendez quelques minutes avant de réessayer.',
+  lien: 'Ce lien n’est plus valable. Demandez-en un nouveau — ils expirent vite, c’est voulu.',
+}
+
 export default async function Connexion({
   searchParams,
 }: {
@@ -72,7 +84,7 @@ export default async function Connexion({
               padding: 'var(--space-3)',
             }}
           >
-            Ce lien n’est plus valable. Demandez-en un nouveau — ils expirent vite, c’est voulu.
+            {MESSAGES_ERREUR[params.erreur] ?? MESSAGES_ERREUR.lien}
           </p>
         ) : null}
 

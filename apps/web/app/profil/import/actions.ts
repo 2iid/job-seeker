@@ -21,6 +21,7 @@ import { redirect } from 'next/navigation'
 import { cheminStockage, extraire, lire, lireDate, messageDeRefus, MIME, PLAFOND_OCTETS } from '@job-seeker/parsing'
 import type { Proposition } from '@job-seeker/parsing'
 import { creerBascule, fournisseurAnthropique, fournisseurOpenRouter } from '@job-seeker/llm'
+import { POLITIQUES, verifierLimite } from '@/lib/limitation'
 import { clientServeur, utilisateurCourant } from '@/lib/supabase/server'
 
 export type EtatImport =
@@ -41,6 +42,25 @@ export async function analyser(_precedent: EtatImport, formulaire: FormData): Pr
   // identifiant venu du formulaire n'entre dans une décision.
   const utilisateur = await utilisateurCourant()
   if (utilisateur === null) redirect('/connexion?next=%2Fprofil%2Fimport')
+
+  // ── F21 : cette action appelle un modèle FACTURÉ ──
+  // La clé est l'identifiant du compte, pas l'IP : ici l'appelant est
+  // authentifié, et l'IP le laisserait changer de quota en changeant de réseau.
+  // La limite est posée AVANT de lire le fichier — le refus doit être le moins
+  // cher possible, sinon on peut encore faire dépenser du calcul au produit
+  // sans jamais atteindre le modèle.
+  const limite = await verifierLimite([
+    { politique: POLITIQUES['analyse-modele'], valeur: utilisateur.id },
+  ])
+  if (!limite.autorise) {
+    const minutes = Math.max(1, Math.ceil(limite.reessayerDans / 60))
+    return {
+      etape: 'refuse',
+      message:
+        `Trop d’analyses en peu de temps. Réessayez dans ${String(minutes)} minute` +
+        `${minutes > 1 ? 's' : ''}. Vous pouvez saisir votre profil à la main entre-temps.`,
+    }
+  }
 
   const fichier = formulaire.get('fichier')
   if (!(fichier instanceof File) || fichier.size === 0) {
