@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T20:55:00Z",
-  "head": "f81c5d6062ac16d1b9139c224b72bb8c0048bbb7",
+  "at": "2026-08-27T22:05:00Z",
+  "head": "4e162d505adfbe2c0b1412d6523fb34f08d7ab7c",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -58,6 +58,12 @@
     "apps/worker/src/matching/replay.ts",
     "apps/worker/src/matching/resume.ts",
     "apps/worker/src/matching/score.ts",
+    "apps/worker/src/receipts/boucle.test.ts",
+    "apps/worker/src/receipts/boucle.ts",
+    "apps/worker/src/receipts/index.ts",
+    "apps/worker/src/receipts/reconciliation.test.ts",
+    "apps/worker/src/receipts/reconciliation.ts",
+    "apps/worker/src/receipts/recu.ts",
     "packages/audit/package.json",
     "packages/audit/src/audit.test.ts",
     "packages/audit/src/audit.ts",
@@ -176,6 +182,8 @@
     "supabase/migrations/20260827260000_confirmation_envoi.sql",
     "supabase/migrations/20260827280000_reclamation_envoi.sql",
     "supabase/migrations/20260827300000_dossier_appartenance.sql",
+    "supabase/migrations/20260827320000_incidents.sql",
+    "supabase/migrations/20260827340000_export_incidents_dossiers.sql",
     "tests/rls/audit-support.test.ts",
     "tests/rls/autonomie.test.ts",
     "tests/rls/dossiers.test.ts",
@@ -187,6 +195,7 @@
     "tests/rls/modele.test.ts",
     "tests/rls/opportunites.test.ts",
     "tests/rls/profiles.test.ts",
+    "tests/rls/recus-reconciliation.test.ts",
     "tests/rls/stockage.test.ts",
     "tests/rls/suppression-profil.test.ts",
     "tests/rls/versions-profil.test.ts",
@@ -284,7 +293,8 @@
     "`suppression-en-cours` bloque l envoi AVANT l arrêt d urgence. Sans cet état, un travail déjà en file partirait pendant les secondes qui séparent la demande de l effacement — et la preuve de l envoi serait effacée juste après.",
     "JOB-073 (2026-08-27) : revue de la limitation de débit. F9/F10/F21 fermés. DEUX constats nouveaux trouvés sur mon propre changement (F24, F25), nés de la même erreur : avoir traité une fonction `security definer` accordée à `anon` comme si elle n'était appelée que par mon code. Corrigés, et gardés par des invariants calculés plutôt que par des listes d'exceptions — un `grant` fautif rallume l'exigence au lieu de la contourner.",
     "JOB-049 (2026-08-27) : envoi. L'injection est traitée par un TYPE que seul verifierDestination peut produire, DOUBLÉ d'un contrôle à l'exécution (un symbole ne survit pas à un aller-retour JSON, et la file transite par du JSON — c'est là que la défense s'évaporait), et d'un test qui refuse que le dossier d'envoi voie le texte d'une annonce. Une limite est consignée en F26 : la garantie s'arrête là où JOB-065 construira les contacts.",
-    "JOB-051 (2026-08-27) : idempotence. La garantie est une contrainte d'unicité plus un ORDRE d'écriture — réclamer avant d'envoyer — et non du code : prouvé par mutation (réclamation naïve + contrainte retirée → cinq workers obtiennent la réclamation ; réclamation retirée de traiterEnvoi → trois envois au lieu d'un). Un bail expiré conduit à 'incertain' et jamais à une reprise. F27 trouvé sur mon propre travail. Note de périmètre : scripts/demarrer-web.sh a été modifié pour faucher un orphelin de CE dépôt — la faucheuse n'affaiblit aucun contrôle, et sa borne de sûreté (un serveur d'un autre projet est épargné) est prouvée par un test manuel documenté dans l'observation du reçu."
+    "JOB-051 (2026-08-27) : idempotence. La garantie est une contrainte d'unicité plus un ORDRE d'écriture — réclamer avant d'envoyer — et non du code : prouvé par mutation (réclamation naïve + contrainte retirée → cinq workers obtiennent la réclamation ; réclamation retirée de traiterEnvoi → trois envois au lieu d'un). Un bail expiré conduit à 'incertain' et jamais à une reprise. F27 trouvé sur mon propre travail. Note de périmètre : scripts/demarrer-web.sh a été modifié pour faucher un orphelin de CE dépôt — la faucheuse n'affaiblit aucun contrôle, et sa borne de sûreté (un serveur d'un autre projet est épargné) est prouvée par un test manuel documenté dans l'observation du reçu.",
+    "JOB-055 (2026-08-27) : reçus et incidents. La table `incidents` ne porte aucun contenu de document — seulement un constat et une conduite — d'où un accès support complet, contrairement à `dossiers`. Le reçu s'écrit dans la transaction de l'envoi, et deux invariants sont VÉRIFIÉS plutôt que supposés (envoi sans reçu, reçu sans envoi) : une atomicité qu'on n'observe jamais est un commentaire. F28 et F29 trouvés en revue de mon propre changement."
   ],
   "findings": [
     {
@@ -470,6 +480,22 @@
       "file": "supabase/migrations/20260827240000_dossiers.sql",
       "summary": "public.dossiers porte profile_id ET opportunite_id. La politique de lecture s'appuie sur le premier ; le contenu — CV et lettre — appartient au second. Le worker écrit avec service_role, qui contourne la RLS : deux paramètres incohérents suffisaient donc à créer un dossier contenant les documents d'Alice mais VISIBLE PAR BOB. Aucun code ne le faisait, ce qui est exactement pourquoi il fallait une contrainte : la garantie ne doit pas dépendre de la vigilance de l'appelant suivant, qui aura deux identifiants sous la main et une raison d'être pressé.",
       "fix": "20260827300000_dossier_appartenance.sql : clé étrangère COMPOSITE (opportunite_id, profile_id) vers opportunites (id, profile_id). Un `check` ne peut pas faire de sous-requête et un déclencheur se désactive au prochain `alter table ... disable trigger` ; une clé étrangère, non. La migration refuse de s'appliquer si des lignes incohérentes existent déjà, plutôt que de les effacer en silence. Deux tests couvrent le refus et l'acceptation.",
+      "status": "corrigé"
+    },
+    {
+      "id": "F28",
+      "severity": "low",
+      "file": "apps/worker/src/receipts/reconciliation.ts",
+      "summary": "Le constat d'un incident intègre le TITRE de l'annonce, qui est du contenu récupéré : n'importe qui peut publier une offre, donc choisir ce texte. Il s'affiche à la personne au moment précis où elle est déjà inquiète d'une candidature peut-être partie — le meilleur moment pour lui glisser « appelez le 06… pour confirmer ». On ne peut pas s'en passer : sans intitulé, l'incident ne dit pas de quoi il parle.",
+      "fix": "`intituleSur()` borne le titre à 80 caractères, écrase les retours à la ligne et retire les caractères de contrôle — il reste une étiquette, il ne devient pas un message. Cinq tests, dont les séquences ANSI et le multi-ligne.",
+      "status": "corrigé"
+    },
+    {
+      "id": "F29",
+      "severity": "low",
+      "file": "supabase/migrations/20260827140000_export_et_suppression.sql",
+      "summary": "L'export REQ-014 se disait « complet » et omettait trois tables portant un profile_id : dossiers, incidents, et recherches_sauvegardees — cette dernière depuis un sprint antérieur. Ce n'est pas une négligence : « complet » est une propriété qui se dégrade seule à chaque migration, et rien ne la surveillait. L'omission d'`incidents` était la plus gênante : c'est la table qui dit à quelqu'un qu'une candidature est peut-être partie en son nom sans preuve.",
+      "fix": "Les trois tables sont exportées. Surtout : un test compare désormais l'export au SCHÉMA — toute table publique portant un profile_id doit y figurer ou être exclue avec une raison écrite. Comparer à une liste tenue à la main aurait eu le même défaut que l'export lui-même.",
       "status": "corrigé"
     }
   ]
