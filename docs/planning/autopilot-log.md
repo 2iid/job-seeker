@@ -636,6 +636,22 @@ parenthèse non échappée corrompt le fichier, et « (depuis 2021) » est une l
 typographique et le tiret cadratin sont cartographiés en CP1252 : ils sont partout dans un CV français
 et absents de Latin-1.
 
+## Exécution 29 — 2026-08-27 · dire où l'on a regardé
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 129 | JOB-090 | Lire la couverture dans le registre ou dans les offres ? | **Dans les offres relevées** | Dans la portée déclarée | *constat* | Un connecteur déclare `pays: 'monde'` — c'est une affirmation du fournisseur. `JOB-076` a mesuré l'écart : 393 offres, **zéro en Afrique**. Le registre dit ce qu'on espère couvrir, la table dit ce qu'on a rapporté. |
+| 130 | JOB-090 | Que dire sur un flux vide ? | **Distinguer « le marché n'a rien » de « je n'ai pas de source ici »** | Une seule phrase | BRIEF | La première renvoie la personne à son profil, la seconde nous renvoie à notre travail. Dire la première quand la seconde est vraie fait porter à quelqu'un **un échec qui est le nôtre**. |
+| 131 | JOB-087 | Annoncer la couverture visée ou la couverture réelle ? | **La réelle, à l'accueil** | La visée | BRIEF | Le dire coûte des inscriptions ; ne pas le dire coûterait la confiance de ceux qui restent. Pour un agent autonome, c'est la seule chose qui ne se rattrape pas — quelqu'un qui découvre en trois semaines que « mondial » voulait dire « distanciel anglophone » ne revient pas, **et il le raconte**. |
+
+**Le cas de JOB-076 est rejoué en test.** L'infirmier de Nantes, en présentiel, n'a **aucune** source
+locale — et le message le dit « de mon côté ». Le même profil ouvert au distanciel en a trois : une
+source qui ne rend que du distanciel couvre bien quelqu'un qui l'accepte, où qu'il soit.
+
+**Un contrôle sur la sortie plutôt que sur la vigilance.** Un test vérifie qu'aucune phrase de
+couverture ne contient « mondial », « tous les pays » ou « tous les secteurs ». Compter sur l'attention
+de celui qui écrira la prochaine phrase ne tiendrait pas six mois.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
