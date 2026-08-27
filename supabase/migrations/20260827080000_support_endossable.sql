@@ -1,0 +1,26 @@
+-- =============================================================================
+--  JOB-057 — rendre le rôle `support` endossable.
+--
+--  `support` est `nologin` : on ne s'y connecte pas, on l'ENDOSSE depuis un
+--  compte nominatif. C'est délibéré — un rôle partagé avec son mot de passe
+--  rend l'audit inutile, parce que « le support » n'est le nom de personne.
+--
+--  Encore faut-il que quelqu'un puisse l'endosser. Ce `grant` le permet.
+--
+--  ── Pourquoi ça n'affaiblit rien ──
+--
+--  `postgres` peut déjà tout lire : c'est le propriétaire des tables, et aucun
+--  privilège de colonne ne le contraint. Lui accorder `support` ne lui donne
+--  donc AUCUN droit supplémentaire — cela lui donne seulement le moyen de
+--  s'en retirer.
+--
+--  C'est le sens du rôle : il ne protège pas contre quelqu'un qui aurait déjà
+--  la connexion d'administration. Il protège contre le cas réel — une console
+--  de support ouverte un soir d'incident, où l'on lit un CV « juste pour
+--  comprendre le problème » parce que rien ne l'interdit.
+--
+--  En production, la connexion du support est nominative et membre de ce rôle,
+--  et ELLE n'est pas propriétaire des tables.
+-- =============================================================================
+
+grant support to postgres;
