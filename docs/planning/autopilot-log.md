@@ -652,6 +652,36 @@ source qui ne rend que du distanciel couvre bien quelqu'un qui l'accepte, où qu
 couverture ne contient « mondial », « tous les pays » ou « tous les secteurs ». Compter sur l'attention
 de celui qui écrira la prochaine phrase ne tiendrait pas six mois.
 
+## Exécution 30 — 2026-08-27 · une découverte qui dit que la voie ne mène pas là
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 132 | JOB-088 | Où trouver des employeurs par secteur et par pays ? | **Wikidata** | Un annuaire commercial, un moteur de recherche | ASSUMED | Licence CC0, API publique et documentée, et elle n'interdit rien de ce qu'on fait. Les deux autres seraient plus complets et **juridiquement inutilisables**. |
+| 133 | JOB-088 | Que faire d'un site protégé par un anti-robot ? | **Le classer palier C** | Insister | *garde-fou* | Le franchir serait un contournement. Le produit doit le **dire** plutôt que d'insister — et `JOB-092` ajoutera de ne plus le re-sonder : insister chez quelqu'un qui nous a fermé la porte est un comportement de nuisible. |
+| 134 | JOB-088 | Que rendre d'un lot de sondages ? | **Les plateformes classées par nombre d'employeurs** | Une liste d'échecs | ASSUMED | C'est ce qui transforme « il faudrait plus de sources » en « écris le connecteur `mstaff`, il ouvre N hôpitaux ». Une liste d'échecs n'aide personne. |
+
+### Le résultat contredit l'espoir de départ, et c'est le résultat
+
+**20 employeurs sondés, 4 lots : 17 « rien », 2 anti-robot, 1 plateforme inconnue, ZÉRO board lisible.**
+
+Aucun des vingt n'utilise l'une des cinq plateformes que nous savons lire, ni ne pose de `JobPosting`.
+Un hôpital public français ne publie pas ses postes en donnée structurée.
+
+**Le mécanisme fonctionne ; c'est la voie qui ne mène pas là.** `JOB-089` — les sources nationales et
+sectorielles — n'est donc plus une piste parmi d'autres : c'est la seule qui puisse combler le trou.
+Elle passe **P0**.
+
+### Deux défauts trouvés par la mesure elle-même
+
+1. **La sonde ne suivait pas le lien.** Elle n'essayait que des chemins sur le même domaine, et rendait
+   « rien » pour le CHU de Nantes — dont le site de recrutement est un domaine à part, et où se
+   trouvait `mstaff.co`, un ATS sectoriel santé français inconnu de nous. *Une sonde qui ne suit pas le
+   lien mesure la structure des URL, pas la présence d'offres.*
+
+2. **La requête SPARQL dépassait le délai** sur la France (`/wdt:P279*`), deux fois de suite. Et un
+   délai dépassé se présentait chez nous comme « aucun employeur trouvé » — c'est-à-dire **exactement
+   comme la lacune qu'on cherchait à mesurer**. La mesure aurait confirmé son propre défaut.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
