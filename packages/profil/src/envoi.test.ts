@@ -14,6 +14,7 @@ const mandat = (o: Partial<Mandat> = {}): Mandat => ({
 })
 
 const etat = (o: Partial<EtatEnvoi> = {}): EtatEnvoi => ({
+  suppressionDemandeeLe: null,
   arretUrgenceLe: null,
   parcoursTermineLe: '2026-08-01T00:00:00Z',
   cranDuCanal: 'agir-seul',
@@ -27,6 +28,24 @@ const etat = (o: Partial<EtatEnvoi> = {}): EtatEnvoi => ({
 })
 
 describe('l’ordre des vérifications EST le message', () => {
+  it('une suppression demandée passe avant TOUT, même l’arrêt d’urgence', () => {
+    // Une suppression n'est pas atomique. Entre « elle a cliqué » et « les
+    // données sont parties », un travail déjà en file peut partir — et les
+    // données qui le prouvaient seraient effacées juste après. Elle ne saurait
+    // jamais qu'une candidature est partie en son nom APRÈS sa demande.
+    const d = peutEnvoyer(etat({
+      suppressionDemandeeLe: '2026-08-27T09:00:00Z',
+      arretUrgenceLe: '2026-08-27T09:00:00Z',
+    }), 'ats', MAINTENANT)
+    expect(d.envoyer === false && d.motif).toBe('suppression-en-cours')
+    expect(d.envoyer === false && d.enFile).toBe(false)
+  })
+
+  it('… et elle bloque même un profil parfaitement mandaté', () => {
+    const d = peutEnvoyer(etat({ suppressionDemandeeLe: '2026-08-27T09:00:00Z' }), 'ats', MAINTENANT)
+    expect(d.envoyer).toBe(false)
+  })
+
   it('l’arrêt d’urgence passe avant tout le reste', () => {
     // Quelqu'un qui vient d'appuyer sur l'arrêt ne doit pas lire un message
     // sur son quota : ce serait lui parler d'un problème qu'il n'a pas, à

@@ -41,6 +41,18 @@ export type Mandat = {
 }
 
 export type EtatEnvoi = {
+  /**
+   * Non nul quand la personne a demandé la suppression de son compte.
+   *
+   * Vérifié AVANT tout le reste, même avant l'arrêt d'urgence. Une suppression
+   * n'est pas atomique : entre « elle a cliqué » et « les données sont
+   * parties » il s'écoule des secondes, parfois plus si le worker est chargé.
+   * Sans cet état, un travail déjà en file part pendant cette fenêtre — et les
+   * données qui prouvaient ce qui est parti sont effacées juste après. La
+   * personne ne saurait jamais qu'une candidature est partie en son nom APRÈS
+   * qu'elle a demandé à tout effacer.
+   */
+  readonly suppressionDemandeeLe: string | null
   readonly arretUrgenceLe: string | null
   readonly parcoursTermineLe: string | null
   readonly cranDuCanal: Cran
@@ -54,6 +66,7 @@ export type EtatEnvoi = {
 }
 
 export type MotifBlocage =
+  | 'suppression-en-cours'
   | 'arret-urgence'
   | 'parcours-en-cours'
   | 'cran-insuffisant'
@@ -111,6 +124,16 @@ export function peutEnvoyer(
   const refus = (motif: MotifBlocage, enFile: boolean, explication: string): DecisionEnvoi => ({
     envoyer: false, motif, enFile, explication,
   })
+
+  if (e.suppressionDemandeeLe !== null) {
+    // En PREMIER, avant même l'arrêt d'urgence. Quelqu'un qui a demandé
+    // l'effacement de son compte n'a pas à lire un message sur autre chose.
+    return refus(
+      'suppression-en-cours', false,
+      'Vous avez demandé la suppression de votre compte. Plus rien ne part — et rien ne repartira, ' +
+      'même si vous annulez : il faudra me le redemander explicitement.',
+    )
+  }
 
   if (e.arretUrgenceLe !== null) {
     // Sans négociation, et en premier : quelqu'un qui vient d'appuyer sur

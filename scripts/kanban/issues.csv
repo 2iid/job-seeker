@@ -56,8 +56,8 @@ JOB-054,Table de reçus immuable en insertion seule,EPIC 7 — Traçabilité,dat
 JOB-055,Écriture d un reçu pour chaque action sortante,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-054;JOB-049,backlog,S5,apps/worker/src/receipts/**,REQ-013,yes
 JOB-056,Consultation et export des reçus par leur propriétaire,EPIC 7 — Traçabilité,frontend,frontend-engineer,P0,S,JOB-055;JOB-016,backlog,S5,apps/web/app/recus/**,REQ-013,no
 JOB-057,Journal d audit incluant les accès du support,EPIC 7 — Traçabilité,security,security-engineer,P0,M,JOB-005,done,S5,packages/audit/**;supabase/migrations/**,REQ-014,yes
-JOB-058,Export de données en libre-service,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-057,backlog,S5,apps/web/app/api/export/**,REQ-014,yes
-JOB-059,Suppression dure avec annulation préalable de l automatisation,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-053;JOB-057,backlog,S5,apps/web/app/api/suppression/**,REQ-014,yes
+JOB-058,Export de données en libre-service,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-057,done,S5,supabase/migrations/**;packages/profil/**,REQ-014,yes
+JOB-059,Suppression dure avec annulation préalable de l automatisation,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-053;JOB-057,done,S5,supabase/migrations/**;packages/profil/**,REQ-014,yes
 JOB-060,Pipeline de suivi des candidatures et transitions manuelles,EPIC 8 — Suivi,frontend,frontend-engineer,P0,L,JOB-055,backlog,S5,apps/web/app/suivi/**,REQ-015,no
 JOB-061,Connexion à la boîte mail en lecture restreinte,EPIC 8 — Suivi,backend,backend-engineer,P0,L,JOB-030,backlog,S5,apps/worker/src/mailbox/**,REQ-015,yes
 JOB-062,Rattachement des réponses reçues à la bonne candidature,EPIC 8 — Suivi,ai,ai-integration-engineer,P0,M,JOB-061;JOB-060,backlog,S6,apps/worker/src/mailbox/match.ts,REQ-015,yes

@@ -198,11 +198,39 @@ describe('le journal d’audit', () => {
     ).rejects.toThrow(/insertion seule/i)
   })
 
-  it('une personne authentifiée ne lit pas le journal directement', async () => {
-    // Il lui est rendu par l'application, filtré sur son profil — pas par un
-    // accès direct qui exposerait les lignes des autres.
-    await expect(
-      asUser(c, alice, (x) => x.query('select 1 from audit.acces limit 1')),
-    ).rejects.toThrow(/permission denied/i)
+  it('la personne lit SES lignes — c’est un droit, pas une fuite', async () => {
+    // J'avais d'abord supposé l'inverse. C'était une supposition, pas une
+    // exigence : REQ-014 place le journal dans les droits de la personne, et
+    // le « y compris ceux du support » n'a de sens que si quelqu'un peut le
+    // lire — d'abord celui dont on a lu le dossier.
+    const { rows } = await asUser(c, alice, (x) =>
+      x.query('select action, acteur from audit.acces'),
+    )
+    expect(rows.length).toBeGreaterThan(0)
+    for (const r of rows as { acteur: string }[]) expect(['support', 'candidat', 'worker', 'systeme']).toContain(r.acteur)
+  })
+
+  it('… et seulement les siennes', async () => {
+    const bob = await creerCompte(c, 'bob@audit.test')
+    const { rows } = await asUser(c, bob, (x) => x.query('select 1 from audit.acces'))
+    expect(rows).toEqual([])
+  })
+
+  it('une ligne ANONYMISÉE n’appartient plus à personne', async () => {
+    // Elle reste lisible par le support, invisible pour tout candidat : la
+    // responsabilité reste vérifiable, la personne n'est plus dedans.
+    const { rows } = await c.query<{ id: string }>(
+      `insert into audit.acces (acteur, action, objet_table, profile_id)
+       values ('support', 'lecture-dossier', 'recus', $1) returning id`, [profilAlice],
+    )
+    await c.query('update audit.acces set profile_id = null where id = $1', [rows[0]!.id])
+    const vues = await asUser(c, alice, (x) =>
+      x.query('select 1 from audit.acces where id = $1', [rows[0]!.id]),
+    )
+    expect(vues.rows).toEqual([])
+    const parSupport = await commeSupport((x) =>
+      x.query('select 1 from audit.acces where id = $1', [rows[0]!.id]),
+    )
+    expect(parSupport.rows).toHaveLength(1)
   })
 })
