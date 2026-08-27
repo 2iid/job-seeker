@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T01:55:40Z",
-  "head": "4898c4ea22d2ee69560cbda6fd3db171d5be0b6b",
+  "at": "2026-08-27T06:08:47Z",
+  "head": "bf8cb59a8ca36c49cca542823b6ced99403724e8",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -124,7 +124,8 @@
     "JOB-042 : une donnee proscrite par le marche vise est OMISE DU DOCUMENT, pas masquee a l affichage. Un PDF dont on a cache une image contient toujours l image, et une date de naissance retiree de l affichage reste dans les metadonnees. C est une protection de la personne, pas une preference de mise en page : sur certains marches, garder ces donnees fait ecarter le dossier sans lecture.",
     "Seul `proscrite` omet. `inhabituelle` ne retire rien — retirer sur la foi d un usage reviendrait a decider a la place de quelqu un. Un marche non verifie n omet rien et le DIT.",
     "JOB-043 : le PDF ne contient AUCUNE image ni XObject, et le test le relit avec pdf.js pour verifier que le texte en ressort. Un PDF-image ferait arriver la candidature VIDE dans l ATS de l employeur, et la personne ne le saurait jamais.",
-    "Encodage : les parentheses et l antislash sont echappes avant d entrer dans le flux PDF — une parenthese non echappee corrompt le fichier, et « (depuis 2021) » est une ligne de CV ordinaire. Un caractere hors WinAnsi est translittere ou rendu « ? », jamais converti en un octet qui produirait une lettre fausse."
+    "Encodage : les parentheses et l antislash sont echappes avant d entrer dans le flux PDF — une parenthese non echappee corrompt le fichier, et « (depuis 2021) » est une ligne de CV ordinaire. Un caractere hors WinAnsi est translittere ou rendu « ? », jamais converti en un octet qui produirait une lettre fausse.",
+    "JOB-087/090 : la couverture annoncee est lue dans les offres REELLEMENT relevees, pas dans la portee declaree par les connecteurs — JOB-076 a mesure l ecart. Un flux vide distingue « le marche n a rien » de « je n ai pas de source ici », et la seconde phrase designe la lacune comme etant la NOTRE. Un test verifie sur la SORTIE qu aucune phrase de couverture ne contient « mondial » ni « tous secteurs » : compter sur la vigilance de celui qui ecrira la prochaine phrase ne tiendrait pas."
   ],
   "findings": [
     {
