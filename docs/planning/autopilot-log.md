@@ -921,3 +921,44 @@ l'orphelin qu'un SIGKILL laisse derrière lui — deuxième fois que ce fantôme
 tomber la barrière. La faucheuse n'affaiblit aucun contrôle et sa borne de
 sûreté est prouvée : un serveur d'un autre projet sur le même port est épargné.
 Signalé au verdict plutôt que glissé dans le lot.
+
+## Exécution 37 — JOB-055, reçu pour chaque action sortante
+
+**Décidé sans demander.** L'incident est adressé À LA PERSONNE d'abord, pas à un
+tableau d'exploitation (règle 3 — la spec dit « le produit alerte », et c'est SA
+candidature qui est peut-être partie sans preuve ; elle est la seule à pouvoir
+aller vérifier). Chaque incident porte un constat ET une conduite à tenir : un
+incident sans conduite est une angoisse sans issue.
+
+**Décidé sans demander.** Le détecteur surveille sa propre santé (règle 2 —
+additif et réversible). Une réconciliation arrêtée ne produit pas d'erreur :
+elle produit zéro incident, ce qui ressemble exactement à « tout va bien ».
+C'est la forme de panne la plus coûteuse, celle qui a l'air d'un succès.
+
+**Décidé sans demander.** Une préparation ne produit PAS de reçu (règle 3 —
+REQ-013 parle de « ce qui a été envoyé »). Lui en donner un viderait le mot de
+son sens.
+
+**Un garde-fou qui a trouvé plus que prévu.** Le test de complétude d'export
+compare l'export au SCHÉMA plutôt qu'à une liste. Il a trouvé TROIS tables
+manquantes, dont `recherches_sauvegardees`, absente depuis un autre sprint et
+que personne ne serait allé chercher. Comparer à une liste tenue à la main
+aurait eu exactement le même défaut que l'export.
+
+**Une erreur de méthode que j'ai répétée trois fois.** Trois de mes tests
+mesuraient un état GLOBAL alors que la base porte le résidu des autres fichiers :
+un comptage de reçus, un bilan de réconciliation, une suppression non bornée.
+J'ai corrigé les trois occurrences avant d'admettre que la correction dépendait
+de la vigilance du prochain fichier ajouté. Les tests de base sont désormais
+SÉRIALISÉS dans `vitest.config.ts` — coût mesuré à environ une seconde, contre
+un échec intermittent un tour sur trois.
+
+**Et une réécriture à la main qui a coûté un aller-retour.** J'ai recopié le
+corps de `exporter_mes_donnees` pour y ajouter deux lignes, et introduit
+`public.criteres` là où la table s'appelle `criteres_recherche`. La version
+livrée est DÉRIVÉE de l'originale par programme, ligne à ligne.
+
+**La barrière a bloqué à la fin**, sur deux erreurs dans le journal de
+l'application. Diagnostic mesuré plutôt que supposé : smoke relancé seul contre
+un serveur neuf, zéro erreur — les deux venaient de mes propres expériences
+d'orphelin de l'exécution précédente.
