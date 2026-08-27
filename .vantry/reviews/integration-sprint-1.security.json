@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T00:35:42Z",
-  "head": "d31d91867043b3c7148c67a0f4d87d427a21a856",
+  "at": "2026-08-27T01:34:16Z",
+  "head": "396eeda522ad4dc56ce6ade2e627157949947f02",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -45,7 +45,8 @@
     "apps/worker/src/sources/assiste/** — decide qu une candidature ne part pas seule",
     "apps/web/app/entree/** — c est la que la garde « rien ne sort » se leve",
     "packages/documents/** — engendre ce qui partira en votre nom, a partir de votre parcours",
-    "apps/web/app/arret/** — le rendre inopérant serait la pire régression de ce produit"
+    "apps/web/app/arret/** — le rendre inopérant serait la pire régression de ce produit",
+    "apps/web/app/approbations/** — c est ici que quelqu un autorise un envoi"
   ],
   "notes": [
     "data-authz : le schéma `worker` n'est atteignable par aucun rôle client. `revoke all` sur le schéma, les tables et les fonctions, plus `alter default privileges` pour les tables à venir. Deux tests le vérifient, dont un sur has_schema_privilege('anon','worker','USAGE').",
@@ -115,7 +116,11 @@
     "La limite de cette immuabilite est nommee : l UPDATE est refuse sans exception, la SUPPRESSION passe par un drapeau de session explicite que seul le parcours d effacement pose. REQ-013 protege de la correction silencieuse ; REQ-014 protege le droit d effacer. Le drapeau n ouvre PAS l UPDATE — sinon « je supprime » deviendrait « je corrige ».",
     "JOB-041 : un refus de modification est DEFINITIF pour la candidature, et il n existe aucune fonction ni action serveur pour l annuler — un chemin qui n existe pas ne se prend pas par erreur. La cle est prefixee par le champ : sans prefixe, refuser une phrase en annulerait une autre que la personne n a jamais regardee. La cle recue du formulaire est validee contre un motif strict avant d entrer dans une liste dont elle ne sortira plus.",
     "JOB-045 : la reconnaissance d une question de screening est faite par MOTIFS et non par un modele. Un modele repondrait la reponse d une AUTRE question une fois sur dix, et une mauvaise reponse de screening est une affirmation fausse envoyee a un recruteur sous le nom de quelqu un. Le systeme est volontairement peu couvrant : ambigu ou inconnu = escalade.",
-    "`validee_le` distingue une SUGGESTION d une REPONSE. Sans elle, la bibliotheque se remplirait de reponses plausibles qu un modele aurait posees et que l agent enverrait."
+    "`validee_le` distingue une SUGGESTION d une REPONSE. Sans elle, la bibliotheque se remplirait de reponses plausibles qu un modele aurait posees et que l agent enverrait.",
+    "JOB-048 : l echeance est RELUE cote serveur avant d approuver, pas seulement au moment de l affichage. Entre l affichage de la file et le clic, l offre a pu expirer — se fier a ce qui etait affiche revient a decider dans un monde perime, et REQ-010 interdit d envoyer apres coup.",
+    "Le motif de refus est valide contre une liste close cote serveur, et un motif hors vocabulaire n est PAS corrige vers « autre » : il serait compte comme un vrai motif et fausserait ce que REQ-006 en tire.",
+    "Les raccourcis clavier A et R sont ignores dans un champ de saisie. Envoyer une candidature parce que quelqu un tapait « a » dans sa note serait le pire defaut possible de cet ecran.",
+    "Collision de noms levee : `MotifRefus` designait a la fois pourquoi l AGENT n a pas le droit d agir et pourquoi LA PERSONNE a ecarte une offre. Deux concepts homonymes finissent par etre manipules l un pour l autre — ici, l un autorise un envoi et l autre l empeche."
   ],
   "findings": [
     {

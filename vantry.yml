@@ -101,6 +101,8 @@ sensitive_paths:
   # JOB-053 : l'arrêt d'urgence. Le rendre inopérant serait la pire régression
   # possible de ce produit.
   - "apps/web/app/arret/**"
+  # JOB-048 : c'est ici que quelqu'un autorise un envoi.
+  - "apps/web/app/approbations/**"
   - "apps/web/app/auth/**"
   - "apps/worker/src/submission/**"
   - "apps/worker/src/contacts/**"
