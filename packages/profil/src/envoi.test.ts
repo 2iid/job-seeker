@@ -1,10 +1,20 @@
+/**
+ * NOTE (ADR-0003, 2026-08-27) — les fixtures de ce fichier utilisaient le canal
+ * 'ats'. Elles ont été écrites quand un canal ATS pouvait envoyer seul ; huit
+ * d'entre elles sont tombées le jour où le produit a cessé de l'honorer.
+ *
+ * Elles sont passées au canal 'email' plutôt qu'ajustées une par une : ce sont
+ * les contrôles EN AVAL — mandat, quota, plage horaire — qu'elles vérifient, et
+ * le courriel est désormais le seul canal où ces contrôles sont atteints.
+ * Le refus par canal a ses propres tests dans `canal.test.ts`.
+ */
 import { describe, expect, it } from 'vitest'
 import { mandatCourant, minutesLocales, peutEnvoyer, type EtatEnvoi, type Mandat } from './envoi.ts'
 
 const MAINTENANT = new Date('2026-08-26T12:00:00Z')
 
 const mandat = (o: Partial<Mandat> = {}): Mandat => ({
-  canal: 'ats',
+  canal: 'email',
   cran: 'agir-seul',
   accordeLe: '2026-08-01T00:00:00Z',
   expireLe: '2026-12-31T00:00:00Z',
@@ -36,13 +46,13 @@ describe('l’ordre des vérifications EST le message', () => {
     const d = peutEnvoyer(etat({
       suppressionDemandeeLe: '2026-08-27T09:00:00Z',
       arretUrgenceLe: '2026-08-27T09:00:00Z',
-    }), 'ats', MAINTENANT)
+    }), 'email', MAINTENANT)
     expect(d.envoyer === false && d.motif).toBe('suppression-en-cours')
     expect(d.envoyer === false && d.enFile).toBe(false)
   })
 
   it('… et elle bloque même un profil parfaitement mandaté', () => {
-    const d = peutEnvoyer(etat({ suppressionDemandeeLe: '2026-08-27T09:00:00Z' }), 'ats', MAINTENANT)
+    const d = peutEnvoyer(etat({ suppressionDemandeeLe: '2026-08-27T09:00:00Z' }), 'email', MAINTENANT)
     expect(d.envoyer).toBe(false)
   })
 
@@ -55,40 +65,40 @@ describe('l’ordre des vérifications EST le message', () => {
       envoyesAujourdHui: 999,
       minutesLocales: 3 * 60,
       mandats: [],
-    }), 'ats', MAINTENANT)
+    }), 'email', MAINTENANT)
     expect(d.envoyer).toBe(false)
     expect(d.envoyer === false && d.motif).toBe('arret-urgence')
     expect(d.envoyer === false && d.enFile).toBe(false)
   })
 
   it('le parcours d’entrée passe avant le cran et le mandat', () => {
-    const d = peutEnvoyer(etat({ parcoursTermineLe: null, mandats: [] }), 'ats', MAINTENANT)
+    const d = peutEnvoyer(etat({ parcoursTermineLe: null, mandats: [] }), 'email', MAINTENANT)
     expect(d.envoyer === false && d.motif).toBe('parcours-en-cours')
   })
 })
 
 describe('mandat — REQ-009', () => {
   it('autorise quand tout est réuni', () => {
-    const d = peutEnvoyer(etat(), 'ats', MAINTENANT)
+    const d = peutEnvoyer(etat(), 'email', MAINTENANT)
     expect(d.envoyer).toBe(true)
   })
 
   it('refuse sans mandat, même au cran maximal', () => {
-    expect(peutEnvoyer(etat({ mandats: [] }), 'ats', MAINTENANT).envoyer).toBe(false)
+    expect(peutEnvoyer(etat({ mandats: [] }), 'email', MAINTENANT).envoyer).toBe(false)
   })
 
   it('un mandat EXPIRÉ ne vaut plus rien', () => {
     // Une échéance existe pour être atteinte : un mandat sans fin est un
     // mandat qu'on oublie d'avoir donné.
     const d = peutEnvoyer(
-      etat({ mandats: [mandat({ expireLe: '2026-08-25T00:00:00Z' })] }), 'ats', MAINTENANT,
+      etat({ mandats: [mandat({ expireLe: '2026-08-25T00:00:00Z' })] }), 'email', MAINTENANT,
     )
     expect(d.envoyer === false && d.motif).toBe('mandat-expire')
   })
 
   it('un mandat RÉVOQUÉ ne vaut plus rien non plus', () => {
     const d = peutEnvoyer(
-      etat({ mandats: [mandat({ revoqueLe: '2026-08-20T00:00:00Z' })] }), 'ats', MAINTENANT,
+      etat({ mandats: [mandat({ revoqueLe: '2026-08-20T00:00:00Z' })] }), 'email', MAINTENANT,
     )
     expect(d.envoyer === false && d.motif).toBe('mandat-revoque')
   })
@@ -102,7 +112,7 @@ describe('mandat — REQ-009', () => {
         mandat({ accordeLe: '2026-08-01T00:00:00Z' }),
         mandat({ accordeLe: '2026-08-20T00:00:00Z', revoqueLe: '2026-08-20T00:00:00Z' }),
       ],
-      'ats', MAINTENANT,
+      'email', MAINTENANT,
     )
     expect(m?.revoqueLe).not.toBeNull()
   })
@@ -110,7 +120,7 @@ describe('mandat — REQ-009', () => {
   it('un mandat sur un AUTRE canal ne vaut pas pour celui-ci', () => {
     // « Canal par canal » est la promesse de REQ-009 : autoriser l'envoi de
     // candidatures ne vaut pas autorisation d'écrire à des recruteurs.
-    const d = peutEnvoyer(etat({ mandats: [mandat({ canal: 'email' })] }), 'ats', MAINTENANT)
+    const d = peutEnvoyer(etat({ mandats: [mandat({ canal: 'ats' })] }), 'email', MAINTENANT)
     expect(d.envoyer === false && d.motif).toBe('mandat-absent')
   })
 })
@@ -119,18 +129,18 @@ describe('quota et plage — ils METTENT EN FILE, ils ne jettent pas', () => {
   it('le quota atteint met en file', () => {
     // Jeter la candidature punirait quelqu'un d'avoir trouvé trop d'offres le
     // même jour.
-    const d = peutEnvoyer(etat({ envoyesAujourdHui: 10 }), 'ats', MAINTENANT)
+    const d = peutEnvoyer(etat({ envoyesAujourdHui: 10 }), 'email', MAINTENANT)
     expect(d.envoyer === false && d.motif).toBe('quota-atteint')
     expect(d.envoyer === false && d.enFile).toBe(true)
     expect(d.envoyer === false && d.explication).toMatch(/pas perdue/)
   })
 
   it('un quota de zéro arrête tout sans être un arrêt d’urgence', () => {
-    expect(peutEnvoyer(etat({ quotaQuotidien: 0 }), 'ats', MAINTENANT).envoyer).toBe(false)
+    expect(peutEnvoyer(etat({ quotaQuotidien: 0 }), 'email', MAINTENANT).envoyer).toBe(false)
   })
 
   it('hors plage horaire, on attend l’ouverture', () => {
-    const d = peutEnvoyer(etat({ minutesLocales: 6 * 60 }), 'ats', MAINTENANT)
+    const d = peutEnvoyer(etat({ minutesLocales: 6 * 60 }), 'email', MAINTENANT)
     expect(d.envoyer === false && d.motif).toBe('hors-plage')
     expect(d.envoyer === false && d.enFile).toBe(true)
   })
@@ -139,9 +149,9 @@ describe('quota et plage — ils METTENT EN FILE, ils ne jettent pas', () => {
     // Quelqu'un peut vouloir que l'agent travaille la nuit, pour un marché
     // dans un autre fuseau que le sien.
     const nuit = etat({ plageDebutMinutes: 22 * 60, plageFinMinutes: 6 * 60 })
-    expect(peutEnvoyer({ ...nuit, minutesLocales: 23 * 60 }, 'ats', MAINTENANT).envoyer).toBe(true)
-    expect(peutEnvoyer({ ...nuit, minutesLocales: 2 * 60 }, 'ats', MAINTENANT).envoyer).toBe(true)
-    expect(peutEnvoyer({ ...nuit, minutesLocales: 12 * 60 }, 'ats', MAINTENANT).envoyer).toBe(false)
+    expect(peutEnvoyer({ ...nuit, minutesLocales: 23 * 60 }, 'email', MAINTENANT).envoyer).toBe(true)
+    expect(peutEnvoyer({ ...nuit, minutesLocales: 2 * 60 }, 'email', MAINTENANT).envoyer).toBe(true)
+    expect(peutEnvoyer({ ...nuit, minutesLocales: 12 * 60 }, 'email', MAINTENANT).envoyer).toBe(false)
   })
 })
 
@@ -169,14 +179,14 @@ describe('un mandat daté du futur n’est pas en vigueur', () => {
     // import pose une date en avance — et il vaudrait alors autorisation.
     const m = mandatCourant(
       [mandat({ accordeLe: '2027-01-01T00:00:00Z' }), mandat({ accordeLe: '2026-08-01T00:00:00Z' })],
-      'ats', MAINTENANT,
+      'email', MAINTENANT,
     )
     expect(m?.accordeLe).toBe('2026-08-01T00:00:00Z')
   })
 
   it('et s’il est le seul, il n’autorise rien', () => {
     const d = peutEnvoyer(
-      etat({ mandats: [mandat({ accordeLe: '2027-01-01T00:00:00Z' })] }), 'ats', MAINTENANT,
+      etat({ mandats: [mandat({ accordeLe: '2027-01-01T00:00:00Z' })] }), 'email', MAINTENANT,
     )
     expect(d.envoyer === false && d.motif).toBe('mandat-absent')
   })

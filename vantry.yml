@@ -124,3 +124,16 @@ sensitive_paths:
   - ".env.example"
   # Affaiblir un scanner de secrets est un changement de sécurité.
   - ".gitleaks.toml"
+# ---------------------------------------------------------------- acceptance
+# Les promesses qui SURVIVENT au ticket. Ajoutées à la fin d'une issue, quand
+# elles passent, et jamais retirées : une régression sur REQ-011 dans six mois
+# bloque le push de quelqu'un qui n'en a jamais entendu parler.
+#
+# NOTE (2026-08-27) : ce bloc n'existait pas après 63 issues livrées — une
+# dérive par rapport à AGENTS.md, pas une décision. Les deux premières entrées
+# sont posées ici avec JOB-049 ; les issues déjà livrées ne sont PAS
+# reconstituées rétroactivement, ce qui serait inventer des critères après coup.
+acceptance:
+  - "AC-1 | REQ-011 | un canal ATS ne déclenche aucun envoi, même cadran sur agir-seule et mandat valide | pnpm exec vitest run packages/profil/src/canal.test.ts"
+  - "AC-2 | REQ-011 | une destination sortante ne peut pas venir du texte d une annonce | pnpm exec vitest run apps/worker/src/envoi/destination.test.ts apps/worker/src/envoi/etanche.test.ts"
+

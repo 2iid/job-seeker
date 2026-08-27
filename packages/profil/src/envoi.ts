@@ -9,8 +9,11 @@
  *   1. ARRÊT D'URGENCE      — rien ne passe, sans négociation.
  *   2. PARCOURS D'ENTRÉE    — non terminé, rien ne sort (JOB-081).
  *   3. CRAN DU CANAL        — en dessous d'« agir-seul », on prépare, on n'envoie pas.
- *   4. MANDAT               — REQ-009 : valide À L'INSTANT DE L'EXÉCUTION.
- *   5. QUOTA ET PLAGE       — combien, et à quelles heures.
+ *   4. CAPACITÉ DU CANAL    — ADR-0003 : « agir seule » sur un canal ATS est
+ *                             une valeur qu'on REFUSE D'HONORER, pas une
+ *                             valeur interdite de choisir.
+ *   5. MANDAT               — REQ-009 : valide À L'INSTANT DE L'EXÉCUTION.
+ *   6. QUOTA ET PLAGE       — combien, et à quelles heures.
  *
  * ── « Vérifié au moment de l'exécution, pas seulement à la mise en file » ──
  *
@@ -27,9 +30,10 @@
  * d'offres le même jour.
  */
 
+import { accepteEnvoiAutonome, pourquoiPasSeul, type Canal } from './canal.ts'
 import type { Cran } from './autonomie.ts'
 
-export type Canal = 'ats' | 'email' | 'formulaire'
+export type { Canal }
 
 export type Mandat = {
   readonly canal: Canal
@@ -70,6 +74,7 @@ export type MotifBlocage =
   | 'arret-urgence'
   | 'parcours-en-cours'
   | 'cran-insuffisant'
+  | 'canal-sans-envoi-autonome'
   | 'mandat-absent'
   | 'mandat-expire'
   | 'mandat-revoque'
@@ -153,6 +158,20 @@ export function peutEnvoyer(
       'cran-insuffisant', false,
       'Sur ce canal, votre cadran dit que je prépare et que vous envoyez.',
     )
+  }
+
+  // APRÈS le cran, et l'ordre porte tout le sens.
+  //
+  // Si le cadran n'est pas sur « agir seule », la bonne réponse est l'ordinaire
+  // « je prépare, vous envoyez » — pas un exposé sur les limites du canal, que
+  // personne n'a demandé. Le refus ci-dessous ne s'adresse qu'à quelqu'un qui a
+  // EXPLICITEMENT choisi l'autonomie sur ce canal : lui seul mérite de savoir
+  // pourquoi son choix n'est pas exécuté.
+  //
+  // Et AVANT le mandat, parce que réclamer un mandat pour une action qu'on
+  // n'exécutera jamais ferait signer quelqu'un pour rien.
+  if (!accepteEnvoiAutonome(canal)) {
+    return refus('canal-sans-envoi-autonome', false, pourquoiPasSeul(canal))
   }
 
   const m = mandatCourant(e.mandats, canal, maintenant)
