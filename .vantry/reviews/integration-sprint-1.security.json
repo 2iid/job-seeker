@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T01:36:54Z",
-  "head": "86173839824f9606773cc5c4af96ec8ab5306357",
+  "at": "2026-08-27T01:55:40Z",
+  "head": "4898c4ea22d2ee69560cbda6fd3db171d5be0b6b",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -120,7 +120,11 @@
     "JOB-048 : l echeance est RELUE cote serveur avant d approuver, pas seulement au moment de l affichage. Entre l affichage de la file et le clic, l offre a pu expirer — se fier a ce qui etait affiche revient a decider dans un monde perime, et REQ-010 interdit d envoyer apres coup.",
     "Le motif de refus est valide contre une liste close cote serveur, et un motif hors vocabulaire n est PAS corrige vers « autre » : il serait compte comme un vrai motif et fausserait ce que REQ-006 en tire.",
     "Les raccourcis clavier A et R sont ignores dans un champ de saisie. Envoyer une candidature parce que quelqu un tapait « a » dans sa note serait le pire defaut possible de cet ecran.",
-    "Collision de noms levee : `MotifRefus` designait a la fois pourquoi l AGENT n a pas le droit d agir et pourquoi LA PERSONNE a ecarte une offre. Deux concepts homonymes finissent par etre manipules l un pour l autre — ici, l un autorise un envoi et l autre l empeche."
+    "Collision de noms levee : `MotifRefus` designait a la fois pourquoi l AGENT n a pas le droit d agir et pourquoi LA PERSONNE a ecarte une offre. Deux concepts homonymes finissent par etre manipules l un pour l autre — ici, l un autorise un envoi et l autre l empeche.",
+    "JOB-042 : une donnee proscrite par le marche vise est OMISE DU DOCUMENT, pas masquee a l affichage. Un PDF dont on a cache une image contient toujours l image, et une date de naissance retiree de l affichage reste dans les metadonnees. C est une protection de la personne, pas une preference de mise en page : sur certains marches, garder ces donnees fait ecarter le dossier sans lecture.",
+    "Seul `proscrite` omet. `inhabituelle` ne retire rien — retirer sur la foi d un usage reviendrait a decider a la place de quelqu un. Un marche non verifie n omet rien et le DIT.",
+    "JOB-043 : le PDF ne contient AUCUNE image ni XObject, et le test le relit avec pdf.js pour verifier que le texte en ressort. Un PDF-image ferait arriver la candidature VIDE dans l ATS de l employeur, et la personne ne le saurait jamais.",
+    "Encodage : les parentheses et l antislash sont echappes avant d entrer dans le flux PDF — une parenthese non echappee corrompt le fichier, et « (depuis 2021) » est une ligne de CV ordinaire. Un caractere hors WinAnsi est translittere ou rendu « ? », jamais converti en un octet qui produirait une lettre fausse."
   ],
   "findings": [
     {
