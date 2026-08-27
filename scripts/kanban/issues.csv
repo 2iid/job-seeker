@@ -49,7 +49,7 @@ JOB-047,Quotas journaliers et plages horaires dans le fuseau du candidat,EPIC 6 
 JOB-048,File d approbation utilisable au pouce et au clavier,EPIC 6 — Automatisation,frontend,frontend-engineer,P0,L,JOB-046;JOB-015,done,S4,apps/web/app/approbations/**;packages/profil/**;supabase/migrations/**,REQ-010,yes
 JOB-049,Dossier pret a envoyer et envoi autonome par courriel,EPIC 6 — Automatisation,backend,backend-engineer,P0,L,JOB-002;JOB-044,done,S5,apps/worker/src/envoi/**,REQ-011,yes
 JOB-050,Escalade sur champ inconnu ou anti-robot rencontre,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,backlog,S5,apps/worker/src/envoi/**,REQ-011,yes
-JOB-051,Idempotence d envoi et detection de doublon,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,backlog,S5,apps/worker/src/envoi/**,REQ-011,yes
+JOB-051,Idempotence d envoi et detection de doublon,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-049,done,S5,apps/worker/src/envoi/**,REQ-011,yes
 JOB-052,Défense contre l injection par le contenu d une offre,EPIC 6 — Automatisation,security,security-engineer,P0,M,JOB-044,done,S4,packages/llm-guard/**;tests/injection/**,REQ-011;REQ-016,yes
 JOB-053,Arrêt d urgence global effectif sous cinq secondes,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-047,done,S4,apps/web/app/arret/**;apps/web/components/**;supabase/migrations/**,REQ-012,yes
 JOB-054,Table de reçus immuable en insertion seule,EPIC 7 — Traçabilité,data,database-architect,P0,M,JOB-005,done,S4,supabase/migrations/**,REQ-013,yes

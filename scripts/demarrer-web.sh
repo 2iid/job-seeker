@@ -38,6 +38,51 @@
 # =============================================================================
 set -uo pipefail
 PORT="${PORT_WEB:-3100}"
+RACINE="$(cd "$(dirname "$0")/.." && pwd)"
+
+# =============================================================================
+#  Faucher NOTRE orphelin, et lui seul.
+#
+#  La trappe de nettoyage ci-dessous couvre TERM, INT et EXIT. Elle ne couvre
+#  pas SIGKILL — rien ne le couvre, c'est ce que SIGKILL veut dire. Or
+#  `verify.sh` finit par envoyer KILL quand TERM n'a pas suffi : le script meurt
+#  sans exécuter sa trappe, et le `next-server` PETIT-FILS survit, réparenté à
+#  init, en écoute sur le port. L'exécution suivante attend quatre-vingt-dix
+#  secondes puis échoue en accusant un « serveur d'une exécution précédente » —
+#  ce qu'il est, sans que personne ne puisse plus le rattacher à un parent.
+#
+#  Le nettoyage doit donc pouvoir se faire AU DÉMARRAGE, et c'est là que se
+#  joue la seule difficulté : ne jamais tuer le serveur de quelqu'un d'autre.
+#  Un balayage du port tuerait aussi bien le `next dev` d'un autre projet, ou
+#  un service sans rapport qu'on aurait mis là.
+#
+#  Le critère retenu est donc double, et vérifié sur le processus lui-même :
+#  c'est un `next-server`, ET son répertoire de travail est SOUS ce dépôt. Un
+#  serveur d'un autre projet ne satisfait jamais la seconde condition.
+#
+#  « Sous », et pas « égal à » : le premier jet comparait à la racine et ne
+#  trouvait jamais rien. `pnpm --filter @job-seeker/web start` lance Next depuis
+#  `apps/web/`, donc c'est ce répertoire-là que porte le processus. Le test l'a
+#  dit ; sans lui, la faucheuse aurait été un commentaire.
+# =============================================================================
+faucher_orphelin() {
+  local pid cmd cwd
+  for pid in $(lsof -nP -tiTCP:"$PORT" -sTCP:LISTEN 2>/dev/null); do
+    cmd="$(ps -o command= -p "$pid" 2>/dev/null)"
+    case "$cmd" in
+      *next-server*|*"next start"*) ;;
+      *) continue ;;
+    esac
+    cwd="$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1)"
+    case "$cwd" in
+      "$RACINE"|"$RACINE"/*) ;;
+      *) continue ;;
+    esac
+    echo "  · orphelin de ce dépôt sur le port $PORT (pid $pid) — fauché" >&2
+    kill -KILL "$pid" 2>/dev/null
+  done
+}
+faucher_orphelin
 
 # `--input-type=module` : le script mêle `import` et `await` de premier niveau,
 # et sans cette précision Node ne peut pas trancher entre CJS et ESM.

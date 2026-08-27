@@ -254,3 +254,30 @@ describe('la contrainte de cohérence de la confirmation', () => {
     ).rejects.toThrow(/destination_provenance/)
   })
 })
+
+describe('F27 — un dossier ne peut pas être rattaché à la mauvaise personne', () => {
+  it('REFUSE un dossier dont le profil ne correspond pas à l’opportunité', async () => {
+    // Le worker écrit avec service_role, qui contourne la RLS. Deux paramètres
+    // incohérents suffisaient donc à créer un dossier contenant le CV et la
+    // lettre d'Alice, mais VISIBLE PAR BOB — la politique de lecture s'appuie
+    // sur profile_id, le contenu appartient à l'opportunité.
+    // Nettoyer d'abord : sinon c'est la contrainte d'unicité qui parle, et le
+    // test passerait pour la mauvaise raison.
+    await c.query("delete from public.dossiers where canal = 'email'")
+    const profilBob = (await c.query<{ id: string }>(
+      'select id from public.profiles where user_id = $1', [bob])).rows[0]!.id
+    await expect(
+      c.query(
+        `insert into public.dossiers (profile_id, opportunite_id, canal)
+         values ($1, $2, 'email')`, [profilBob, opportunite]),
+    ).rejects.toThrow(/dossiers_appartiennent_a_leur_opportunite/)
+  })
+
+  it('et accepte le bon', async () => {
+    await c.query("delete from public.dossiers where canal = 'email'")
+    const { rowCount } = await c.query(
+      `insert into public.dossiers (profile_id, opportunite_id, canal)
+       values ($1, $2, 'email')`, [profilAlice, opportunite])
+    expect(rowCount).toBe(1)
+  })
+})

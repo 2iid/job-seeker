@@ -136,4 +136,5 @@ sensitive_paths:
 acceptance:
   - "AC-1 | REQ-011 | un canal ATS ne déclenche aucun envoi, même cadran sur agir-seule et mandat valide | pnpm exec vitest run packages/profil/src/canal.test.ts"
   - "AC-2 | REQ-011 | une destination sortante ne peut pas venir du texte d une annonce | pnpm exec vitest run apps/worker/src/envoi/destination.test.ts apps/worker/src/envoi/etanche.test.ts"
+  - "AC-3 | REQ-011 | un envoi n est jamais rejoue, meme apres un plantage du worker | pnpm exec vitest run tests/rls/idempotence-envoi.test.ts"
 

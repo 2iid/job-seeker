@@ -91,6 +91,10 @@ export async function enregistrer(db: pg.Client | pg.Pool, e: Enregistrement): P
              confirmation_recue_le = coalesce(excluded.confirmation_recue_le, public.dossiers.confirmation_recue_le),
              destination_adresse = coalesce(excluded.destination_adresse, public.dossiers.destination_adresse),
              destination_provenance = coalesce(excluded.destination_provenance, public.dossiers.destination_provenance),
+             -- La réclamation est RENDUE en même temps que l'issue est écrite.
+             -- Laisser un bail sur une ligne terminée la ferait relire plus tard
+             -- comme une interruption, ce qu'elle n'a pas été.
+             reclame_le = null, reclame_par = null, bail_jusqu_a = null,
              updated_at = now()`,
       [
         e.profileId, e.opportuniteId, e.canal,
