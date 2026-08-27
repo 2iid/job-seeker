@@ -27,7 +27,6 @@ type LigneRecu = {
   canal: string
   resultat: string
   envoye_le: string
-  cv_texte: string
   opportunites: { offres: { titre: string; employeur_affiche: string } } | null
 }
 
@@ -54,7 +53,11 @@ export default async function Recus() {
   const [{ data: recus }, { data: incidents }] = await Promise.all([
     supabase
       .from('recus')
-      .select('id, canal, resultat, envoye_le, cv_texte, opportunites(offres(titre, employeur_affiche))')
+      // `cv_texte` n'est PAS demandé : la liste ne l'affiche pas. Le charger
+      // ferait transiter le CV complet de deux cents candidatures pour ne rien
+      // en montrer — la donnée la plus lourde du produit, tirée pour rien.
+      // Un contenu qu'on ne montre pas est un contenu qu'on ne demande pas.
+      .select('id, canal, resultat, envoye_le, opportunites(offres(titre, employeur_affiche))')
       .order('envoye_le', { ascending: false })
       .limit(200)
       .returns<LigneRecu[]>(),
