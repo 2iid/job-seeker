@@ -140,3 +140,47 @@ describe('suppression — elle ARRÊTE avant d’effacer', () => {
     expect(rows[0]!.s).not.toBeNull()
   })
 })
+
+describe('« complet » est une propriété qui se dégrade toute seule', () => {
+  it('CHAQUE table portant un profile_id figure dans l’export', async () => {
+    // Deux tables ajoutées la même semaine — `dossiers` et `incidents` —
+    // manquaient à l'export sans que personne ne l'ait décidé. Ce n'était pas
+    // une négligence de leur auteur : c'est que « complet » ne se maintient pas
+    // tout seul, et que rien ne le surveillait.
+    //
+    // Ce test compare l'export au SCHÉMA plutôt qu'à une liste écrite à la
+    // main : une liste aurait exactement le même défaut que l'export.
+    const { rows } = await c.query<{ table_name: string }>(
+      `select c.table_name
+         from information_schema.columns c
+         join information_schema.tables t
+           on t.table_schema = c.table_schema and t.table_name = c.table_name
+        where c.table_schema = 'public' and c.column_name = 'profile_id'
+          and t.table_type = 'BASE TABLE'
+        order by c.table_name`,
+    )
+    expect(rows.length).toBeGreaterThan(5)
+
+    /**
+     * Les exclusions, chacune avec sa raison. Une exclusion sans raison est
+     * une omission qu'on a fini par accepter.
+     */
+    const EXCLUES: Record<string, string> = {
+      employeurs_suivis:
+        'référentiel partagé : ne contient aucune donnée personnelle, seulement le lien vers un employeur public',
+      profil_versions: 'exportée sous la clé versions_profil',
+      criteres_recherche: 'exportée sous la clé criteres',
+      reponses_reference: 'exportée sous la clé reponses',
+    }
+
+    const { rows: sortie } = await asUser(c, alice, (x) =>
+      x.query<{ e: Record<string, unknown> }>('select public.exporter_mes_donnees() as e'),
+    )
+    const exportKeys = new Set(Object.keys(sortie[0]!.e))
+
+    const manquantes = rows
+      .map((r) => r.table_name)
+      .filter((t) => !exportKeys.has(t) && !(t in EXCLUES))
+    expect(manquantes, 'table(s) à profile_id absentes de l’export').toEqual([])
+  })
+})

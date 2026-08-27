@@ -12,6 +12,7 @@ import type pg from 'pg'
 import type { Issue } from './envoyer.ts'
 import type { Dossier, EtatDossier } from './dossier.ts'
 import type { Canal } from '@job-seeker/profil'
+import { depuisDossier, ecrireRecu } from '../receipts/recu.ts'
 
 export type Statut =
   | 'en-file'
@@ -107,6 +108,29 @@ export async function enregistrer(db: pg.Client | pg.Pool, e: Enregistrement): P
     await db.query('update public.opportunites set statut = $2 where id = $1', [
       e.opportuniteId, statutPour(e.issue),
     ])
+
+    // REQ-013 — le reçu, DANS la même transaction que l'état de l'envoi.
+    //
+    // Les écrire séparément laisserait une fenêtre où le produit affirme avoir
+    // envoyé sans pouvoir dire quoi. C'est précisément le « trou » que
+    // l'exigence interdit, et l'écrire après coup le rendrait possible à chaque
+    // exécution plutôt qu'une fois sur mille.
+    //
+    // Seul un envoi RÉEL produit un reçu. Une préparation n'a rien fait sortir
+    // et n'a rien à prouver ; lui en donner un viderait le mot de son sens.
+    if (e.issue.type === 'envoye') {
+      await ecrireRecu(
+        db,
+        depuisDossier(e.dossier, {
+          profileId: e.profileId,
+          opportuniteId: e.opportuniteId,
+          cranAuMoment: e.issue.cranAuMoment,
+          mandatId: e.issue.mandatId,
+          resultat: 'envoye',
+        }),
+      )
+    }
+
     await db.query('commit')
   } catch (err) {
     await db.query('rollback')

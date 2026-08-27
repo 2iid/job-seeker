@@ -37,6 +37,7 @@ describe('issue → statut : « que doit faire la personne maintenant ? »', () 
     expect(statutPour({
       type: 'envoye', adresse: 'a@b.fr',
       confirmation: { reference: 'r', recuLe: 'x' },
+      cranAuMoment: 'agir-seul', mandatId: null,
     })).toBe('envoyee')
   })
 

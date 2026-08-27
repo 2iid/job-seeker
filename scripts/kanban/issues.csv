@@ -53,7 +53,7 @@ JOB-051,Idempotence d envoi et detection de doublon,EPIC 6 — Automatisation,ba
 JOB-052,Défense contre l injection par le contenu d une offre,EPIC 6 — Automatisation,security,security-engineer,P0,M,JOB-044,done,S4,packages/llm-guard/**;tests/injection/**,REQ-011;REQ-016,yes
 JOB-053,Arrêt d urgence global effectif sous cinq secondes,EPIC 6 — Automatisation,backend,backend-engineer,P0,M,JOB-047,done,S4,apps/web/app/arret/**;apps/web/components/**;supabase/migrations/**,REQ-012,yes
 JOB-054,Table de reçus immuable en insertion seule,EPIC 7 — Traçabilité,data,database-architect,P0,M,JOB-005,done,S4,supabase/migrations/**,REQ-013,yes
-JOB-055,Écriture d un reçu pour chaque action sortante,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-054;JOB-049,backlog,S5,apps/worker/src/receipts/**,REQ-013,yes
+JOB-055,Écriture d un reçu pour chaque action sortante,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-054;JOB-049,done,S5,apps/worker/src/receipts/**,REQ-013,yes
 JOB-056,Consultation et export des reçus par leur propriétaire,EPIC 7 — Traçabilité,frontend,frontend-engineer,P0,S,JOB-055;JOB-016,backlog,S5,apps/web/app/recus/**,REQ-013,no
 JOB-057,Journal d audit incluant les accès du support,EPIC 7 — Traçabilité,security,security-engineer,P0,M,JOB-005,done,S5,packages/audit/**;supabase/migrations/**,REQ-014,yes
 JOB-058,Export de données en libre-service,EPIC 7 — Traçabilité,backend,backend-engineer,P0,M,JOB-057,done,S5,supabase/migrations/**;packages/profil/**,REQ-014,yes

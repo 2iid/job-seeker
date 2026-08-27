@@ -35,7 +35,13 @@ beforeAll(async () => {
     [profil, offre])).rows[0]!.id
 }, 30_000)
 
-beforeEach(async () => { await c.query('delete from public.dossiers') })
+// Borné à SON opportunité. Un `delete from public.dossiers` sans clause
+// effaçait les lignes de dossiers.test.ts, qui tourne en parallèle sur la même
+// base : la suite échouait selon l'ordonnancement, ce qui est pire qu'un échec
+// franc — on cherche le défaut dans le code livré, pas dans le harnais.
+beforeEach(async () => {
+  await c.query('delete from public.dossiers where opportunite_id = $1', [opportunite])
+})
 
 afterAll(async () => {
   await c.query("select set_config('app.suppression_compte', 'true', false)")

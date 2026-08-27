@@ -170,7 +170,11 @@ describe('enregistrer — le dossier et le statut, ou ni l’un ni l’autre', (
       profileId: profilAlice, opportuniteId: opportunite, canal: 'email',
       dossier: { opportuniteId: opportunite, canal: 'email', pieces: [], questionsSansReponse: [] },
       etat: { pret: true },
-      issue: { type: 'envoye', adresse: 'a@exemple.fr', confirmation: { reference: 'r', recuLe: '2026-08-27T10:00:00Z' } },
+      issue: {
+        type: 'envoye', adresse: 'a@exemple.fr',
+        confirmation: { reference: 'r', recuLe: '2026-08-27T10:00:00Z' },
+        cranAuMoment: 'agir-seul', mandatId: null,
+      },
       destinationProvenance: 'contact-enregistre',
     })
     const { rows } = await c.query<{ statut: string; issue: string }>(
@@ -263,7 +267,9 @@ describe('F27 — un dossier ne peut pas être rattaché à la mauvaise personne
     // sur profile_id, le contenu appartient à l'opportunité.
     // Nettoyer d'abord : sinon c'est la contrainte d'unicité qui parle, et le
     // test passerait pour la mauvaise raison.
-    await c.query("delete from public.dossiers where canal = 'email'")
+    await c.query(
+      "delete from public.dossiers where canal = 'email' and opportunite_id = $1",
+      [opportunite])
     const profilBob = (await c.query<{ id: string }>(
       'select id from public.profiles where user_id = $1', [bob])).rows[0]!.id
     await expect(
@@ -274,7 +280,9 @@ describe('F27 — un dossier ne peut pas être rattaché à la mauvaise personne
   })
 
   it('et accepte le bon', async () => {
-    await c.query("delete from public.dossiers where canal = 'email'")
+    await c.query(
+      "delete from public.dossiers where canal = 'email' and opportunite_id = $1",
+      [opportunite])
     const { rowCount } = await c.query(
       `insert into public.dossiers (profile_id, opportunite_id, canal)
        values ($1, $2, 'email')`, [profilAlice, opportunite])

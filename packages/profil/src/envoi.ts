@@ -36,6 +36,13 @@ import type { Cran } from './autonomie.ts'
 export type { Canal }
 
 export type Mandat = {
+  /**
+   * Facultatif dans le type, obligatoire dans la vie : un reçu doit pouvoir
+   * dire SOUS QUEL mandat l'envoi est parti (REQ-013). Il reste optionnel pour
+   * que les tests de décision n'aient pas à inventer un identifiant qui ne
+   * décide de rien.
+   */
+  readonly id?: string
   readonly canal: Canal
   readonly cran: Cran
   readonly accordeLe: string

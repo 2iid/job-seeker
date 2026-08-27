@@ -39,8 +39,19 @@ export type Transport = (
 export type Issue =
   /** Canal ATS, ou cadran en dessous d'« agir seule » : le dossier attend. */
   | { readonly type: 'prepare'; readonly annonce: string; readonly pret: boolean }
-  /** Parti, avec la preuve de ce que le destinataire a répondu. */
-  | { readonly type: 'envoye'; readonly confirmation: Confirmation; readonly adresse: string }
+  /**
+   * Parti, avec la preuve de ce que le destinataire a répondu — ET le contexte
+   * d'autorisation du moment. Le cran et le mandat sont portés par l'issue
+   * plutôt que relus plus tard : les relire au moment d'écrire le reçu
+   * donnerait l'état d'AUJOURD'HUI, qui n'explique rien de ce qui s'est passé.
+   */
+  | {
+      readonly type: 'envoye'
+      readonly confirmation: Confirmation
+      readonly adresse: string
+      readonly cranAuMoment: string
+      readonly mandatId: string | null
+    }
   /** Refusé par nos propres règles. Terminal : réessayer ne changera rien. */
   | { readonly type: 'refuse'; readonly motif: string; readonly explication: string }
   /**
@@ -144,7 +155,13 @@ export async function executer(c: Contexte): Promise<Issue> {
 
   try {
     const confirmation = await c.transport(c.destination, c.dossier)
-    return { type: 'envoye', confirmation, adresse: adresseDe(c.destination) }
+    return {
+      type: 'envoye',
+      confirmation,
+      adresse: adresseDe(c.destination),
+      cranAuMoment: c.etat.cranDuCanal,
+      mandatId: decision.mandat.id ?? null,
+    }
   } catch (e) {
     if (e instanceof PanneAvantEnvoi) {
       // Rien n'est parti : la file peut réessayer. On relaie, on n'avale pas.
