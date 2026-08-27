@@ -754,6 +754,30 @@ commande que `verify.sh`, et annoté un reçu `fail` sans avoir lu son verdict. 
 `pass` à la relance, mais l'ordre reste : **lire le verdict, puis annoter** — jamais dans la même
 commande.
 
+## Exécution 33 — 2026-08-27 · le support voit l'état, jamais le contenu
+
+| # | issue | la question | choisi | écarté | règle | pourquoi |
+|---|---|---|---|---|---|---|
+| 142 | JOB-057 | Comment empêcher le support de lire un CV ? | **Un privilège de COLONNE** | Un contrôle d'écran | BRIEF | REQ-014 dit « testé au niveau de la base ». Un contrôle applicatif ne tient pas contre un export improvisé ou une console ouverte un soir d'incident — **or c'est exactement là qu'on lit un CV « pour comprendre le problème »**. |
+| 143 | JOB-057 | Révoquer, ou ne jamais accorder ? | **Ne jamais accorder** | Révoquer | *garde-fou* | Une garantie fondée sur un `revoke` se perd au prochain `grant all`. |
+| 144 | JOB-057 | Que fait une suppression de compte au journal d'audit ? | **Elle l'ANONYMISE** | Elle l'efface | BRIEF | Il documente qui a accédé, **support compris**. L'effacer donnerait à un support un moyen très simple de faire disparaître ses propres accès. La ligne reste, son **lien** part. |
+| 145 | JOB-058 | Export en `security definer` ? | **Non — droits de l'appelant** | `security definer` | *garde-fou* | Ce serait un contournement de toute la RLS, **offert sous couvert d'un droit de la personne** — et le premier export du profil d'autrui ne se remarquerait pas. |
+| 146 | JOB-059 | « En cours de suppression » : instant ou état ? | **Un état** | Un instant | BRIEF | Une suppression n'est pas atomique. Sans état, un envoi part pendant les secondes qui séparent la demande de l'effacement — **et la preuve de cet envoi est effacée trois secondes plus tard.** |
+
+**Deux mécanismes, deux questions.** La première version accordait des colonnes soigneusement choisies
+et oubliait la RLS : le support pouvait lire *des colonnes de zéro ligne*. La RLS répond « de **qui**
+puis-je voir les lignes ? », le privilège de colonne répond « **quoi**, dans ces lignes ? ». Chacun sans
+l'autre est une demi-garantie, et les confondre mène à l'un des deux échecs — un support impuissant, ou
+un support qui lit tout.
+
+**Une supposition corrigée.** J'avais réservé le journal d'audit au support. C'était une supposition,
+pas une exigence — et la fonction d'export l'a révélée en butant dessus. REQ-014 place ce journal dans
+les droits de la personne : le « y compris ceux du support » n'a de sens que si quelqu'un peut le lire,
+**d'abord celui dont on a lu le dossier**.
+
+**Et la barrière a fait son travail sur moi.** Le commit du verdict de sécurité a périmé le reçu, et le
+push a été refusé. C'est exactement ce pour quoi elle existe.
+
 ## État à la fin de cette exécution
 
 - **Fusionné :** rien — `main` exige une PR, deux sont ouvertes et attendent 2iD.
