@@ -962,3 +962,46 @@ livrée est DÉRIVÉE de l'originale par programme, ligne à ligne.
 l'application. Diagnostic mesuré plutôt que supposé : smoke relancé seul contre
 un serveur neuf, zéro erreur — les deux venaient de mes propres expériences
 d'orphelin de l'exécution précédente.
+
+## Exécution 38 — JOB-056, consultation et export des reçus
+
+**Décidé sans demander.** La page des reçus montre AUSSI les incidents ouverts,
+en tête (règle 3 — REQ-013 parle de « savoir ce que le recruteur a réellement
+reçu »). Une page de preuves qui n'afficherait que les preuves se lirait comme
+complète alors qu'elle ne l'est pas. Le réflexe est de ranger les mauvaises
+nouvelles dans un onglet à part ; or quelqu'un qui vient vérifier ce qui est
+parti en son nom vient précisément pour les trous.
+
+**Décidé sans demander.** Deux formats d'export (règle 2 — additif) : le lot en
+JSON parce qu'on l'emporte, un reçu isolé en texte parce qu'on l'ouvre pour le
+lire ou le montrer.
+
+**Décidé sans demander.** Les exports refusent en 401 au lieu de rediriger vers
+la connexion (règle 3 — REQ-013 dit « exportable »). Une redirection est
+confortable pour un humain et trompeuse pour un script : `curl -L` la suit et
+enregistre une page HTML sous le nom d'un fichier de reçus. Mon premier jet du
+lot redirigeait — ce que mon propre commentaire de smoke qualifiait de trompeur
+deux fichiers plus loin.
+
+**Deux corrections trouvées en revue de mon propre travail :** le nom du fichier
+téléchargé ne tire aucun caractère du contenu (un intitulé d'offre dans un
+`Content-Disposition` est une injection d'en-tête, et l'identifiant plus la date
+suffisent) ; et la liste demandait `cv_texte` sans jamais l'afficher — deux
+cents CV tirés pour rien, contraire à la minimisation de F19.
+
+**Constaté et NON corrigé ici.** Le produit n'a aucune navigation transverse :
+dix écrans, aucun moyen d'aller de l'un à l'autre. `/recus` fonctionne mais
+personne ne le trouvera sans son adresse — REQ-013 techniquement satisfait,
+pratiquement non. Enregistré en JOB-094 avec son fichier de détail, plutôt que
+d'élargir en silence une issue de taille S.
+
+**Une fausse piste, et ce qu'elle a expliqué.** J'ai d'abord vu `/recus`
+rediriger vers `/fr/recus` et cru à un défaut de locale. C'était un serveur
+périmé qui répondait. Puis la barrière a refusé de démarrer : le port 3100 est
+tenu par un AUTRE projet de la machine, avec un onglet Chrome dessus. La
+faucheuse de l'exécution 36 l'a épargné — c'est exactement sa borne de sûreté.
+Vérification refaite sur un port libre, sans toucher au serveur d'autrui.
+
+Cela explique rétrospectivement les deux erreurs « router state header » de
+l'exécution 37 : le navigateur pointé sur 3100 pour l'autre projet frappait le
+nôtre quand il prenait le port.
