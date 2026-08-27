@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T10:44:10Z",
-  "head": "d0f036d2218a8d59b9a18cf8c9bbd1177240c74e",
+  "at": "2026-08-27T12:05:21Z",
+  "head": "1d0fd1b2c04fd92ccdf0eb06e5d2fa4bd712f027",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -131,7 +131,8 @@
     "Remplir sans envoyer aurait deja ete trop : un formulaire ATS enregistre souvent une candidature « brouillon » des la premiere saisie, et le recruteur la voit.",
     "Un anti-robot detecte ARRETE le sondage. Aucune tentative de resolution, aucune recherche de porte de service — et ADR-0003 rend cette regle structurelle en supprimant le chemin de code ou la tentation existait.",
     "ADR-0003 : `apps/worker/src/envoi/**` devient le SEUL canal d envoi autonome, et entre dans les chemins sensibles. Le risque se concentre desormais la ou les gardes existent — mandat, quota, plage horaire, arret d urgence, recu immuable.",
-    "JOB-089 : le filtre de lieu de The Muse est silencieusement permissif — 0 concordance sur 33 pour Dakar et Lyon, alors que l API annonce 6 340 offres. Le connecteur ne reprend JAMAIS le compte de la source : il filtre sur le lieu reellement rendu et ne compte que ce qui passe. Une source qui rend des offres hors sujet sans le dire est une source qui nous ferait mentir a notre tour."
+    "JOB-089 : le filtre de lieu de The Muse est silencieusement permissif — 0 concordance sur 33 pour Dakar et Lyon, alors que l API annonce 6 340 offres. Le connecteur ne reprend JAMAIS le compte de la source : il filtre sur le lieu reellement rendu et ne compte que ce qui passe. Une source qui rend des offres hors sujet sans le dire est une source qui nous ferait mentir a notre tour.",
+    "F19 CLOS. Offrir un résumé sans obliger à s en servir n aurait rien fermé : la contrainte est portée par la signature, et le compilateur a refusé les onze appels qui passaient un profil libre. Le scoring tourne sur chaque offre plusieurs fois par jour pendant des mois — c est de loin le chemin par lequel un profil part le plus souvent chez un sous-traitant, et une minimisation qui ne se fait pas maintenant ne se fait jamais : après coup, tout est déjà parti."
   ],
   "findings": [
     {
@@ -248,8 +249,8 @@
       "file": "apps/worker/src/matching/score.ts",
       "line": 0,
       "summary": "Le profil du candidat est inséré en clair dans le message envoyé au modèle. C est necessaire pour scorer, mais cela signifie que du CV, des employeurs et des dates partent chez un sous-traitant a chaque evaluation.",
-      "fix": "Minimiser ce qui part : JOB-037 (reproductibilite du score) doit definir un RESUME de profil dedie au scoring plutot que d envoyer le profil complet, et OBL-1 impose de nommer le fournisseur de modele comme sous-traitant dans le registre des traitements. A rappeler dans les criteres de JOB-037 et JOB-057.",
-      "status": "reporté à JOB-037 et JOB-057"
+      "fix": "Le scoring reçoit un RÉSUMÉ imposé par le TYPE, jamais le profil complet. Il ne porte ni nom, ni courriel, ni téléphone, ni date au jour près, ni année de diplôme ; la ville reste, la rue non. La détection de fuite porte sur le texte SÉRIALISÉ, pas sur la forme de l objet — une adresse recopiée dans une description partirait quand même.",
+      "status": "corrigé — JOB-037"
     },
     {
       "severity": "medium",
