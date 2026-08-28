@@ -107,6 +107,10 @@ sensitive_paths:
   # nom de quelqu'un sort par là.
   - "apps/worker/src/envoi/**"
   - "apps/web/app/auth/**"
+  # La liste d'autorisation des redirections post-connexion vit ici. Une entrée
+  # trop large y serait une redirection ouverte, offerte par la configuration
+  # plutôt que par le code — et invisible à la lecture du code.
+  - "supabase/config.toml"
   # JOB-073 : décide qui est limité et sur quelle clé. Une erreur ici ne casse
   # rien de visible — elle rend simplement la limitation décorative.
   - "apps/web/lib/limitation/**"

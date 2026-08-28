@@ -21,17 +21,33 @@
 
 export const DESTINATIONS_AUTORISEES = [
   '/',
-  '/accueil',
+  '/entree',
   '/opportunites',
   '/approbations',
-  '/suivi',
   '/profil',
+  '/criteres',
+  '/recus',
+  // Écrans prévus, pas encore construits. Ils restent déclarés : les retirer
+  // puis les remettre au moment où l'écran arrive est une occasion d'oublier.
+  '/accueil',
+  '/suivi',
   '/agent',
 ] as const
 
 export type DestinationAutorisee = (typeof DESTINATIONS_AUTORISEES)[number]
 
-export const DESTINATION_PAR_DEFAUT: DestinationAutorisee = '/accueil'
+/**
+ * Où l'on atterrit après une connexion sans destination demandée.
+ *
+ * C'était `/accueil` — un écran qui n'a jamais été construit. Toute personne
+ * qui se connectait tombait donc sur un 404, et la liste d'autorisation avait
+ * l'air correcte : elle contient bien `/accueil`. Une liste de chemins
+ * AUTORISÉS ne dit rien de leur EXISTENCE, et rien ne reliait les deux.
+ *
+ * `redirection.test.ts` vérifie désormais que cette valeur correspond à une
+ * page réelle du dossier `app/`.
+ */
+export const DESTINATION_PAR_DEFAUT: DestinationAutorisee = '/entree'
 
 /** Espace, tabulation, saut de ligne, octet nul : tout ce qui est <= 0x20. */
 function contientCaractereDeControle(valeur: string): boolean {

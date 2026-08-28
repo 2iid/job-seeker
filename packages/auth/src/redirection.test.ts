@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DESTINATION_PAR_DEFAUT, destinationSure } from './redirection'
+import { DESTINATIONS_AUTORISEES, DESTINATION_PAR_DEFAUT, destinationSure } from './redirection'
 
 // Construits par code : un caractere de controle ecrit litteralement dans un
 // fichier source est invisible a la relecture, donc indebogable.
@@ -44,5 +44,23 @@ describe('destinationSure - la liste, jamais un motif', () => {
     // passer. La correspondance est exacte.
     expect(destinationSure('/suivi-evil')).toBe(DESTINATION_PAR_DEFAUT)
     expect(destinationSure('/profilx')).toBe(DESTINATION_PAR_DEFAUT)
+  })
+})
+
+describe('la destination par défaut mène quelque part', () => {
+  it('correspond à une page qui EXISTE dans l’application', async () => {
+    // Le défaut était `/accueil`, un écran jamais construit : toute connexion
+    // finissait sur un 404. La liste d'autorisation avait pourtant l'air
+    // correcte — elle contient bien `/accueil`. Une liste de chemins AUTORISÉS
+    // ne dit rien de leur EXISTENCE, et rien ne reliait les deux.
+    const { existsSync } = await import('node:fs')
+    const app = new URL('../../../apps/web/app/', import.meta.url).pathname
+    const segment = DESTINATION_PAR_DEFAUT === '/' ? '' : DESTINATION_PAR_DEFAUT.slice(1)
+    const page = segment === '' ? `${app}page.tsx` : `${app}${segment}/page.tsx`
+    expect(existsSync(page), `${DESTINATION_PAR_DEFAUT} n’a pas de page`).toBe(true)
+  })
+
+  it('est elle-même autorisée — sinon elle serait remplacée par elle-même', () => {
+    expect(DESTINATIONS_AUTORISEES).toContain(DESTINATION_PAR_DEFAUT)
   })
 })
