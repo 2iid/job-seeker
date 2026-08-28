@@ -63,7 +63,7 @@ JOB-061,Connexion à la boîte mail en lecture restreinte,EPIC 8 — Suivi,backe
 JOB-062,Rattachement des réponses reçues à la bonne candidature,EPIC 8 — Suivi,ai,ai-integration-engineer,P0,M,JOB-061;JOB-060,backlog,S6,apps/worker/src/mailbox/match.ts,REQ-015,yes
 JOB-063,Poste de commande avec vue attention du jour,EPIC 8 — Suivi,frontend,frontend-engineer,P0,L,JOB-060;JOB-048,backlog,S6,apps/web/app/accueil/**,REQ-015,no
 JOB-064,Notifications sobres limitées à trois événements,EPIC 8 — Suivi,backend,backend-engineer,P1,M,JOB-063,backlog,S6,apps/worker/src/notifications/**,REQ-015,no
-JOB-065,Identification des contacts recruteurs avec niveau de certitude,EPIC 9 — Contact recruteur,ai,ai-integration-engineer,P0,L,JOB-035,backlog,S5,apps/worker/src/contacts/**,REQ-016,yes
+JOB-065,Identification des contacts recruteurs avec niveau de certitude,EPIC 9 — Contact recruteur,ai,ai-integration-engineer,P0,L,JOB-035,done,S5,apps/worker/src/contacts/**,REQ-016,yes
 JOB-066,Rédaction de l email de contact personnalisé,EPIC 9 — Contact recruteur,ai,ai-integration-engineer,P0,M,JOB-065;JOB-052,backlog,S6,apps/worker/src/contacts/compose.ts,REQ-016,yes
 JOB-067,Envoi depuis la boîte du candidat message par message,EPIC 9 — Contact recruteur,backend,backend-engineer,P0,M,JOB-066;JOB-061,backlog,S6,apps/worker/src/contacts/send.ts,REQ-016,yes
 JOB-068,Conservation bornée et opposition sur les données de recruteurs,EPIC 9 — Contact recruteur,security,security-engineer,P0,M,JOB-065;JOB-057,backlog,S6,supabase/migrations/**;packages/retention/**,REQ-016,yes

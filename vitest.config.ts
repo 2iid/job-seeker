@@ -1,6 +1,12 @@
 import { defineConfig } from 'vitest/config'
 
-const COMMUN = { environment: 'node' as const }
+const COMMUN = {
+  environment: 'node' as const,
+  // Les tests tournaient dans un environnement différent de celui du produit :
+  // l'application charge `.env`, eux non. Un module qui lit un secret y
+  // échouait donc avec un message sans rapport avec ce qu'on testait.
+  setupFiles: ['./tests/setup-env.ts'],
+}
 
 export default defineConfig({
   esbuild: { jsx: 'automatic' },

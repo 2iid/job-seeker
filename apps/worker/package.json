@@ -14,7 +14,8 @@
     "@job-seeker/observability": "workspace:*",
     "pg": "^8.16.3",
     "@job-seeker/llm": "workspace:*",
-    "@job-seeker/llm-guard": "workspace:*"
+    "@job-seeker/llm-guard": "workspace:*",
+    "@job-seeker/ratelimit": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
