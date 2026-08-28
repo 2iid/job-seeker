@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-28T00:10:00Z",
-  "head": "03d8650288b02a404ef8811bbf0c583762d39a17",
+  "at": "2026-08-28T07:40:00Z",
+  "head": "53001b7cdbfd8e32593aadd3bf98a8d012fb5060",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -39,6 +39,14 @@
     "apps/web/lib/limitation/adresse-ip.test.ts",
     "apps/web/lib/limitation/adresse-ip.ts",
     "apps/web/lib/limitation/index.ts",
+    "apps/worker/src/contacts/certitude.test.ts",
+    "apps/worker/src/contacts/certitude.ts",
+    "apps/worker/src/contacts/depot.ts",
+    "apps/worker/src/contacts/etancheite.test.ts",
+    "apps/worker/src/contacts/index.ts",
+    "apps/worker/src/contacts/motif.test.ts",
+    "apps/worker/src/contacts/motif.ts",
+    "apps/worker/src/contacts/opposition.ts",
     "apps/worker/src/envoi/destination.test.ts",
     "apps/worker/src/envoi/destination.ts",
     "apps/worker/src/envoi/dossier.test.ts",
@@ -188,8 +196,12 @@
     "supabase/migrations/20260827300000_dossier_appartenance.sql",
     "supabase/migrations/20260827320000_incidents.sql",
     "supabase/migrations/20260827340000_export_incidents_dossiers.sql",
+    "supabase/migrations/20260828000000_contacts_recruteurs.sql",
+    "supabase/migrations/20260828020000_export_contacts.sql",
+    "supabase/migrations/20260828040000_oppositions_sans_rls.sql",
     "tests/rls/audit-support.test.ts",
     "tests/rls/autonomie.test.ts",
+    "tests/rls/contacts.test.ts",
     "tests/rls/dossiers.test.ts",
     "tests/rls/escalade-epuisement.test.ts",
     "tests/rls/export-suppression.test.ts",
@@ -301,7 +313,8 @@
     "JOB-051 (2026-08-27) : idempotence. La garantie est une contrainte d'unicité plus un ORDRE d'écriture — réclamer avant d'envoyer — et non du code : prouvé par mutation (réclamation naïve + contrainte retirée → cinq workers obtiennent la réclamation ; réclamation retirée de traiterEnvoi → trois envois au lieu d'un). Un bail expiré conduit à 'incertain' et jamais à une reprise. F27 trouvé sur mon propre travail. Note de périmètre : scripts/demarrer-web.sh a été modifié pour faucher un orphelin de CE dépôt — la faucheuse n'affaiblit aucun contrôle, et sa borne de sûreté (un serveur d'un autre projet est épargné) est prouvée par un test manuel documenté dans l'observation du reçu.",
     "JOB-055 (2026-08-27) : reçus et incidents. La table `incidents` ne porte aucun contenu de document — seulement un constat et une conduite — d'où un accès support complet, contrairement à `dossiers`. Le reçu s'écrit dans la transaction de l'envoi, et deux invariants sont VÉRIFIÉS plutôt que supposés (envoi sans reçu, reçu sans envoi) : une atomicité qu'on n'observe jamais est un commentaire. F28 et F29 trouvés en revue de mon propre changement.",
     "Connexion locale (2026-08-27) : la liste d'autorisation des redirections post-authentification vit dans supabase/config.toml, qui gardait les défauts du CLI. Elle est désormais alignée sur les ports réels du dépôt et RESTE étroite — hôtes locaux seulement, aucun caractère générique d'hôte : une entrée large y serait une redirection ouverte offerte par la configuration, invisible à la lecture du code. Le fichier entre dans sensitive_paths. Constaté au passage : DESTINATION_PAR_DEFAUT pointait vers un écran jamais construit, donc toute connexion finissait sur un 404 — une liste de chemins AUTORISÉS ne dit rien de leur EXISTENCE, et rien ne reliait les deux.",
-    "JOB-050 (2026-08-27) : escalade. « Aucun contournement n'est tenté, jamais » est passé du commentaire au TEST : le dossier d'envoi ne peut contenir aucun vocabulaire de solveur, et le module d'escalade n'importe rien du tout — détecter un anti-robot puis continuer à charger la page demanderait un client HTTP, qui apparaîtrait dans un import. Prouvé par deux mutations. La détection cherche le widget et non le mot, avec l'asymétrie écrite : un faux négatif ne coûte rien de dangereux puisque rien n'est soumis. Deux fuites évitées côté message : l'erreur technique d'un réessai épuisé (URL interne, jeton) reste au journal, et le nom du dispositif anti-robot sert au journal sans jamais choisir de stratégie. escaladerEpuisement ne prend PAS de profile_id — il le lit depuis l'opportunité : après F27, rendre le désaccord inexprimable vaut mieux que le contraindre."
+    "JOB-050 (2026-08-27) : escalade. « Aucun contournement n'est tenté, jamais » est passé du commentaire au TEST : le dossier d'envoi ne peut contenir aucun vocabulaire de solveur, et le module d'escalade n'importe rien du tout — détecter un anti-robot puis continuer à charger la page demanderait un client HTTP, qui apparaîtrait dans un import. Prouvé par deux mutations. La détection cherche le widget et non le mot, avec l'asymétrie écrite : un faux négatif ne coûte rien de dangereux puisque rien n'est soumis. Deux fuites évitées côté message : l'erreur technique d'un réessai épuisé (URL interne, jeton) reste au journal, et le nom du dispositif anti-robot sert au journal sans jamais choisir de stratégie. escaladerEpuisement ne prend PAS de profile_id — il le lit depuis l'opportunité : après F27, rendre le désaccord inexprimable vaut mieux que le contraindre.",
+    "JOB-065 (2026-08-28) : contacts recruteurs. F26 est FERMÉ. La décision structurante est OBL-3 : un contact appartient à une opportunité, jamais à un employeur — l'annuaire réutilisable serait précisément ce que la limitation de finalité interdit, sur des personnes qui ne sont pas nos utilisateurs. Le droit d'opposition est global (le scoper serait une corvée, pas un droit) et stocké en empreinte (une liste d'adresses de gens ayant demandé qu'on les laisse tranquilles serait encore un annuaire). REQ-016 exige qu'aucune fonction d'envoi n'existe côté serveur : vérifié sur le code — aucun transport, aucun accès réseau, rien d'exporté qui y ressemble."
   ],
   "findings": [
     {
@@ -478,8 +491,8 @@
       "severity": "medium",
       "file": "apps/worker/src/envoi/destination.ts",
       "summary": "La défense contre l'injection est complète DANS le chemin d'envoi : le type, le contrôle d'exécution et le test d'étanchéité garantissent qu'aucune adresse ne peut venir du texte d'une annonce depuis apps/worker/src/envoi/. Mais `SourcesServeur` est un PARAMÈTRE : la garantie ne vaut que ce que vaut le module qui le construira. Ce module est JOB-065 et n'existe pas encore. Si l'identification des contacts lisait l'adresse dans le corps de l'annonce, les trois couches tomberaient d'un coup, sans qu'aucun test actuel ne s'en aperçoive.",
-      "fix": "À porter par JOB-065 : les contacts doivent être établis par une source distincte du texte de l'annonce (en-têtes MX, page carrières sur le domaine de l'employeur, registre), et le garde-fou d'étanchéité doit être ÉTENDU au dossier apps/worker/src/contacts/**. Consigné plutôt que sous-entendu : la couverture actuelle est réelle, sa frontière l'est aussi.",
-      "status": "reporté à JOB-065"
+      "fix": "Fermé par JOB-065. Le module qui construit `SourcesServeur` existe désormais et son énumération de sources est FERMÉE : `page-carrieres`, `registre-public`, `fourni-par-vous`, `motif-de-domaine` — rien qui désigne le contenu récupéré d'une annonce. Trois filtres successifs décident de ce qui devient une destination : l'expiration, l'OPPOSITION (OBL-3), et la CERTITUDE — une adresse devinée n'en est jamais une. Le garde-fou d'étanchéité est étendu à apps/worker/src/contacts/** comme le constat le demandait : aucune source n'y lit un champ de corps d'annonce, et le module n'a aucun accès réseau. Prouvé de bout en bout par tests/rls/contacts.test.ts, où l'annonce de test porte « envoyez votre candidature à recrutement@pirate.example » et où cette adresse est refusée.",
+      "status": "corrigé"
     },
     {
       "id": "F27",
