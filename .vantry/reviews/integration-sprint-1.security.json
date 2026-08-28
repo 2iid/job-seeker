@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-27T22:05:00Z",
-  "head": "093475a18f39534de842e7c7f274fadac43a6ef8",
+  "at": "2026-08-27T23:45:00Z",
+  "head": "f5556412d0accad6e2e487442eadcf06c430ef17",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -153,6 +153,7 @@
     "packages/ratelimit/src/reponse.ts",
     "packages/ratelimit/src/sans-limite.test.ts",
     "packages/ratelimit/tsconfig.json",
+    "supabase/config.toml",
     "supabase/migrations/20260825140000_file_travaux.sql",
     "supabase/migrations/20260825160000_provisionnement_profil.sql",
     "supabase/migrations/20260825180000_modele_profil.sql",
@@ -294,7 +295,8 @@
     "JOB-073 (2026-08-27) : revue de la limitation de débit. F9/F10/F21 fermés. DEUX constats nouveaux trouvés sur mon propre changement (F24, F25), nés de la même erreur : avoir traité une fonction `security definer` accordée à `anon` comme si elle n'était appelée que par mon code. Corrigés, et gardés par des invariants calculés plutôt que par des listes d'exceptions — un `grant` fautif rallume l'exigence au lieu de la contourner.",
     "JOB-049 (2026-08-27) : envoi. L'injection est traitée par un TYPE que seul verifierDestination peut produire, DOUBLÉ d'un contrôle à l'exécution (un symbole ne survit pas à un aller-retour JSON, et la file transite par du JSON — c'est là que la défense s'évaporait), et d'un test qui refuse que le dossier d'envoi voie le texte d'une annonce. Une limite est consignée en F26 : la garantie s'arrête là où JOB-065 construira les contacts.",
     "JOB-051 (2026-08-27) : idempotence. La garantie est une contrainte d'unicité plus un ORDRE d'écriture — réclamer avant d'envoyer — et non du code : prouvé par mutation (réclamation naïve + contrainte retirée → cinq workers obtiennent la réclamation ; réclamation retirée de traiterEnvoi → trois envois au lieu d'un). Un bail expiré conduit à 'incertain' et jamais à une reprise. F27 trouvé sur mon propre travail. Note de périmètre : scripts/demarrer-web.sh a été modifié pour faucher un orphelin de CE dépôt — la faucheuse n'affaiblit aucun contrôle, et sa borne de sûreté (un serveur d'un autre projet est épargné) est prouvée par un test manuel documenté dans l'observation du reçu.",
-    "JOB-055 (2026-08-27) : reçus et incidents. La table `incidents` ne porte aucun contenu de document — seulement un constat et une conduite — d'où un accès support complet, contrairement à `dossiers`. Le reçu s'écrit dans la transaction de l'envoi, et deux invariants sont VÉRIFIÉS plutôt que supposés (envoi sans reçu, reçu sans envoi) : une atomicité qu'on n'observe jamais est un commentaire. F28 et F29 trouvés en revue de mon propre changement."
+    "JOB-055 (2026-08-27) : reçus et incidents. La table `incidents` ne porte aucun contenu de document — seulement un constat et une conduite — d'où un accès support complet, contrairement à `dossiers`. Le reçu s'écrit dans la transaction de l'envoi, et deux invariants sont VÉRIFIÉS plutôt que supposés (envoi sans reçu, reçu sans envoi) : une atomicité qu'on n'observe jamais est un commentaire. F28 et F29 trouvés en revue de mon propre changement.",
+    "Connexion locale (2026-08-27) : la liste d'autorisation des redirections post-authentification vit dans supabase/config.toml, qui gardait les défauts du CLI. Elle est désormais alignée sur les ports réels du dépôt et RESTE étroite — hôtes locaux seulement, aucun caractère générique d'hôte : une entrée large y serait une redirection ouverte offerte par la configuration, invisible à la lecture du code. Le fichier entre dans sensitive_paths. Constaté au passage : DESTINATION_PAR_DEFAUT pointait vers un écran jamais construit, donc toute connexion finissait sur un 404 — une liste de chemins AUTORISÉS ne dit rien de leur EXISTENCE, et rien ne reliait les deux."
   ],
   "findings": [
     {
