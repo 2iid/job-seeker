@@ -8,6 +8,7 @@
  */
 
 import type { Canal } from '@job-seeker/profil'
+import type { Escalade } from './escalade.ts'
 
 export type Piece = {
   readonly nature: 'cv' | 'lettre' | 'reponse-screening'
@@ -27,6 +28,14 @@ export type Dossier = {
   readonly pieces: readonly Piece[]
   /** Les questions de screening restées sans réponse fiable. */
   readonly questionsSansReponse: readonly string[]
+  /**
+   * Ce qui a ARRÊTÉ la préparation et demande un humain (JOB-050).
+   *
+   * Distinct d'un manque : un manque se comble en continuant le travail, une
+   * escalade ne se comble que si quelqu'un intervient. Les mêler ferait
+   * espérer que le produit finira tout seul.
+   */
+  readonly escalades?: readonly Escalade[]
 }
 
 export type EtatDossier =
@@ -56,6 +65,10 @@ export function evaluerDossier(d: Dossier): EtatDossier {
   // Une question de screening sans réponse ne bloque pas silencieusement : elle
   // est NOMMÉE. Le dossier n'est pas prêt, et la personne sait quoi faire.
   for (const q of d.questionsSansReponse) manques.push(`une réponse à « ${q} »`)
+
+  // Une escalade rend le dossier non prêt, comme un manque — mais son CONSTAT
+  // remplace la formule générique, parce qu'elle explique déjà tout.
+  for (const e of d.escalades ?? []) manques.push(e.constat)
 
   return manques.length === 0 ? { pret: true } : { pret: false, manques }
 }

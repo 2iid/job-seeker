@@ -20,3 +20,10 @@ export type { EtatReclamation, Reprise } from './idempotence.ts'
 export type { Confirmation, Contexte, Issue, Transport } from './envoyer.ts'
 export { enregistrer, statutPour } from './enregistrer.ts'
 export type { Enregistrement, Statut } from './enregistrer.ts'
+export {
+  detecterAntiRobot, champsBloquants, escaladeAntiRobot, escaladeChampInconnu,
+  escaladeQuestion, escaladePlateforme, escaladeReessaisEpuises,
+} from './escalade.ts'
+export type { Champ, Detection, Escalade, MotifEscalade } from './escalade.ts'
+export { escaladerEpuisement } from './epuisement.ts'
+export type { Epuisement } from './epuisement.ts'

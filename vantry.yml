@@ -143,4 +143,5 @@ acceptance:
   - "AC-3 | REQ-011 | un envoi n est jamais rejoue, meme apres un plantage du worker | pnpm exec vitest run tests/rls/idempotence-envoi.test.ts"
   - "AC-4 | REQ-013 | toute action sortante produit un recu, et une action sans recu devient un incident visible | pnpm exec vitest run tests/rls/recus-reconciliation.test.ts"
   - "AC-5 | REQ-013 | le nom d un fichier de recu telecharge ne tire aucun caractere du contenu | pnpm exec vitest run apps/web/app/recus/nom-fichier.test.ts"
+  - "AC-6 | REQ-011 | aucun contournement d anti-robot ne peut reapparaitre dans le chemin d envoi | pnpm exec vitest run apps/worker/src/envoi/etanche.test.ts apps/worker/src/envoi/escalade.test.ts"
 

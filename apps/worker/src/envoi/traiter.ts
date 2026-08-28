@@ -42,6 +42,21 @@ export async function traiterEnvoi(db: pg.Client | pg.Pool, t: Travail): Promise
   const maintenant = t.maintenant ?? new Date()
   const etatDossier = evaluerDossier(t.dossier)
 
+  // JOB-050 — une escalade passe AVANT tout le reste, y compris avant la
+  // réclamation. Réclamer puis découvrir qu'on ne peut pas continuer laisserait
+  // une ligne « en-cours » qu'un bail devra expirer, et qui serait relue comme
+  // une interruption — alors que rien n'a été tenté.
+  const escalade = t.dossier.escalades?.[0]
+  if (escalade !== undefined) {
+    const issue: Issue = {
+      type: 'refuse',
+      motif: `escalade-${escalade.motif}`,
+      explication: `${escalade.constat} ${escalade.conduite}`,
+    }
+    await ecrire(db, t, etatDossier, issue)
+    return issue
+  }
+
   // Un canal qui ne s'envoie pas seul ne réclame rien : il n'y a pas d'effet de
   // bord à protéger, et poser une réclamation sur une préparation empêcherait
   // simplement de la refaire.
