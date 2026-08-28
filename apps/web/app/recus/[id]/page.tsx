@@ -27,9 +27,21 @@ type Recu = {
   opportunites: { offres: { titre: string; employeur_affiche: string } } | null
 }
 
-const DATE = new Intl.DateTimeFormat('fr-FR', {
-  dateStyle: 'full', timeStyle: 'short',
-})
+const DATE = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'full', timeStyle: 'short' })
+
+/** Mêmes libellés que la liste : deux écrans qui nomment différemment la même
+ *  chose donnent l'impression de parler de deux choses. */
+const CANAL: Record<string, string> = {
+  email: 'par courriel',
+  ats: 'par le formulaire de l’employeur',
+  formulaire: 'par formulaire',
+}
+const RESULTAT: Record<string, string> = {
+  envoye: 'remis',
+  refuse: 'refusé',
+  incertain: 'issue inconnue',
+  prepare: 'préparé',
+}
 
 const CADRE: React.CSSProperties = {
   whiteSpace: 'pre-wrap',
@@ -74,7 +86,7 @@ export default async function UnRecu({ params }: { params: Promise<{ id: string 
         {data.opportunites?.offres.employeur_affiche ?? '—'}
         {' · '}
         <time dateTime={data.envoye_le}>{DATE.format(new Date(data.envoye_le))}</time>
-        {` · par ${data.canal} · ${data.resultat}`}
+        {` · ${CANAL[data.canal] ?? data.canal} · ${RESULTAT[data.resultat] ?? data.resultat}`}
       </p>
 
       <p style={{ margin: '0 0 var(--space-5)', fontSize: '13px' }}>

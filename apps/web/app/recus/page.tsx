@@ -38,6 +38,23 @@ type LigneIncident = {
   detecte_le: string
 }
 
+/**
+ * Les valeurs de la base sont des mots de machine. Les afficher telles quelles
+ * — « envoye », « ats » — fait lire à quelqu'un le vocabulaire interne du
+ * produit, sur l'écran qui doit justement lui rendre des comptes.
+ */
+const CANAL: Record<string, string> = {
+  email: 'par courriel',
+  ats: 'par le formulaire de l’employeur',
+  formulaire: 'par formulaire',
+}
+const RESULTAT: Record<string, string> = {
+  envoye: 'remis',
+  refuse: 'refusé',
+  incertain: 'issue inconnue',
+  prepare: 'préparé',
+}
+
 const DATE = new Intl.DateTimeFormat('fr-FR', {
   day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
 })
@@ -154,7 +171,7 @@ export default async function Recus() {
                     style={{ display: 'block', fontSize: '13px', color: 'var(--texte-secondaire)' }}
                   >
                     <time dateTime={r.envoye_le}>{DATE.format(new Date(r.envoye_le))}</time>
-                    {` · ${r.canal} · ${r.resultat}`}
+                    {` · ${CANAL[r.canal] ?? r.canal} · ${RESULTAT[r.resultat] ?? r.resultat}`}
                   </span>
                 </Link>
               </li>

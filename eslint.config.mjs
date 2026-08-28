@@ -41,4 +41,19 @@ export default tseslint.config(
     },
   },
   { files: ['packages/env/**'], rules: { 'no-restricted-properties': 'off' } },
+  /**
+   * Les outils de `scripts/` sont des programmes Node autonomes : ils ne sont
+   * pas construits, pas importés par l'application, et ne partent jamais dans
+   * un paquet livré.
+   *
+   * L'exception à `process.env` est donc étroite ET justifiée : la règle existe
+   * pour que l'APPLICATION n'ait qu'une porte d'environnement, et un script
+   * local qui lit DATABASE_URL n'est pas l'application. Le chemin est limité à
+   * `scripts/**` : rien de ce qui est servi à quelqu'un ne passe par ici.
+   */
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
+    rules: { 'no-restricted-properties': 'off' },
+  },
 )
