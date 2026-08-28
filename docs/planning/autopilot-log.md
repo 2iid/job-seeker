@@ -1005,3 +1005,43 @@ Vérification refaite sur un port libre, sans toucher au serveur d'autrui.
 Cela explique rétrospectivement les deux erreurs « router state header » de
 l'exécution 37 : le navigateur pointé sur 3100 pour l'autre projet frappait le
 nôtre quand il prenait le port.
+
+## Exécution 39 — JOB-050, escalade
+
+**Une exigence déplacée, pas annulée.** REQ-011 dit « un anti-robot rencontré
+arrête le traitement ». Depuis l'ADR-0003 il n'existe plus de chemin de
+soumission : on ne le rencontre donc plus en envoyant, mais en LISANT le
+formulaire. La règle reste, elle change de lieu — et le motif de s'arrêter
+change aussi : un service de détection qui nous repère pendant la lecture va
+empreinter puis bloquer l'hôte.
+
+**Décidé sans demander.** La détection cherche le WIDGET et non le mot (règle 2
+— l'option la plus réversible : resserrer une détection trop large est plus
+facile que d'expliquer des escalades fantômes). L'asymétrie est écrite dans le
+fichier : un faux positif coûte une escalade inutile, un faux négatif ne coûte
+rien de dangereux puisque rien ne sera soumis.
+
+**Décidé sans demander.** Un champ FACULTATIF inconnu n'escalade pas (règle 3 —
+la spec veut une escalade « à l'humain », donc rare pour rester lisible). Sans
+cette nuance, le produit réveillerait quelqu'un pour un « comment nous avez-vous
+connus ? ».
+
+**Décidé sans demander.** L'escalade passe AVANT la réclamation d'idempotence
+(règle 3). Réclamer puis découvrir qu'on ne peut pas continuer laisserait une
+ligne « en-cours » qu'un bail devra expirer, relue plus tard comme une
+interruption — alors que rien n'a été tenté.
+
+**Le tiers manquant.** « Réessayé, borné, puis escaladé à l'humain » : les deux
+premiers existaient dans la file, le troisième non. Un travail `failed` est
+visible dans une statistique et par personne d'autre.
+
+**Ce que j'ai fait de la leçon F27.** `escaladerEpuisement` ne prend pas de
+`profile_id` : il le lit depuis l'opportunité. F27 m'avait appris à contraindre
+le désaccord par une clé composite ; ici j'ai pu faire un cran de mieux et le
+rendre INEXPRIMABLE.
+
+**Le non-contournement est passé du commentaire au test.** Un commentaire
+« ne pas contourner » se supprime en même temps que le code qu'il gardait.
+Deux mutations le prouvent : « capsolver » en commentaire fait tomber un test,
+un `import` d'undici en fait tomber un autre — le module d'escalade n'importe
+rien du tout, donc reprendre le chargement après détection serait visible.
