@@ -1045,3 +1045,47 @@ rendre INEXPRIMABLE.
 Deux mutations le prouvent : « capsolver » en commentaire fait tomber un test,
 un `import` d'undici en fait tomber un autre — le module d'escalade n'importe
 rien du tout, donc reprendre le chargement après détection serait visible.
+
+## Exécution 40 — JOB-065, contacts recruteurs (ferme F26)
+
+**La décision structurante est OBL-3, pas REQ-016.** Un contact est rattaché à
+UNE opportunité, pas à un employeur. L'annuaire de recruteurs réutilisable
+serait plus utile et serait exactement ce que « finalité limitée à la mise en
+relation » interdit — sur des personnes qui ne sont pas nos utilisateurs et
+n'ont rien accepté. Le coût est réel (on ré-identifie le même recruteur à la
+candidature suivante) et il est écrit dans la migration, pour que personne ne
+« corrige » cette inefficacité sans savoir ce qu'il défait.
+
+**Décidé sans demander.** Une adresse devinée reste PROPOSABLE (règle 3 —
+REQ-016 dit « présentée comme devinée », pas « supprimée »). La cacher
+priverait la personne de la seule piste disponible sur bien des offres. Mais
+elle n'est jamais une destination d'envoi automatique : au mieux le message
+rebondit, au pire il arrive chez quelqu'un d'autre, avec un CV.
+
+**Décidé sans demander.** Le droit d'opposition est GLOBAL alors que les
+contacts sont scopés (règle 3 — OBL-3 parle d'un droit). Le scoper par profil
+obligerait quelqu'un à répéter son refus à chaque nouvel utilisateur du produit :
+ce n'est pas un droit, c'est une corvée. Et il est stocké en empreinte — une
+table d'adresses de gens ayant demandé qu'on les laisse tranquilles serait
+encore un annuaire, construit à partir de leur refus.
+
+**Décidé sans demander.** On ne devine jamais d'adresse générique (règle 2 —
+l'option la plus restrictive est la plus réversible). « recrutement@ » deviné à
+l'aveugle n'est pas une mise en relation, c'est du démarchage.
+
+**Deux invariants plus anciens ont travaillé sans que je les sollicite.** Le
+socle a refusé une RLS décorative sur `oppositions_contact` — même diagnostic
+qu'en JOB-073, posé une seconde fois plutôt que copié. Et le test de complétude
+d'export a bloqué la livraison tant que `contacts` manquait : c'était son objet
+même, et c'est la deuxième fois qu'il rattrape une table en trois jours.
+
+**Deux de mes tests étaient faux, pas le code.** `asUser` annule sa transaction
+— observer l'effet après coup ne mesurait rien. Et en Postgres une requête
+refusée AVORTE la transaction : enchaîner les assertions faisait passer le test
+sur « current transaction is aborted », un message qui ressemble à un refus sans
+en être un.
+
+**Une correction de fond au harnais.** Les tests ne chargeaient pas `.env` alors
+que l'application le fait. Ils tournaient donc dans un environnement différent
+du produit, et le premier module lisant un secret a échoué avec un message sans
+aucun rapport avec ce qu'on testait.
