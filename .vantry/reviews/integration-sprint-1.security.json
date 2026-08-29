@@ -3,8 +3,8 @@
   "kind": "security",
   "verdict": "pass",
   "reviewer": "security-engineer",
-  "at": "2026-08-28T07:40:00Z",
-  "head": "53001b7cdbfd8e32593aadd3bf98a8d012fb5060",
+  "at": "2026-08-29T14:40:00Z",
+  "head": "256ee765414f485901e1b77dd580470ee5a642c3",
   "checklist": [
     "data-authz",
     "privileged-credential",
@@ -199,6 +199,7 @@
     "supabase/migrations/20260828000000_contacts_recruteurs.sql",
     "supabase/migrations/20260828020000_export_contacts.sql",
     "supabase/migrations/20260828040000_oppositions_sans_rls.sql",
+    "supabase/migrations/20260829000000_recu_deliaison.sql",
     "tests/rls/audit-support.test.ts",
     "tests/rls/autonomie.test.ts",
     "tests/rls/contacts.test.ts",
@@ -211,6 +212,7 @@
     "tests/rls/mandats-recus.test.ts",
     "tests/rls/modele.test.ts",
     "tests/rls/opportunites.test.ts",
+    "tests/rls/portee-des-assertions.test.ts",
     "tests/rls/profiles.test.ts",
     "tests/rls/recus-reconciliation.test.ts",
     "tests/rls/stockage.test.ts",
@@ -314,7 +316,8 @@
     "JOB-055 (2026-08-27) : reçus et incidents. La table `incidents` ne porte aucun contenu de document — seulement un constat et une conduite — d'où un accès support complet, contrairement à `dossiers`. Le reçu s'écrit dans la transaction de l'envoi, et deux invariants sont VÉRIFIÉS plutôt que supposés (envoi sans reçu, reçu sans envoi) : une atomicité qu'on n'observe jamais est un commentaire. F28 et F29 trouvés en revue de mon propre changement.",
     "Connexion locale (2026-08-27) : la liste d'autorisation des redirections post-authentification vit dans supabase/config.toml, qui gardait les défauts du CLI. Elle est désormais alignée sur les ports réels du dépôt et RESTE étroite — hôtes locaux seulement, aucun caractère générique d'hôte : une entrée large y serait une redirection ouverte offerte par la configuration, invisible à la lecture du code. Le fichier entre dans sensitive_paths. Constaté au passage : DESTINATION_PAR_DEFAUT pointait vers un écran jamais construit, donc toute connexion finissait sur un 404 — une liste de chemins AUTORISÉS ne dit rien de leur EXISTENCE, et rien ne reliait les deux.",
     "JOB-050 (2026-08-27) : escalade. « Aucun contournement n'est tenté, jamais » est passé du commentaire au TEST : le dossier d'envoi ne peut contenir aucun vocabulaire de solveur, et le module d'escalade n'importe rien du tout — détecter un anti-robot puis continuer à charger la page demanderait un client HTTP, qui apparaîtrait dans un import. Prouvé par deux mutations. La détection cherche le widget et non le mot, avec l'asymétrie écrite : un faux négatif ne coûte rien de dangereux puisque rien n'est soumis. Deux fuites évitées côté message : l'erreur technique d'un réessai épuisé (URL interne, jeton) reste au journal, et le nom du dispositif anti-robot sert au journal sans jamais choisir de stratégie. escaladerEpuisement ne prend PAS de profile_id — il le lit depuis l'opportunité : après F27, rendre le désaccord inexprimable vaut mieux que le contraindre.",
-    "JOB-065 (2026-08-28) : contacts recruteurs. F26 est FERMÉ. La décision structurante est OBL-3 : un contact appartient à une opportunité, jamais à un employeur — l'annuaire réutilisable serait précisément ce que la limitation de finalité interdit, sur des personnes qui ne sont pas nos utilisateurs. Le droit d'opposition est global (le scoper serait une corvée, pas un droit) et stocké en empreinte (une liste d'adresses de gens ayant demandé qu'on les laisse tranquilles serait encore un annuaire). REQ-016 exige qu'aucune fonction d'envoi n'existe côté serveur : vérifié sur le code — aucun transport, aucun accès réseau, rien d'exporté qui y ressemble."
+    "JOB-065 (2026-08-28) : contacts recruteurs. F26 est FERMÉ. La décision structurante est OBL-3 : un contact appartient à une opportunité, jamais à un employeur — l'annuaire réutilisable serait précisément ce que la limitation de finalité interdit, sur des personnes qui ne sont pas nos utilisateurs. Le droit d'opposition est global (le scoper serait une corvée, pas un droit) et stocké en empreinte (une liste d'adresses de gens ayant demandé qu'on les laisse tranquilles serait encore un annuaire). REQ-016 exige qu'aucune fonction d'envoi n'existe côté serveur : vérifié sur le code — aucun transport, aucun accès réseau, rien d'exporté qui y ressemble.",
+    "Déliaison des reçus (2026-08-29) : F30. Trouvé par le semoir de démonstration et non par un test — le chemin fautif (supprimer une opportunité seule) n'était emprunté par personne. Deuxième leçon du jour, de méthode : quatre de mes assertions de base mesuraient un état GLOBAL et détruisaient les données voisines ; tests/rls/portee-des-assertions.test.ts rend la règle exécutable et en a trouvé cinq."
   ],
   "findings": [
     {
@@ -516,6 +519,14 @@
       "file": "supabase/migrations/20260827140000_export_et_suppression.sql",
       "summary": "L'export REQ-014 se disait « complet » et omettait trois tables portant un profile_id : dossiers, incidents, et recherches_sauvegardees — cette dernière depuis un sprint antérieur. Ce n'est pas une négligence : « complet » est une propriété qui se dégrade seule à chaque migration, et rien ne la surveillait. L'omission d'`incidents` était la plus gênante : c'est la table qui dit à quelqu'un qu'une candidature est peut-être partie en son nom sans preuve.",
       "fix": "Les trois tables sont exportées. Surtout : un test compare désormais l'export au SCHÉMA — toute table publique portant un profile_id doit y figurer ou être exclue avec une raison écrite. Comparer à une liste tenue à la main aurait eu le même défaut que l'export lui-même.",
+      "status": "corrigé"
+    },
+    {
+      "id": "F30",
+      "severity": "low",
+      "file": "supabase/migrations/20260826220000_recu_effacement.sql",
+      "summary": "Le déclencheur d'immutabilité des reçus refusait TOUT UPDATE, y compris la mise à NULL de opportunite_id que le schéma déclare lui-même (`on delete set null`). Supprimer une opportunité portant un reçu était donc impossible. Ce n'est pas une faille de confidentialité : c'est une contradiction entre deux mécanismes, dont l'effet est qu'un chemin de suppression légitime échoue avec un message de sécurité — le genre d'erreur qu'on finit par contourner en désactivant la protection.",
+      "fix": "20260829000000_recu_deliaison.sql autorise EXACTEMENT la déliaison : opportunite_id vers NULL, toutes les autres colonnes identiques, comparées via to_jsonb pour ne pas dépendre d'une énumération qui se périmerait. Rattacher un reçu à une autre opportunité reste refusé. Quatre tests. La suppression de compte, elle, n'était pas affectée : le reçu part par la cascade du profil.",
       "status": "corrigé"
     }
   ]
