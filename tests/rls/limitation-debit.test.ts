@@ -27,12 +27,26 @@ const consommer = async (cle: string, fenetre: number, plafond: number) =>
     )
   ).rows[0]!
 
+/**
+ * Les clés que ce fichier écrit — la seule chose qu'il a le droit d'effacer.
+ *
+ * `limitation_debit` n'a pas de propriétaire : sa clé EST une empreinte, par
+ * conception (voir la migration). L'effacer en entier était donc commode et
+ * détruisait les compteurs de tout ce qui tournait à côté — y compris ceux
+ * d'une session de développement en cours.
+ */
+const MIENNES = ['bornes', 'hex', 'test-a', 'test-anon', 'test-au-dela', 'test-b', 'test-course', 'test-fenetre', 'test-fin', 'test-plafond'].map(digest)
+  // Insérée en clair par le test de purge, sans passer par `consommer_jeton` —
+  // donc pas une empreinte. Elle est nettoyée par ce test, et listée ici pour
+  // qu'un échec de la purge ne la laisse pas derrière.
+  .concat(['test-vieux'])
+
 beforeAll(async () => {
   c = await admin()
-  await c.query('delete from public.limitation_debit')
+  await c.query('delete from public.limitation_debit where cle = any($1::text[])', [MIENNES])
 })
 afterAll(async () => {
-  await c.query('delete from public.limitation_debit')
+  await c.query('delete from public.limitation_debit where cle = any($1::text[])', [MIENNES])
   await c.end()
 })
 

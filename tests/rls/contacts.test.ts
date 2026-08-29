@@ -5,7 +5,7 @@ import { verifierDestination } from '../../apps/worker/src/envoi/destination.ts'
 import { evaluer, type Contact } from '../../apps/worker/src/contacts/certitude.ts'
 import { deviner } from '../../apps/worker/src/contacts/motif.ts'
 import { deposer, lireContacts, sourcesServeurPour } from '../../apps/worker/src/contacts/depot.ts'
-import { enregistrerOpposition } from '../../apps/worker/src/contacts/opposition.ts'
+import { empreinteOpposition, enregistrerOpposition } from '../../apps/worker/src/contacts/opposition.ts'
 
 /**
  * JOB-065 — la fermeture de F26, prouvée de bout en bout.
@@ -48,7 +48,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await c.query('delete from public.contacts where opportunite_id = $1', [opportunite])
-  await c.query('delete from public.oppositions_contact')
+  // Bornée aux empreintes de CE test : la table est globale par conception
+  // (une opposition ne se scope pas par profil), donc l'effacer en entier
+  // détruirait celles du jeu de démonstration ou d'un autre fichier.
+  await c.query('delete from public.oppositions_contact where empreinte = any($1::text[])',
+    [MIENNES])
 })
 
 afterAll(async () => {
@@ -56,7 +60,8 @@ afterAll(async () => {
   await c.query("delete from auth.users where email like '%@contact.test'")
   await c.query("delete from public.offres where identifiant_source = 'ref-contact-1'")
   await c.query("delete from worker.employeurs where nom_canonique = 'northwind'")
-  await c.query('delete from public.oppositions_contact')
+  await c.query('delete from public.oppositions_contact where empreinte = any($1::text[])',
+    [MIENNES])
   await c.end()
 })
 
@@ -65,6 +70,14 @@ const CONFIRME: Contact = evaluer({
   justification: 'publiée sur la page carrières de Northwind Analytics',
 })
 const DEVINE: Contact = evaluer(deviner('Marie Dupont', 'northwind.example')[0]!)
+
+/**
+ * Les empreintes que ce fichier écrit — la seule chose qu'il a le droit
+ * d'effacer. `oppositions_contact` est GLOBALE par conception : une opposition
+ * ne se scope pas par profil. L'effacer en entier détruirait donc celles du jeu
+ * de démonstration, ou d'un autre fichier de test.
+ */
+const MIENNES = [CONFIRME.adresse, DEVINE.adresse].map(empreinteOpposition)
 
 describe('F26 — ce que le chemin d’envoi accepte, et rien d’autre', () => {
   it('une adresse tirée du TEXTE de l’annonce est refusée', async () => {
@@ -114,7 +127,8 @@ describe('OBL-3 — le droit d’opposition', () => {
     // nouvel utilisateur du produit — ce n'est pas un droit, c'est une corvée.
     await enregistrerOpposition(c, CONFIRME.adresse, 'demande-directe')
     const { rows } = await c.query<{ n: number }>(
-      'select count(*)::int as n from public.oppositions_contact')
+      'select count(*)::int as n from public.oppositions_contact where empreinte = any($1::text[])',
+      [MIENNES])
     expect(rows[0]!.n).toBe(1)
     const { rows: cols } = await c.query<{ column_name: string }>(
       `select column_name from information_schema.columns
@@ -127,7 +141,8 @@ describe('OBL-3 — le droit d’opposition', () => {
     // serait encore un annuaire de recruteurs.
     await enregistrerOpposition(c, CONFIRME.adresse, 'demande-directe')
     const { rows } = await c.query<{ empreinte: string }>(
-      'select empreinte from public.oppositions_contact')
+      'select empreinte from public.oppositions_contact where empreinte = any($1::text[])',
+      [MIENNES])
     expect(rows[0]!.empreinte).not.toContain('northwind')
     expect(rows[0]!.empreinte).toMatch(/^[0-9a-f]{64}$/)
   })
@@ -136,7 +151,8 @@ describe('OBL-3 — le droit d’opposition', () => {
     await enregistrerOpposition(c, CONFIRME.adresse, 'demande-directe')
     await enregistrerOpposition(c, CONFIRME.adresse, 'signalement')
     const { rows } = await c.query<{ n: number }>(
-      'select count(*)::int as n from public.oppositions_contact')
+      'select count(*)::int as n from public.oppositions_contact where empreinte = any($1::text[])',
+      [MIENNES])
     expect(rows[0]!.n).toBe(1)
   })
 })
@@ -160,6 +176,8 @@ describe('OBL-3 — conservation bornée et cloisonnement', () => {
   it('DENY : Bob ne voit AUCUN contact d’Alice', async () => {
     await deposer(c, opportunite, [CONFIRME])
     const { rows } = await asUser(c, bob, (x) => x.query('select id from public.contacts'))
+    // Zéro est le bon chiffre ici même globalement : Bob ne doit voir AUCUNE
+    // ligne, ni les miennes ni celles du jeu de démonstration.
     expect(rows).toHaveLength(0)
   })
 
@@ -200,10 +218,13 @@ describe('OBL-3 — conservation bornée et cloisonnement', () => {
         return await c.query(sql)
       } finally { await c.query('rollback') }
     }
-    expect((await commeSupport('select certitude from public.contacts')).rows).toHaveLength(1)
-    await expect(commeSupport('select adresse from public.contacts')).rejects.toThrow(/permission denied/i)
-    await expect(commeSupport('select nom from public.contacts')).rejects.toThrow(/permission denied/i)
-    await expect(commeSupport('select * from public.contacts')).rejects.toThrow(/permission denied/i)
+    // Borné à MON opportunité. La base porte aussi le jeu de démonstration :
+    // compter globalement mesurait le voisinage, pas la politique.
+    const mien = `where opportunite_id = '${opportunite}'`
+    expect((await commeSupport(`select certitude from public.contacts ${mien}`)).rows).toHaveLength(1)
+    await expect(commeSupport(`select adresse from public.contacts ${mien}`)).rejects.toThrow(/permission denied/i)
+    await expect(commeSupport(`select nom from public.contacts ${mien}`)).rejects.toThrow(/permission denied/i)
+    await expect(commeSupport(`select * from public.contacts ${mien}`)).rejects.toThrow(/permission denied/i)
   })
 })
 

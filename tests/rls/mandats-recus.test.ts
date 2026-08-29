@@ -1,5 +1,5 @@
 import type pg from 'pg'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { admin, asAnon, asUser, creerCompte } from '@job-seeker/testing'
 
 /**
@@ -221,5 +221,78 @@ describe('arrêt d’urgence et quotas — les défauts de la base', () => {
       x.query('update public.profiles set arret_urgence_le = now() where id = $1', [profilBob]),
     )
     expect(autrui).toBe(0)
+  })
+})
+
+describe('la DÉLIAISON — un reçu survit à l’opportunité qu’il prouve', () => {
+  /**
+   * `recus.opportunite_id` est déclaré `on delete set null` : l'intention
+   * écrite est qu'un reçu survive à la disparition de l'opportunité. Mais
+   * `set null` est un UPDATE, et le déclencheur d'immutabilité les refusait
+   * TOUS : supprimer une opportunité portant un reçu était impossible.
+   *
+   * Deux mécanismes qui se contredisaient, découverts par le semoir de
+   * démonstration et pas par un test — la suppression de COMPTE, elle,
+   * fonctionnait, parce que le reçu part par la cascade du profil avant que la
+   * mise à null ne soit tentée. Le défaut ne vivait que sur le chemin
+   * qu'aucun test n'empruntait.
+   */
+  let opp: string
+  let recuLie: string
+
+  beforeEach(async () => {
+    const offre = (await c.query<{ id: string }>(
+      `insert into public.offres (source, palier, identifiant_source, employeur_canonique,
+                                  employeur_affiche, titre, url_candidature)
+       values ('t','a','delie-' || gen_random_uuid()::text,'x','X','T','https://x.invalid')
+       returning id`)).rows[0]!.id
+    opp = (await c.query<{ id: string }>(
+      'insert into public.opportunites (profile_id, offre_id) values ($1,$2) returning id',
+      [profilAlice, offre])).rows[0]!.id
+    recuLie = (await c.query<{ id: string }>(
+      `insert into public.recus (profile_id, opportunite_id, canal, cv_texte, cran_au_moment, resultat)
+       values ($1,$2,'email','CV EXACT','agir-seul','envoye') returning id`,
+      [profilAlice, opp])).rows[0]!.id
+  })
+
+  it('supprimer l’opportunité DÉLIE le reçu au lieu de le détruire', async () => {
+    await c.query('delete from public.opportunites where id = $1', [opp])
+    const { rows } = await c.query<{ opportunite_id: string | null; cv_texte: string }>(
+      'select opportunite_id, cv_texte from public.recus where id = $1', [recuLie])
+    expect(rows[0]!.opportunite_id).toBeNull()
+    // Le CONTENU, lui, n'a pas bougé : c'est toute la valeur du reçu.
+    expect(rows[0]!.cv_texte).toBe('CV EXACT')
+  })
+
+  it('mais AUCUNE autre modification ne passe par cette porte', async () => {
+    // L'exception autorise exactement une transformation. Un `update` qui en
+    // profiterait pour toucher le contenu reste refusé.
+    await expect(
+      c.query("update public.recus set opportunite_id = null, cv_texte = 'ALTÉRÉ' where id = $1",
+        [recuLie]),
+    ).rejects.toThrow(/immuable|ne se modifie pas/i)
+  })
+
+  it('et on ne peut pas RATTACHER un reçu à une autre opportunité', async () => {
+    // La déliaison va vers NULL, jamais vers une autre valeur : réattribuer un
+    // reçu ferait dire à une preuve qu'elle prouve autre chose.
+    const autre = (await c.query<{ id: string }>(
+      `insert into public.offres (source, palier, identifiant_source, employeur_canonique,
+                                  employeur_affiche, titre, url_candidature)
+       values ('t','a','autre-' || gen_random_uuid()::text,'y','Y','U','https://y.invalid')
+       returning id`)).rows[0]!.id
+    const autreOpp = (await c.query<{ id: string }>(
+      'insert into public.opportunites (profile_id, offre_id) values ($1,$2) returning id',
+      [profilAlice, autre])).rows[0]!.id
+    await expect(
+      c.query('update public.recus set opportunite_id = $2 where id = $1', [recuLie, autreOpp]),
+    ).rejects.toThrow(/immuable|ne se modifie pas/i)
+  })
+
+  it('le contenu d’un reçu DÉJÀ délié reste immuable', async () => {
+    await c.query('delete from public.opportunites where id = $1', [opp])
+    await expect(
+      c.query("update public.recus set cv_texte = 'ALTÉRÉ' where id = $1", [recuLie]),
+    ).rejects.toThrow(/immuable|ne se modifie pas/i)
   })
 })

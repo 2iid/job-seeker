@@ -171,6 +171,13 @@ async function semer() {
   const { rows: p } = await db.query('select id from public.profiles where user_id = $1', [u[0].id])
   const profil = p[0].id
 
+  // Rejouable. Un semoir qui échoue à la deuxième exécution n'est utilisable
+  // qu'une fois, ce qui est exactement le contraire de ce qu'on lui demande —
+  // on le relance précisément parce qu'on vient de réinitialiser la base, ou
+  // parce qu'on veut repartir d'un état connu.
+  await db.query("select set_config('app.suppression_compte', 'true', false)")
+  await db.query('delete from public.offres where identifiant_source like $1', [`${MARQUE}-%`])
+
   await db.query('begin')
 
   // ── Le profil, complet : les écrans de profil ne sont pas des formulaires vides
@@ -374,6 +381,46 @@ async function semer() {
     [profil, oAb],
   )
 
+  // ── Des contacts recruteurs, un par NIVEAU DE CERTITUDE (JOB-065).
+  //
+  //    C'est le trio qui rend REQ-016 visible : une adresse publiée, une
+  //    trouvée dans un registre, et une DEVINÉE. La troisième est proposée à
+  //    l'écran et n'est jamais une destination d'envoi — c'est précisément la
+  //    distinction qu'une démonstration doit montrer plutôt que raconter.
+  await db.query(
+    `insert into worker.employeurs (nom_canonique, nom_affiche, site_carriere)
+     values ('northwind-analytics','Northwind Analytics','https://www.northwind.example/carrieres')
+     on conflict (nom_canonique) do update set site_carriere = excluded.site_carriere`,
+  )
+  const contacts = [
+    ['jobs@northwind.example', 'confirme', 'page-carrieres', null, null,
+     'publiée sur la page carrières de Northwind Analytics'],
+    ['recrutement@northwind.example', 'probable', 'registre-public', 'Service recrutement', null,
+     'trouvée dans les mentions légales du site'],
+    ['marie.dupont@northwind.example', 'devine', 'motif-de-domaine', 'Marie Dupont',
+     'Responsable recrutement', 'le motif « prenom.nom@northwind.example »'],
+  ]
+  for (const [adresse, certitude, source, nom, poste, justification] of contacts) {
+    await db.query(
+      `insert into public.contacts
+         (profile_id, opportunite_id, adresse, certitude, source, nom, poste, justification)
+       values ($1,$2,$3,$4::public.certitude_contact,$5::public.source_contact,$6,$7,$8)
+       on conflict (opportunite_id, adresse) do nothing`,
+      [profil, oGh, adresse, certitude, source, nom, poste, justification],
+    )
+  }
+
+  // ── Une opposition (OBL-3), pour que le filtre se voie à l'œuvre.
+  //    L'adresse n'apparaît nulle part en clair : seule son empreinte est
+  //    stockée, et c'est tout l'objet de la table.
+  await db.query(
+    `insert into public.oppositions_contact (empreinte, origine)
+     values (encode(hmac('opposition-contact:oppose@northwind.example', $1, 'sha256'), 'hex'),
+             'demande-directe')
+     on conflict (empreinte) do nothing`,
+    [process.env.LIMITATION_SEL ?? 'sel-absent'],
+  )
+
   // ── Une escalade : destination non vérifiée
   await db.query(
     `insert into public.dossiers (profile_id, opportunite_id, canal, pieces, pret, issue, issue_motif)
@@ -398,6 +445,7 @@ async function semer() {
   console.log('    /opportunites  8 offres, dont 2 écartées et pourquoi')
   console.log('    /approbations  une offre qui attend votre accord (36 h)')
   console.log('    /recus         un envoi prouvé — ET une candidature sans preuve')
+  console.log('    (les contacts sont en base : l’écran qui les montre est JOB-066)')
   console.log('\n  Pour tout retirer :  node scripts/semer-demo.mjs --effacer\n')
 }
 
